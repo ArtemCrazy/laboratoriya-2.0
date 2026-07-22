@@ -1,0 +1,12 @@
+# Стенд согласования: картинки меняются часто и под теми же именами,
+# поэтому браузер не должен держать их долго — иначе заказчик увидит
+# старую версию. Файлы сборки Next.js уже содержат хэш в имени,
+# их кэшируем надолго.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(webp|png|jpg|jpeg|svg|ico)$">
+    Header set Cache-Control "public, max-age=300, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

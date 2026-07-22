@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import DotField from '@/components/DotField';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
+import LiquidButton from '@/components/LiquidButton';
 import { hero, facts, elements } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
@@ -38,8 +39,11 @@ export default function ConceptB() {
                 {hero.titleMain}
                 <br />
                 <span className="xl:whitespace-nowrap">
-                  <span className="text-gradient">{hero.titleAccent}</span>{' '}
-                  <span className="text-accent">{hero.version}</span>
+                  <span className="text-gradient">{hero.titleAccent}</span>
+                  {/* Версия верхним индексом — как заряд в химической формуле */}
+                  <sup className="ml-1.5 align-super text-[0.42em] font-extrabold text-accent">
+                    {hero.version}
+                  </sup>
                 </span>
               </h1>
 
@@ -48,18 +52,10 @@ export default function ConceptB() {
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <a
-                  href="#price"
-                  className="rounded-full bg-accent px-8 py-4 text-center font-semibold text-text-dark transition-all hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(255,213,79,0.35)]"
-                >
-                  {hero.ctaPrimary}
-                </a>
-                <a
-                  href="#program"
-                  className="rounded-full border border-glass-border bg-glass px-8 py-4 text-center font-semibold backdrop-blur-sm transition-colors hover:border-cyan hover:text-cyan"
-                >
+                <LiquidButton href="#price">{hero.ctaPrimary}</LiquidButton>
+                <LiquidButton href="#program" variant="ghost">
                   {hero.ctaSecondary}
-                </a>
+                </LiquidButton>
               </div>
 
               {/* Ключевой ход концепции: доказательство стоит рядом с кнопкой покупки */}

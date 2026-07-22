@@ -1,4 +1,5 @@
 import { audience, audienceTitle } from '@/content/hero';
+import FlaskMark from '@/components/FlaskMark';
 import { asset } from '@/lib/paths';
 
 /**
@@ -21,8 +22,8 @@ export default function AudienceTable() {
 
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
         <div className="max-w-[880px]">
-          <div className="mb-4 flex items-center gap-3 text-xs uppercase tracking-[0.22em] text-cyan">
-            <span className="h-px w-8 bg-cyan/50" />
+          <div className="mb-4 flex items-center gap-2.5 text-xs uppercase tracking-[0.22em] text-cyan">
+            <FlaskMark />
             Для кого конференция
           </div>
           <h2
@@ -34,25 +35,28 @@ export default function AudienceTable() {
         </div>
 
         <div className="mt-12 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(320px,0.85fr)_1.15fr] lg:gap-8">
-          {/* --- Портрет: строгий квадрат --- */}
-          <figure className="relative aspect-square overflow-hidden rounded-2xl border border-glass-border">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={asset('/img/mendeleev.webp')}
-              alt="Мраморный бюст Дмитрия Менделеева в тёмных очках"
-              width={1000}
-              height={1000}
-              className="h-full w-full object-cover"
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-bg-main via-bg-main/60 to-transparent" />
-            <figcaption className="absolute bottom-5 left-6 right-6">
+          {/* --- Портрет: фон вырезан, бюст стоит прямо на странице --- */}
+          <figure className="relative">
+            <div className="relative aspect-square">
+              {/* Свечение под бюстом — чтобы вырезанная фигура не висела в пустоте */}
+              <div className="pointer-events-none absolute inset-x-[8%] bottom-[6%] top-[18%] rounded-full bg-cyan/[0.07] blur-[70px]" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={asset('/img/mendeleev.webp')}
+                alt="Мраморный бюст Дмитрия Менделеева в тёмных очках"
+                width={1000}
+                height={936}
+                className="relative h-full w-full object-contain object-bottom"
+              />
+            </div>
+            <figcaption className="mt-2">
               <div
                 className="text-2xl font-extrabold leading-none text-white"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
                 Своя таблица
               </div>
-              <p className="mt-2 text-[15px] leading-snug text-text-muted">
+              <p className="mt-2.5 text-base leading-snug text-text-muted">
                 Только вместо элементов — те, кто отвечает за вознаграждение и мотивацию
               </p>
             </figcaption>

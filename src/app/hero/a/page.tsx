@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import DotField from '@/components/DotField';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
 import AudienceTable from '@/components/AudienceTable';
+import LiquidButton from '@/components/LiquidButton';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
@@ -50,8 +51,11 @@ export default function ConceptA() {
               {hero.titleMain}
               <br />
               <span className="xl:whitespace-nowrap">
-                <span className="text-gradient">{hero.titleAccent}</span>{' '}
-                <span className="text-accent">{hero.version}</span>
+                <span className="text-gradient">{hero.titleAccent}</span>
+                {/* Версия верхним индексом — как заряд в химической формуле */}
+                <sup className="ml-1.5 align-super text-[0.42em] font-extrabold text-accent">
+                  {hero.version}
+                </sup>
               </span>
             </h1>
 
@@ -60,28 +64,21 @@ export default function ConceptA() {
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <a
-                href="#price"
-                className="rounded-full bg-accent px-8 py-4 text-center font-semibold text-text-dark transition-all hover:bg-accent-hover hover:shadow-[0_0_30px_rgba(255,213,79,0.35)]"
-              >
-                {hero.ctaPrimary}
-              </a>
-              <a
-                href="#program"
-                className="rounded-full border border-glass-border bg-glass px-8 py-4 text-center font-semibold backdrop-blur-sm transition-colors hover:border-cyan hover:text-cyan"
-              >
+              <LiquidButton href="#price">{hero.ctaPrimary}</LiquidButton>
+              <LiquidButton href="#program" variant="ghost">
                 {hero.ctaSecondary}
-              </a>
+              </LiquidButton>
             </div>
           </div>
 
           {/* --- Визуальная колонка: сцена лаборатории в круге + плашки ---
               Круг срезает углы иллюстрации, где впечатаны её собственные
               подписи, поэтому понятия C&B выносим своими плашками вокруг. */}
-          <div className="relative mx-auto hidden aspect-square w-full max-w-[520px] items-center justify-center lg:flex">
-            <div className="absolute inset-[12%] rounded-full border border-cyan/20" />
-            <div className="absolute inset-[4%] rounded-full border border-white/5" />
-            <div className="absolute inset-[12%] overflow-hidden rounded-full">
+          <div className="relative mx-auto hidden aspect-square w-full max-w-[600px] items-center justify-center lg:flex">
+            {/* Круг ~500px — как в первой конференции, где он был 450px */}
+            <div className="absolute inset-[8%] rounded-full border border-cyan/20" />
+            <div className="absolute inset-0 rounded-full border border-white/5" />
+            <div className="absolute inset-[8%] overflow-hidden rounded-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={asset('/img/mascots-lab.webp')}
