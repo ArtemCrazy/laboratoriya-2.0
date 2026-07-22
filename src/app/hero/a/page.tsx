@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import DotField from '@/components/DotField';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
+import AudienceTable from '@/components/AudienceTable';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
@@ -18,7 +19,8 @@ export default function ConceptA() {
   return (
     <>
       <Header />
-      <main className="relative flex min-h-screen flex-col overflow-hidden bg-bg-main pt-24 lg:pt-28">
+      <main>
+        <section className="relative flex min-h-screen flex-col overflow-hidden bg-bg-main pt-24 lg:pt-28">
         {/* Фон: точечное поле + световые пятна */}
         <div className="absolute inset-0">
           <DotField />
@@ -124,6 +126,10 @@ export default function ConceptA() {
             ))}
           </div>
         </div>
+        </section>
+
+        {/* ТЗ 4.3 — «Для кого конференция» */}
+        <AudienceTable />
       </main>
       <ConceptSwitcher current="a" />
     </>
