@@ -8,11 +8,10 @@ import Link from 'next/link';
  */
 const concepts = [
   { key: 'a', href: '/hero/a/', title: 'Живая формула' },
-  { key: 'b', href: '/hero/b/', title: 'Эксперимент' },
-  { key: 'c', href: '/hero/c/', title: 'Химия цифр' },
+  { key: 'b', href: '/hero/b/', title: 'Таблица элементов' },
 ];
 
-export default function ConceptSwitcher({ current }: { current: 'a' | 'b' | 'c' }) {
+export default function ConceptSwitcher({ current }: { current: 'a' | 'b' }) {
   return (
     <div className="fixed bottom-24 left-1/2 z-[60] -translate-x-1/2 lg:bottom-6">
       <div className="flex items-center gap-1 rounded-full border border-glass-border bg-bg-deep/90 p-1.5 backdrop-blur-xl">

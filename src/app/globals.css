@@ -21,15 +21,6 @@
   --color-text-muted: #a0abc0;
   --color-text-dark: #030610;
 
-  /* Концепция C: светлая страница и глубокий индиго — направление,
-     заданное референсом techrec.pro. В концепциях A и B не используется. */
-  --color-light-bg: #eef0fa;
-  --color-light-card: #ffffff;
-  --color-indigo-deep: #171245;
-  --color-indigo: #533ba7;
-  --color-indigo-soft: #e7ecff;
-  --color-ink: #12122b;
-
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
