@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+next-env.d.ts
+.DS_Store
+*.log
+
+# Архивы сборок — раздаются напрямую, в репозитории не нужны
+*.zip
+
+# Служебные файлы агентов — на прод и к клиенту не уходят
+.claude/
+AGENTS.md
