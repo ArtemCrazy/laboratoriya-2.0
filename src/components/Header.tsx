@@ -21,11 +21,11 @@ export default function Header() {
 
   return (
     <>
+      {/* Фон сплошной чёрный, а не прозрачный: логотип тонкий, на пёстром
+          первом экране он терялся. После скролла шапка просто уплотняется. */}
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'border-b border-glass-border bg-bg-main/80 py-3 backdrop-blur-xl'
-            : 'py-5'
+        className={`fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black transition-all duration-300 ${
+          scrolled ? 'py-2.5' : 'py-4'
         }`}
       >
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 lg:px-10">
@@ -34,10 +34,10 @@ export default function Header() {
             <img
               src={asset('/img/logo.png')}
               alt="C&B Лаборатория"
-              className="h-7 w-auto lg:h-8"
+              className="h-9 w-auto lg:h-11"
             />
             <span
-              className="text-lg font-bold text-accent"
+              className="text-xl font-bold text-accent lg:text-2xl"
               style={{ fontFamily: 'var(--font-outfit)' }}
             >
               2.0
@@ -94,7 +94,7 @@ export default function Header() {
 
         {/* Мобильное меню */}
         {menuOpen && (
-          <nav className="border-t border-glass-border bg-bg-main/95 backdrop-blur-xl xl:hidden">
+          <nav className="border-t border-white/10 bg-black xl:hidden">
             <div className="mx-auto flex max-w-[1440px] flex-col px-5 py-4">
               {nav.map((item) => (
                 <a
