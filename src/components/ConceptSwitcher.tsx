@@ -9,7 +9,7 @@ import Link from 'next/link';
 const concepts = [
   { key: 'a', href: '/hero/a/', title: 'Живая формула' },
   { key: 'b', href: '/hero/b/', title: 'Эксперимент' },
-  { key: 'c', href: '/hero/c/', title: 'Таблица элементов' },
+  { key: 'c', href: '/hero/c/', title: 'Химия цифр' },
 ];
 
 export default function ConceptSwitcher({ current }: { current: 'a' | 'b' | 'c' }) {
