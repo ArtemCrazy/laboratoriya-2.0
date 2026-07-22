@@ -6,13 +6,14 @@ import Link from 'next/link';
  * Служебный переключатель концепций для показа заказчику.
  * ⚠️ Удалить перед сдачей боевого сайта — это витрина этапа согласования.
  */
+// Концепция «Фон во всю ширину» временно скрыта: код лежит в src/app/hero/_c,
+// папка с подчёркиванием не создаёт маршрут. Вернуть — переименовать в c.
 const concepts = [
   { key: 'a', href: '/hero/a/', title: 'Живая формула' },
   { key: 'b', href: '/hero/b/', title: 'Таблица элементов' },
-  { key: 'c', href: '/hero/c/', title: 'Фон во всю ширину' },
 ];
 
-export default function ConceptSwitcher({ current }: { current: 'a' | 'b' | 'c' }) {
+export default function ConceptSwitcher({ current }: { current: 'a' | 'b' }) {
   return (
     <div className="fixed bottom-24 left-1/2 z-[60] -translate-x-1/2 lg:bottom-6">
       <div className="flex items-center gap-1 rounded-full border border-glass-border bg-bg-deep/90 p-1.5 backdrop-blur-xl">
