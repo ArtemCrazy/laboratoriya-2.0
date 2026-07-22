@@ -102,15 +102,19 @@ export default function ConceptC() {
                 ))}
               </div>
 
-              {/* Маскоты компактно, как «ведущие» экрана */}
-              <div className="mt-5 flex items-center gap-3 rounded-2xl border border-glass-border bg-bg-deep/60 px-4 py-3 backdrop-blur-md">
+              {/* Сцена лаборатории компактной полосой — кадрируем по верху,
+                  чтобы лица лаборантов оставались в кадре */}
+              <div className="mt-5 flex items-center gap-4 overflow-hidden rounded-2xl border border-glass-border bg-bg-deep/60 backdrop-blur-md">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={asset('/img/hr_lab_mascots_2d.png')}
-                  alt="Маскоты конференции — лаборанты C&B"
-                  className="h-12 w-12 shrink-0 rounded-full object-cover"
+                  src={asset('/img/mascots-lab.webp')}
+                  alt="Лаборанты конференции смешивают бюджет, мотивацию и заботу"
+                  width={1320}
+                  height={1191}
+                  className="h-20 w-28 shrink-0 object-cover"
+                  style={{ objectPosition: 'center 28%' }}
                 />
-                <p className="text-sm text-text-muted">
+                <p className="py-3 pr-4 text-sm text-text-muted">
                   Разбираем <span className="text-white">формулы мотивации</span> на реальных
                   кейсах компаний
                 </p>

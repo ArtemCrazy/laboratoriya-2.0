@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { hero, nav } from '@/content/hero';
+import { asset } from '@/lib/paths';
 
 /**
  * Шапка по ТЗ 4.1: sticky после первого скролла, бургер на мобильном,
@@ -28,14 +29,19 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 lg:px-10">
-          <a
-            href="#"
-            className="font-bold tracking-tight"
-            style={{ fontFamily: 'var(--font-outfit)' }}
-          >
-            <span className="text-cyan">C&amp;B</span>{' '}
-            <span className="text-text-main">ЛАБОРАТОРИЯ</span>
-            <span className="ml-1 text-accent">2.0</span>
+          <a href="#" className="flex items-center gap-2.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={asset('/img/logo.png')}
+              alt="C&B Лаборатория"
+              className="h-7 w-auto lg:h-8"
+            />
+            <span
+              className="text-lg font-bold text-accent"
+              style={{ fontFamily: 'var(--font-outfit)' }}
+            >
+              2.0
+            </span>
           </a>
 
           {/* Десктопное меню — от 1280px, иначе 8 пунктов не помещаются рядом с CTA */}

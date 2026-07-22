@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import DotField from '@/components/DotField';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
-import { hero, terms } from '@/content/hero';
+import { hero } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
 export const metadata = { title: 'Концепция A — «Живая формула» | C&B-лаборатория 2.0' };
@@ -69,39 +69,23 @@ export default function ConceptA() {
             </div>
           </div>
 
-          {/* --- Визуальная колонка: маскоты + плавающие плашки --- */}
-          <div className="relative mx-auto hidden aspect-square w-full max-w-[520px] items-center justify-center lg:flex">
-            <div className="absolute inset-[12%] rounded-full border border-cyan/20" />
-            <div className="absolute inset-[4%] rounded-full border border-white/5" />
-            <div className="absolute inset-[12%] overflow-hidden rounded-full bg-gradient-to-b from-cyan/10 to-transparent">
+          {/* --- Визуальная колонка: сцена лаборатории ---
+              Плашки с понятиями C&B уже впечатаны в саму иллюстрацию,
+              поэтому своих поверх не рисуем — дублировали бы. */}
+          <div className="relative mx-auto hidden w-full max-w-[560px] lg:block">
+            <div className="absolute -inset-6 rounded-[32px] bg-cyan/10 blur-3xl" />
+            <div className="relative overflow-hidden rounded-[28px] border border-glass-border shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={asset('/img/hr_lab_mascots_2d.png')}
-                alt="Маскоты конференции — лаборанты C&B"
-                className="h-full w-full object-cover opacity-95"
+                src={asset('/img/mascots-lab.webp')}
+                alt="Лаборанты конференции смешивают бюджет, мотивацию и заботу"
+                width={1320}
+                height={1191}
+                className="h-full w-full object-cover"
               />
+              {/* Затемнение снизу — картинка не спорит с текстом по контрасту */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-bg-main/70 to-transparent" />
             </div>
-
-            {/* Плавающие стеклянные плашки с понятиями C&B */}
-            {terms.map((t, i) => {
-              const positions = [
-                'left-[-4%] top-[18%]',
-                'right-[-6%] top-[30%]',
-                'left-[2%] bottom-[20%]',
-                'right-[0%] bottom-[12%]',
-                'left-1/2 top-[-2%] -translate-x-1/2',
-              ];
-              return (
-                <div
-                  key={t.label}
-                  className={`animate-float absolute ${positions[i]} flex items-center gap-2 rounded-2xl border border-glass-border bg-bg-deep/70 px-4 py-2.5 backdrop-blur-md`}
-                  style={{ animationDelay: `${i * 0.8}s` }}
-                >
-                  <span aria-hidden="true">{t.icon}</span>
-                  <span className="text-sm font-medium">{t.label}</span>
-                </div>
-              );
-            })}
           </div>
         </div>
 

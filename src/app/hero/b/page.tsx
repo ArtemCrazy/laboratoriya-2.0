@@ -3,7 +3,6 @@ import DotField from '@/components/DotField';
 import Flask3D from '@/components/Flask3D';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
 import { hero } from '@/content/hero';
-import { asset } from '@/lib/paths';
 
 export const metadata = { title: 'Концепция B — «Эксперимент» | C&B-лаборатория 2.0' };
 
@@ -58,16 +57,12 @@ export default function ConceptB() {
               </a>
             </div>
 
-            <div className="mt-10 flex items-center gap-4 text-sm text-text-muted">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={asset('/img/hr_lab_mascots_2d.png')}
-                alt=""
-                aria-hidden="true"
-                className="h-14 w-14 rounded-full border border-glass-border object-cover opacity-80"
-              />
+            {/* Сцену лаборатории здесь не ставим: фотореализм спорит с 3D-колбой,
+                а в мелком кропе она всё равно нечитаема. Колба — главный герой экрана. */}
+            <div className="mt-10 flex items-center gap-2 text-sm text-text-muted">
+              <span aria-hidden="true">📍</span>
               <span>
-                📍 {hero.location}, {hero.locationNote}
+                {hero.location}, {hero.locationNote}
               </span>
             </div>
           </div>
