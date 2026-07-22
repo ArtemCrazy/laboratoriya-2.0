@@ -1,14 +1,20 @@
 import { audience, audienceTitle } from '@/content/hero';
+import { asset } from '@/lib/paths';
 
 /**
- * Блок «Для кого конференция» (ТЗ 4.3) в виде таблицы Менделеева:
- * каждая аудитория — ячейка элемента с порядковым номером и символом.
- * Метафора продолжает «лабораторию» первого экрана.
+ * Блок «Для кого конференция» (ТЗ 4.3).
+ * Каждая аудитория — ячейка периодической таблицы: порядковый номер,
+ * символ, роль и задачи, с которыми человек приходит на конференцию.
+ *
+ * Слева — квадратный портрет Менделеева, справа — сама таблица,
+ * колонка уже, поэтому ячейки идут сеткой 2×2.
  */
 export default function AudienceTable() {
   return (
-    <section id="audience" className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28">
-      {/* Мягкая подсветка, чтобы блок не читался плоским продолжением экрана */}
+    <section
+      id="audience"
+      className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28"
+    >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-[380px] w-[680px] -translate-x-1/2 rounded-full bg-cyan/[0.06] blur-[130px]" />
       </div>
@@ -27,38 +33,64 @@ export default function AudienceTable() {
           </h2>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {audience.map((a, i) => (
-            <article
-              key={a.symbol}
-              className="animate-rise group flex flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan/50 hover:bg-glass-hover hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              {/* Шапка ячейки — как в периодической таблице */}
-              <div className="flex items-start justify-between">
-                <span className="text-[13px] text-text-muted">{a.num}</span>
-                <span className="h-2 w-2 rounded-full bg-cyan/30 transition-colors group-hover:bg-cyan" />
-              </div>
-
+        <div className="mt-12 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(320px,0.85fr)_1.15fr] lg:gap-8">
+          {/* --- Портрет: строгий квадрат --- */}
+          <figure className="relative aspect-square overflow-hidden rounded-2xl border border-glass-border">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={asset('/img/mendeleev.webp')}
+              alt="Мраморный бюст Дмитрия Менделеева в тёмных очках"
+              width={1000}
+              height={1000}
+              className="h-full w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-bg-main via-bg-main/60 to-transparent" />
+            <figcaption className="absolute bottom-5 left-6 right-6">
               <div
-                className="mt-3 text-[clamp(40px,4vw,54px)] font-extrabold leading-none text-white transition-colors group-hover:text-cyan"
+                className="text-2xl font-extrabold leading-none text-white"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
-                {a.symbol}
+                Своя таблица
               </div>
+              <p className="mt-2 text-[15px] leading-snug text-text-muted">
+                Только вместо элементов — те, кто отвечает за вознаграждение и мотивацию
+              </p>
+            </figcaption>
+          </figure>
 
-              <div className="mt-5 border-t border-glass-border pt-5">
-                <h3
-                  className="text-[19px] font-bold leading-tight"
+          {/* --- Таблица аудиторий --- */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {audience.map((a, i) => (
+              <article
+                key={a.symbol}
+                className="animate-rise group flex flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan/50 hover:bg-glass-hover hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="flex items-start justify-between">
+                  <span className="text-[13px] text-text-muted">{a.num}</span>
+                  <span className="h-2 w-2 rounded-full bg-cyan/30 transition-colors group-hover:bg-cyan" />
+                </div>
+
+                <div
+                  className="mt-2 text-[clamp(36px,3vw,46px)] font-extrabold leading-none text-white transition-colors group-hover:text-cyan"
                   style={{ fontFamily: 'var(--font-outfit)' }}
                 >
-                  {a.role}
-                </h3>
-                {/* 16px — нижняя граница по ТЗ 5.2 для основного текста */}
-                <p className="mt-3 text-base leading-relaxed text-text-muted">{a.task}</p>
-              </div>
-            </article>
-          ))}
+                  {a.symbol}
+                </div>
+
+                <div className="mt-4 border-t border-glass-border pt-4">
+                  <h3
+                    className="text-[18px] font-bold leading-tight"
+                    style={{ fontFamily: 'var(--font-outfit)' }}
+                  >
+                    {a.role}
+                  </h3>
+                  {/* 16px — нижняя граница по ТЗ 5.2 для основного текста */}
+                  <p className="mt-2.5 text-base leading-relaxed text-text-muted">{a.task}</p>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>
