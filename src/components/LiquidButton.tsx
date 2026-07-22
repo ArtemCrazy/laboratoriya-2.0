@@ -17,8 +17,15 @@ import { useEffect, useRef, useState } from 'react';
  * (@media (hover: none) { .liquid-btn svg { display: none } }).
  */
 
-const PAD = 42; // запас вокруг кнопки: жидкости есть куда выплёскиваться
+const PAD = 56; // запас вокруг кнопки: жидкости есть куда выплёскиваться
 const POINTS = 36;
+
+// Параметры притяжения подобраны расчётом: при forceLimit 1 и 2 передний слой
+// уходит к курсору примерно на 15px, задний — на 39px. Отсюда и липкость.
+const INFLUENCE = 200; // радиус, дальше которого курсор не действует
+const GAIN = 1.0;
+const SPRING = 0.05;
+const MAX_OFFSET = 44; // дальше точка не улетает
 
 type Layer = {
   viscosity: number;
@@ -122,22 +129,33 @@ export default function LiquidButton({
           const dy = my - p.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
 
-          // Притяжение к курсору, ослабевающее с квадратом расстояния
-          let force = layer.mouseForce / (dist * dist);
-          if (force > layer.forceLimit) force = layer.forceLimit;
-          p.vx += (dx / dist) * force * 0.1; // forceFactor
-          p.vy += (dy / dist) * force * 0.1;
+          // Притяжение к курсору: спадает к нулю на границе радиуса влияния.
+          // Квадрат расстояния здесь не годится — при forceLimit 1–2 и шаге 0.1
+          // смещение выходило меньше пикселя, и липкости не было видно.
+          const t = dist < INFLUENCE ? 1 - dist / INFLUENCE : 0;
+          const pull = layer.forceLimit * GAIN * t * t;
+          p.vx += (dx / dist) * pull;
+          p.vy += (dy / dist) * pull;
 
           // Пружина обратно на контур
-          p.vx += (p.ox - p.x) * 0.06;
-          p.vy += (p.oy - p.y) * 0.06;
+          p.vx += (p.ox - p.x) * SPRING;
+          p.vy += (p.oy - p.y) * SPRING;
 
-          // Вязкость: чем ниже, тем «гуще» слой
+          // Вязкость: чем ниже, тем «гуще» слой и тем сильнее он отстаёт
           p.vx *= layer.viscosity;
           p.vy *= layer.viscosity;
 
           p.x += p.vx;
           p.y += p.vy;
+
+          // Не даём каплям улетать за пределы svg
+          const ox = p.x - p.ox;
+          const oy = p.y - p.oy;
+          const off = Math.sqrt(ox * ox + oy * oy);
+          if (off > MAX_OFFSET) {
+            p.x = p.ox + (ox / off) * MAX_OFFSET;
+            p.y = p.oy + (oy / off) * MAX_OFFSET;
+          }
         }
       }
 
