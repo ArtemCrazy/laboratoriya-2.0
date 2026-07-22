@@ -39,14 +39,18 @@ export default function ConceptA() {
               </span>
             </div>
 
+            {/* Вторая строка держится в один ряд вместе с «2.0» — на узких
+                экранах перенос разрешаем, иначе строка не поместится */}
             <h1
-              className="text-[clamp(32px,5.2vw,64px)] font-extrabold leading-[1.08] tracking-tight"
+              className="text-[clamp(30px,4vw,56px)] font-extrabold leading-[1.08] tracking-tight"
               style={{ fontFamily: 'var(--font-outfit)' }}
             >
               {hero.titleMain}
               <br />
-              <span className="text-gradient">{hero.titleAccent}</span>{' '}
-              <span className="text-accent">{hero.version}</span>
+              <span className="xl:whitespace-nowrap">
+                <span className="text-gradient">{hero.titleAccent}</span>{' '}
+                <span className="text-accent">{hero.version}</span>
+              </span>
             </h1>
 
             <p className="mt-6 max-w-[560px] text-[17px] leading-relaxed text-text-muted">

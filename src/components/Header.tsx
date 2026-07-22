@@ -29,19 +29,15 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 lg:px-10">
-          <a href="#" className="flex items-center gap-2.5">
+          {/* Логотип без «2.0» — в первой конференции его в шапке не было,
+              версия живёт в заголовке первого экрана */}
+          <a href="#" className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={asset('/img/logo.png')}
               alt="C&B Лаборатория"
               className="h-9 w-auto lg:h-11"
             />
-            <span
-              className="text-xl font-bold text-accent lg:text-2xl"
-              style={{ fontFamily: 'var(--font-outfit)' }}
-            >
-              2.0
-            </span>
           </a>
 
           {/* Десктопное меню — от 1280px, иначе 8 пунктов не помещаются рядом с CTA */}
