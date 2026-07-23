@@ -41,7 +41,7 @@ const orbitPlates = [
 /** Орбиты атома: наклон, сжатие эллипса, цвет линии и электрона */
 const atomOrbits = [
   { tilt: 0, ry: 19, speed: 14, stroke: 'rgba(0, 229, 255, 0.42)', electron: '#00E5FF' },
-  { tilt: 60, ry: 17, speed: 18, stroke: 'rgba(255, 255, 255, 0.26)', electron: '#FFD54F' },
+  { tilt: 60, ry: 17, speed: 18, stroke: 'rgba(0, 229, 255, 0.35)', electron: '#FFD54F' },
   { tilt: 120, ry: 21, speed: 22, stroke: 'rgba(0, 229, 255, 0.28)', electron: '#00E5FF' },
 ];
 
