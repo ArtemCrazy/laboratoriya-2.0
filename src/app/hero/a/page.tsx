@@ -85,12 +85,15 @@ export default function ConceptA() {
               />
             </div>
 
-            {/* Плавающие плашки с понятиями C&B — только верхняя часть круга,
-                низ отдан виджету с датой */}
-            {terms.slice(0, 3).map((t, i) => {
+            {/* Плавающие плашки с понятиями C&B вокруг фотографии */}
+            {terms.map((t, i) => {
+              // Правые плашки уведены внутрь круга: у самого края экрана
+              // теперь едет закреплённый виджет с датой
               const positions = [
-                'left-[-4%] top-[16%]',
-                'right-[-6%] top-[28%]',
+                'left-[-6%] top-[18%]',
+                'right-[30%] top-[24%]',
+                'left-[0%] bottom-[20%]',
+                'right-[32%] bottom-[8%]',
                 'left-1/2 top-[-2%] -translate-x-1/2',
               ];
               return (
@@ -105,10 +108,6 @@ export default function ConceptA() {
               );
             })}
 
-            {/* Виджет с датой и местом — парит у нижнего края круга */}
-            <div className="absolute bottom-[-2%] left-[-8%]" style={{ animationDelay: '1.2s' }}>
-              <DateWidget floating />
-            </div>
           </div>
         </div>
 
@@ -128,6 +127,13 @@ export default function ConceptA() {
         {/* ТЗ 4.3 — «Для кого конференция» */}
         <AudienceTable />
       </main>
+
+      {/* Виджет с датой и местом закреплён справа и едет вместе со страницей.
+          На мобильном его нет — там он стоит в потоке под кнопками. */}
+      <div className="fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 lg:block">
+        <DateWidget floating />
+      </div>
+
       <ConceptSwitcher current="a" />
     </>
   );
