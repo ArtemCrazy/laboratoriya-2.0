@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import DotField from '@/components/DotField';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
 import AudienceTable from '@/components/AudienceTable';
+import SpeakersMolecule from '@/components/SpeakersMolecule';
 import LiquidButton from '@/components/LiquidButton';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
@@ -217,6 +218,9 @@ export default function ConceptA() {
 
         {/* ТЗ 4.3 — «Для кого конференция» */}
         <AudienceTable />
+
+        {/* ТЗ 4.4 — «Спикеры» */}
+        <SpeakersMolecule />
       </main>
 
       <ConceptSwitcher current="a" />

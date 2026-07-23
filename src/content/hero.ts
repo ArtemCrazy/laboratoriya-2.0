@@ -103,6 +103,89 @@ export const audience = [
 export const audienceTitle =
   'Будет полезно всем, кто отвечает за мотивацию, вознаграждение и благополучие сотрудников';
 
+/**
+ * Блок «Спикеры» (ТЗ 4.4).
+ *
+ * ⚠️ ВСЕ ДАННЫЕ — ПЛЕЙСХОЛДЕРЫ из макета владельца: состав спикеров,
+ * компании и темы заказчиком не переданы. Фотографий тоже нет, поэтому
+ * узлы пока показывают инициалы.
+ *
+ * angle — положение на молекуле в градусах (0 — справа, против часовой),
+ * side — с какой стороны от узла стоит подпись.
+ */
+export const speakers = [
+  {
+    name: 'Анна Иванова',
+    role: 'C&B Director',
+    company: 'НоваТек',
+    topic: 'Как связать систему вознаграждения с бизнес-показателями',
+    day: 'День 1',
+    angle: 105,
+    side: 'right' as const,
+    color: '#00E5FF',
+  },
+  {
+    name: 'Сергей Петров',
+    role: 'Head of Rewards',
+    company: 'Газпром нефть',
+    topic: 'Пересборка грейдов в крупной компании',
+    day: 'День 1',
+    angle: 45,
+    side: 'right' as const,
+    color: '#A78BFA',
+  },
+  {
+    name: 'Наталья Киреева',
+    role: 'Руководитель C&B',
+    company: 'ВкусВилл',
+    topic: 'Льготы, которые действительно выбирают',
+    day: 'День 1',
+    angle: 0,
+    side: 'right' as const,
+    color: '#34D399',
+  },
+  {
+    name: 'Михаил Кузнецов',
+    role: 'Директор по мотивации',
+    company: 'Яндекс',
+    topic: 'Долгосрочная мотивация без роста ФОТ',
+    day: 'День 2',
+    angle: -50,
+    side: 'right' as const,
+    color: '#FFD54F',
+  },
+  {
+    name: 'Екатерина Волкова',
+    role: 'Wellbeing Director',
+    company: 'СберМаркет',
+    topic: 'Программы благополучия: что считать результатом',
+    day: 'День 2',
+    angle: -105,
+    side: 'left' as const,
+    color: '#38BDF8',
+  },
+  {
+    name: 'Алексей Смирнов',
+    role: 'Compensation & Benefits Lead',
+    company: 'OZON',
+    topic: 'Аналитика C&B: от отчётов к решениям',
+    day: 'День 2',
+    angle: 215,
+    side: 'left' as const,
+    color: '#FBBF24',
+  },
+  {
+    name: 'Мария Орлова',
+    role: 'HRD',
+    company: 'АльфаСтрахование',
+    topic: 'Роль C&B в HR-стратегии компании',
+    day: 'День 1',
+    angle: 150,
+    side: 'left' as const,
+    color: '#F472B6',
+  },
+] as const;
+
 /** «Элементы» C&B — концепция B, метафора периодической таблицы */
 export const elements = [
   { symbol: 'Mo', name: 'Мотивация', num: '01' },
