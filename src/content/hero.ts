@@ -277,6 +277,24 @@ export const speakers = [
     status: 'Формула проверена',
     label: 'below' as const,
   },
+  {
+    name: 'Марина Назарова',
+    role: 'Руководитель группы по компенсациям и льготам',
+    company: 'START',
+    photo: '/img/speakers/10.webp',
+    theme: 'motivation' as const,
+    x: 50,
+    y: 50,
+    size: 190,
+    symbol: 'МН',
+    num: '10',
+    topic: 'Как автоматизировать C&B без ошибок: выбор, внедрение, окупаемость',
+    formula: ['Данные', 'Автоматизация', 'Окупаемость'] as const,
+    formulaResult: 'Управляемый процесс',
+    experience: '10 лет в C&B',
+    status: 'Формула проверена',
+    label: 'above' as const,
+  },
 ] as const;
 
 /** C&B LAB — небольшой элемент, встроенный в связку, а не центр молекулы */
