@@ -2,6 +2,14 @@ import { audience, audienceTitle } from '@/content/hero';
 import FlaskMark from '@/components/FlaskMark';
 import { asset } from '@/lib/paths';
 
+/** Цвет символа ячейки — единственное, что отличает карточки по цвету */
+const accentColors: Record<string, string> = {
+  cyan: '#00E5FF',
+  yellow: '#FFD54F',
+  violet: '#A78BFA',
+  green: '#34D399',
+};
+
 /**
  * Блок «Для кого конференция» (ТЗ 4.3).
  * Каждая аудитория — ячейка периодической таблицы: порядковый номер,
@@ -49,21 +57,28 @@ export default function AudienceTable() {
                 className="relative h-full w-full object-contain object-bottom"
               />
             </div>
-            {/* Фраза-манифест под портретом. Намеренно без подписи автора:
-                рядом с Менделеевым любая атрибуция читалась бы как его слова */}
-            <figcaption className="relative mt-4 border-l-2 border-cyan/40 pl-5">
+            {/* Фраза-манифест: стеклянная плашка вместо простой строки, чтобы
+                держать вес рядом с портретом. Без подписи автора намеренно —
+                рядом с Менделеевым атрибуция читалась бы как его слова */}
+            <figcaption className="relative mt-5 overflow-hidden rounded-2xl border border-glass-border bg-glass px-7 py-6 backdrop-blur-sm">
               <span
                 aria-hidden="true"
-                className="absolute -left-1.5 -top-7 select-none text-[72px] leading-none text-cyan/15"
+                className="pointer-events-none absolute -right-3 -top-10 select-none text-[150px] leading-none text-cyan/[0.07]"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
                 «
               </span>
+              <span
+                aria-hidden="true"
+                className="absolute inset-y-0 left-0 w-[3px] bg-gradient-to-b from-cyan/70 via-cyan/25 to-transparent"
+              />
               <p
-                className="relative text-[19px] font-semibold leading-snug text-white"
+                className="relative text-[21px] font-bold leading-[1.35] text-white"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
-                Когда каждый элемент на своём месте, система работает
+                Когда каждый элемент на своём месте,
+                <br />
+                <span className="text-cyan">система работает</span>
               </p>
             </figcaption>
           </figure>
@@ -82,8 +97,8 @@ export default function AudienceTable() {
                 </div>
 
                 <div
-                  className="mt-2 text-[clamp(36px,3vw,46px)] font-extrabold leading-none text-white transition-colors group-hover:text-cyan"
-                  style={{ fontFamily: 'var(--font-outfit)' }}
+                  className="mt-2 text-[clamp(36px,3vw,46px)] font-extrabold leading-none"
+                  style={{ fontFamily: 'var(--font-outfit)', color: accentColors[a.accent] }}
                 >
                   {a.symbol}
                 </div>

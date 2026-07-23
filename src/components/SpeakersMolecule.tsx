@@ -18,13 +18,16 @@ import FlaskMark from '@/components/FlaskMark';
  */
 
 /** Сцена в этих координатах — по ней считаются и связи, и позиции атомов */
-const W = 1200;
-const H = 560;
+const W = 1000;
+const H = 520;
 
 const pointOf = (x: number, y: number) => ({ x: (x / 100) * W, y: (y / 100) * H });
 
 export default function SpeakersMolecule() {
   const [active, setActive] = useState<number | null>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+  // Подсвечиваем связи и от наведения, и от выбора
+  const lit = hovered ?? active;
 
   const nodeAt = (i: number) =>
     i === -1
@@ -52,8 +55,10 @@ export default function SpeakersMolecule() {
         </h2>
 
         {/* --- Молекула: десктоп --- */}
+        {/* Молекула держится в 86% ширины блока — иначе структура
+            расползается и перестаёт читаться единым объектом */}
         <div
-          className="relative mx-auto mt-16 hidden w-full lg:block"
+          className="relative mx-auto mt-16 hidden w-full max-w-[97%] lg:block"
           style={{ aspectRatio: `${W} / ${H}` }}
         >
           {/* Связи: объёмные стеклянные перемычки со световым импульсом */}
@@ -86,7 +91,7 @@ export default function SpeakersMolecule() {
             {speakerBonds.map(([a, b], i) => {
               const p1 = nodeAt(a);
               const p2 = nodeAt(b);
-              const on = active !== null && (active === a || active === b);
+              const on = lit !== null && (lit === a || lit === b);
               return (
                 <g key={i}>
                   {/* Тело связи — толстая полупрозрачная перемычка */}
@@ -127,7 +132,7 @@ export default function SpeakersMolecule() {
             })}
           </svg>
 
-          {/* Ядро — тёмный стеклянный шар */}
+          {/* C&B LAB — рядовой небольшой атом в связке, не центр структуры */}
           <div
             className="absolute -translate-x-1/2 -translate-y-1/2 animate-float"
             style={{
@@ -139,25 +144,24 @@ export default function SpeakersMolecule() {
             }}
           >
             <div
-              className="relative flex h-full w-full flex-col items-center justify-center rounded-full border border-cyan/45 bg-bg-deep/90"
-              style={{ boxShadow: '0 0 46px rgba(0,229,255,0.28), inset 0 2px 18px rgba(255,255,255,0.12)' }}
+              className="relative flex h-full w-full flex-col items-center justify-center rounded-full border border-cyan/40 bg-bg-deep/90"
+              style={{ boxShadow: '0 0 24px rgba(0,229,255,0.20), inset 0 2px 14px rgba(255,255,255,0.10)' }}
             >
-              {/* Внутренний блик стекла */}
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 rounded-full"
                 style={{
                   background:
-                    'radial-gradient(circle at 32% 24%, rgba(255,255,255,0.30), rgba(255,255,255,0) 52%)',
+                    'radial-gradient(circle at 32% 24%, rgba(255,255,255,0.26), rgba(255,255,255,0) 52%)',
                 }}
               />
               <span
-                className="relative text-3xl font-extrabold text-white"
+                className="relative text-lg font-extrabold text-white"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
                 C&amp;B
               </span>
-              <span className="relative mt-0.5 text-[13px] uppercase tracking-[0.32em] text-cyan">
+              <span className="relative text-[10px] uppercase tracking-[0.3em] text-cyan">
                 lab
               </span>
             </div>
@@ -172,8 +176,10 @@ export default function SpeakersMolecule() {
                 key={s.name}
                 type="button"
                 onClick={() => setActive(on ? null : i)}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
                 aria-label={`${s.name}, ${s.role}, ${s.company}`}
-                className="animate-float absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-transform duration-300 hover:scale-[1.06]"
+                className="animate-float group absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-transform duration-300 hover:z-10 hover:scale-[1.08]"
                 style={{
                   left: `${s.x}%`,
                   top: `${s.y}%`,
@@ -215,6 +221,15 @@ export default function SpeakersMolecule() {
                         'radial-gradient(circle at 30% 22%, rgba(255,255,255,0.34), rgba(255,255,255,0) 48%)',
                     }}
                   />
+                  {/* Индикатор показываем по состоянию, а не CSS-классом
+                      наведения: так он гарантированно скрыт в покое */}
+                  <span
+                    className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center bg-bg-deep/85 py-1.5 text-[11px] font-semibold uppercase tracking-wider backdrop-blur-sm transition-opacity duration-200"
+                    style={{ color, opacity: hovered === i ? 1 : 0 }}
+                  >
+                    Открыть профиль
+                  </span>
+
                   {/* Частицы внутри — у части атомов */}
                   {i % 3 === 0 && (
                     <span aria-hidden="true" className="pointer-events-none absolute inset-0">

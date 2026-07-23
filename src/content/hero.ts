@@ -64,24 +64,28 @@ export const audience = [
   {
     num: '01',
     symbol: 'Cb',
+    accent: 'cyan',
     role: 'Руководителям C&B',
     task: 'которые хотят повысить эффективность системы вознаграждения, обосновывать бюджет и усиливать влияние C&B на бизнес',
   },
   {
     num: '02',
     symbol: 'Sp',
+    accent: 'yellow',
     role: 'Специалистам C&B',
     task: 'которые сопровождают программы мотивации и льгот, работают с аналитикой и автоматизируют процессы',
   },
   {
     num: '03',
     symbol: 'Hr',
+    accent: 'violet',
     role: 'Директорам по персоналу',
     task: 'связать вознаграждение, благополучие и HR-стратегию с целями и возможностями бизнеса',
   },
   {
     num: '04',
     symbol: 'Wb',
+    accent: 'green',
     role: 'Директорам по социальной политике',
     task: 'которые развивают программы корпоративного благополучия и ищут способы повысить их ценность без роста затрат',
   },
@@ -118,10 +122,10 @@ export const speakers = [
     company: 'АльфаСтрахование',
     photo: '/img/speakers/1.webp',
     theme: 'culture' as const,
-    x: 7.5,
-    y: 60,
-    size: 118,
-    label: 'below' as const,
+    x: 13.4,
+    y: 44.2,
+    size: 150,
+    label: 'left' as const,
   },
   {
     name: 'Анна Иванова',
@@ -129,9 +133,9 @@ export const speakers = [
     company: 'НоваТек',
     photo: '/img/speakers/2.webp',
     theme: 'analytics' as const,
-    x: 20,
-    y: 25,
-    size: 138,
+    x: 26.6,
+    y: 23.0,
+    size: 142,
     label: 'above' as const,
   },
   {
@@ -140,9 +144,9 @@ export const speakers = [
     company: 'OZON',
     photo: '/img/speakers/3.webp',
     theme: 'rewards' as const,
-    x: 33,
-    y: 76,
-    size: 112,
+    x: 25.4,
+    y: 66.3,
+    size: 134,
     label: 'below' as const,
   },
   {
@@ -151,8 +155,8 @@ export const speakers = [
     company: 'СберМаркет',
     photo: '/img/speakers/4.webp',
     theme: 'wellbeing' as const,
-    x: 58,
-    y: 74,
+    x: 55.7,
+    y: 69.2,
     size: 128,
     label: 'below' as const,
   },
@@ -162,9 +166,9 @@ export const speakers = [
     company: 'Газпром нефть',
     photo: '/img/speakers/5.webp',
     theme: 'motivation' as const,
-    x: 68,
-    y: 24,
-    size: 142,
+    x: 57.4,
+    y: 22.7,
+    size: 138,
     label: 'above' as const,
   },
   {
@@ -173,10 +177,10 @@ export const speakers = [
     company: 'Яндекс',
     photo: '/img/speakers/6.webp',
     theme: 'rewards' as const,
-    x: 82,
-    y: 62,
-    size: 120,
-    label: 'below' as const,
+    x: 72.2,
+    y: 45.2,
+    size: 146,
+    label: 'right' as const,
   },
   {
     name: 'Наталья Киреева',
@@ -184,33 +188,34 @@ export const speakers = [
     company: 'ВкусВилл',
     photo: '/img/speakers/7.webp',
     theme: 'wellbeing' as const,
-    // Намеренно вплотную к соседу: атомы частично перекрываются,
-    // от этого силуэт перестаёт читаться как ровная схема
-    x: 74,
-    y: 16,
-    size: 106,
-    label: 'right' as const,
+    x: 42.0,
+    y: 45.2,
+    size: 156,
+    label: 'above' as const,
   },
 ] as const;
 
-/** Ядро молекулы — намеренно не в центре сцены */
-export const speakerCore = { x: 44, y: 46, size: 168 };
+/** C&B LAB — небольшой элемент, встроенный в связку, а не центр молекулы */
+export const speakerCore = { x: 69, y: 69.6, size: 100 };
 
 /**
  * Связи молекулы. -1 — ядро, остальные индексы из speakers.
  * Часть атомов соединена напрямую друг с другом, минуя ядро.
  */
 export const speakerBonds: [number, number][] = [
-  [-1, 1],
-  [-1, 2],
-  [-1, 3],
-  [-1, 4],
+  // Левое кольцо: Мария — Анна — Наталья — Алексей
   [0, 1],
   [0, 2],
-  [3, 5],
+  [1, 6],
+  [2, 6],
+  // Правое кольцо: Наталья — Сергей — Михаил — Екатерина
+  [6, 4],
+  [6, 3],
   [4, 5],
-  [4, 6],
-  [5, 6],
+  [3, 5],
+  // C&B LAB замыкает нижнюю связку, а не собирает всех на себя
+  [3, -1],
+  [5, -1],
 ];
 
 /** «Элементы» C&B — концепция B, метафора периодической таблицы */
