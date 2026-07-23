@@ -25,8 +25,18 @@ const ticker = [
 // в строке появятся пустоты
 const tickerHalf = [...ticker, ...ticker];
 
-/** Углы плашек на орбите, градусы: 0 — справа, отсчёт против часовой */
-const orbitAngles = [145, 35, 215, 325, 90];
+/**
+ * Плашки на орбите: угол (0 — справа, отсчёт против часовой) и сдвиг
+ * оттенка колбы. Картинка одна, бирюзовая, поэтому цвет раствора
+ * задаётся поворотом тона — как разные реактивы в одной серии.
+ */
+const orbitPlates = [
+  { angle: 145, hue: 35 }, // синий
+  { angle: 35, hue: -45 }, // зелёный
+  { angle: 215, hue: -125 }, // жёлтый
+  { angle: 325, hue: 125 }, // розовый
+  { angle: 90, hue: 80 }, // фиолетовый
+];
 
 export default function ConceptA() {
   return (
@@ -107,9 +117,6 @@ export default function ConceptA() {
                 strokeDasharray="0.1 2.2"
                 className="origin-center animate-[spin_70s_linear_infinite_reverse]"
               />
-              {/* Тонкие направляющие окружности под точками */}
-              <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(0,229,255,0.08)" strokeWidth="0.25" />
-              <circle cx="50" cy="50" r="39.5" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.25" />
             </svg>
 
             <div className="absolute inset-[14%] overflow-hidden rounded-full">
@@ -126,7 +133,7 @@ export default function ConceptA() {
             {/* Плашки сидят прямо на внешней орбите: угол задаёт точку,
                 координаты считаются по окружности радиуса 46% */}
             {terms.map((t, i) => {
-              const angle = orbitAngles[i];
+              const { angle, hue } = orbitPlates[i];
               const rad = (angle * Math.PI) / 180;
               const left = 50 + 46 * Math.cos(rad);
               const top = 50 - 46 * Math.sin(rad);
@@ -148,6 +155,7 @@ export default function ConceptA() {
                     width={75}
                     height={320}
                     className="h-7 w-auto"
+                    style={{ filter: `hue-rotate(${hue}deg) saturate(1.15)` }}
                   />
                   <span className="leading-tight">
                     <span className="block text-[11px] text-text-muted">
