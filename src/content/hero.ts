@@ -108,78 +108,121 @@ export const audienceTitle =
  * angle — положение на молекуле в градусах (0 — справа, против часовой),
  * side — с какой стороны от узла стоит подпись.
  */
+/** Цвет атома задаётся темой выступления */
+export const speakerThemes = {
+  analytics: '#00E5FF', // аналитика
+  motivation: '#A78BFA', // мотивация
+  wellbeing: '#A3E635', // wellbeing
+  rewards: '#FFD54F', // вознаграждение
+  culture: '#F472B6', // корпоративная культура
+} as const;
+
+/**
+ * Раскладка молекулы задана вручную: x/y — доля ширины и высоты сцены,
+ * size — диаметр атома. Композиция асимметричная и вытянутая, атомы
+ * разного размера и на разных уровнях, ядро смещено влево от центра.
+ */
 export const speakers = [
+  {
+    name: 'Мария Орлова',
+    role: 'HRD',
+    company: 'АльфаСтрахование',
+    photo: '/img/speakers/1.webp',
+    theme: 'culture' as const,
+    x: 7.5,
+    y: 60,
+    size: 118,
+    label: 'below' as const,
+  },
   {
     name: 'Анна Иванова',
     role: 'C&B Director',
     company: 'НоваТек',
-    topic: 'Как связать систему вознаграждения с бизнес-показателями',
-    day: 'День 1',
-    angle: 105,
-    side: 'right' as const,
-    color: '#00E5FF',
+    photo: '/img/speakers/2.webp',
+    theme: 'analytics' as const,
+    x: 20,
+    y: 25,
+    size: 138,
+    label: 'above' as const,
   },
   {
-    name: 'Сергей Петров',
-    role: 'Head of Rewards',
-    company: 'Газпром нефть',
-    topic: 'Пересборка грейдов в крупной компании',
-    day: 'День 1',
-    angle: 45,
-    side: 'right' as const,
-    color: '#A78BFA',
-  },
-  {
-    name: 'Наталья Киреева',
-    role: 'Руководитель C&B',
-    company: 'ВкусВилл',
-    topic: 'Льготы, которые действительно выбирают',
-    day: 'День 1',
-    angle: 0,
-    side: 'right' as const,
-    color: '#34D399',
-  },
-  {
-    name: 'Михаил Кузнецов',
-    role: 'Директор по мотивации',
-    company: 'Яндекс',
-    topic: 'Долгосрочная мотивация без роста ФОТ',
-    day: 'День 2',
-    angle: -50,
-    side: 'right' as const,
-    color: '#FFD54F',
+    name: 'Алексей Смирнов',
+    role: 'C&B Lead',
+    company: 'OZON',
+    photo: '/img/speakers/3.webp',
+    theme: 'rewards' as const,
+    x: 33,
+    y: 76,
+    size: 112,
+    label: 'below' as const,
   },
   {
     name: 'Екатерина Волкова',
     role: 'Wellbeing Director',
     company: 'СберМаркет',
-    topic: 'Программы благополучия: что считать результатом',
-    day: 'День 2',
-    angle: -105,
-    side: 'left' as const,
-    color: '#38BDF8',
+    photo: '/img/speakers/4.webp',
+    theme: 'wellbeing' as const,
+    x: 58,
+    y: 74,
+    size: 128,
+    label: 'below' as const,
   },
   {
-    name: 'Алексей Смирнов',
-    role: 'Compensation & Benefits Lead',
-    company: 'OZON',
-    topic: 'Аналитика C&B: от отчётов к решениям',
-    day: 'День 2',
-    angle: 215,
-    side: 'left' as const,
-    color: '#FBBF24',
+    name: 'Сергей Петров',
+    role: 'Head of Rewards',
+    company: 'Газпром нефть',
+    photo: '/img/speakers/5.webp',
+    theme: 'motivation' as const,
+    x: 68,
+    y: 24,
+    size: 142,
+    label: 'above' as const,
   },
   {
-    name: 'Мария Орлова',
-    role: 'HRD',
-    company: 'АльфаСтрахование',
-    topic: 'Роль C&B в HR-стратегии компании',
-    day: 'День 1',
-    angle: 150,
-    side: 'left' as const,
-    color: '#F472B6',
+    name: 'Михаил Кузнецов',
+    role: 'Директор по мотивации',
+    company: 'Яндекс',
+    photo: '/img/speakers/6.webp',
+    theme: 'rewards' as const,
+    x: 82,
+    y: 62,
+    size: 120,
+    label: 'below' as const,
+  },
+  {
+    name: 'Наталья Киреева',
+    role: 'Руководитель C&B',
+    company: 'ВкусВилл',
+    photo: '/img/speakers/7.webp',
+    theme: 'wellbeing' as const,
+    // Намеренно вплотную к соседу: атомы частично перекрываются,
+    // от этого силуэт перестаёт читаться как ровная схема
+    x: 74,
+    y: 16,
+    size: 106,
+    label: 'right' as const,
   },
 ] as const;
+
+/** Ядро молекулы — намеренно не в центре сцены */
+export const speakerCore = { x: 44, y: 46, size: 168 };
+
+/**
+ * Связи молекулы. -1 — ядро, остальные индексы из speakers.
+ * Часть атомов соединена напрямую друг с другом, минуя ядро.
+ */
+export const speakerBonds: [number, number][] = [
+  [-1, 1],
+  [-1, 2],
+  [-1, 3],
+  [-1, 4],
+  [0, 1],
+  [0, 2],
+  [3, 5],
+  [4, 5],
+  [4, 6],
+  [5, 6],
+];
 
 /** «Элементы» C&B — концепция B, метафора периодической таблицы */
 export const elements = [

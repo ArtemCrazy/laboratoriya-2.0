@@ -94,25 +94,30 @@ export default function AudienceTable() {
                     style={{ background: color }}
                   />
 
-                  <div className="font-mono text-[12px] text-text-muted">{a.num}</div>
+                  {/* Как в настоящей ячейке таблицы: символ прижат влево,
+                      порядковый номер — справа сверху, название снизу */}
+                  <div className="flex items-start justify-between gap-3">
+                    <span
+                      className="text-[clamp(44px,4vw,60px)] font-extrabold leading-[0.85] transition-colors"
+                      style={{ fontFamily: 'var(--font-outfit)', color }}
+                    >
+                      {a.symbol}
+                    </span>
+                    <span className="font-mono text-[15px] leading-none text-text-muted">
+                      {a.num}
+                    </span>
+                  </div>
 
-                  {/* Символ по центру — главный элемент ячейки */}
-                  <div
-                    className="mt-1 text-center text-[clamp(38px,3.2vw,50px)] font-extrabold leading-none transition-colors"
-                    style={{ fontFamily: 'var(--font-outfit)', color }}
-                  >
-                    {a.symbol}
+                  <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
+                    {a.group}
                   </div>
 
                   <h3
-                    className="mt-2.5 text-center text-[16px] font-bold leading-tight"
+                    className="mt-2 text-[17px] font-bold leading-tight"
                     style={{ fontFamily: 'var(--font-outfit)' }}
                   >
                     {a.role}
                   </h3>
-                  <div className="mt-1 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
-                    {a.group}
-                  </div>
 
                   {/* 16px — нижняя граница по ТЗ 5.2 для основного текста */}
                   <p className="mt-3.5 border-t border-glass-border pt-3.5 text-base leading-snug text-text-muted">

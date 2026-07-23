@@ -1,49 +1,44 @@
 'use client';
 
 import { useState } from 'react';
-import { speakers } from '@/content/hero';
+import { speakers, speakerCore, speakerBonds, speakerThemes } from '@/content/hero';
+import { asset } from '@/lib/paths';
 import FlaskMark from '@/components/FlaskMark';
 
 /**
- * Блок «Спикеры» (ТЗ 4.4) в виде молекулы: центральное ядро C&B LAB
- * и узлы-спикеры на связях. Клик по узлу раскрывает тему выступления.
+ * Блок «Спикеры» (ТЗ 4.4) — асимметричная молекулярная структура.
  *
- * Геометрия общая для связей и узлов: SVG с системой 1000×625 и позиции
- * в процентах считаются из одних и тех же углов, поэтому линии всегда
- * приходят ровно в центр аватара.
+ * Раскладка задана вручную (см. speakers в content/hero): атомы разного
+ * размера стоят на разных уровнях, часть перекрывает друг друга, ядро
+ * смещено влево от центра. Часть связей идёт напрямую между спикерами,
+ * минуя ядро — поэтому силуэт не читается как радиальная схема.
  *
- * ⚠️ Фотографий спикеров нет — узлы показывают инициалы. Когда заказчик
- * передаст снимки, они встанут на то же место без правок разметки.
+ * ⚠️ Портреты — тестовые, из открытого сервиса-заглушки. Имена, компании
+ * и темы тоже плейсхолдеры: заказчик состав не передавал.
  */
 
-const RX = 34; // радиус по горизонтали, % от ширины
-const RY = 33.6; // радиус по вертикали, % от высоты
+/** Сцена в этих координатах — по ней считаются и связи, и позиции атомов */
+const W = 1200;
+const H = 560;
 
-const pos = (angle: number) => {
-  const rad = (angle * Math.PI) / 180;
-  return { x: 50 + RX * Math.cos(rad), y: 50 - RY * Math.sin(rad) };
-};
-
-const initials = (name: string) =>
-  name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2);
+const pointOf = (x: number, y: number) => ({ x: (x / 100) * W, y: (y / 100) * H });
 
 export default function SpeakersMolecule() {
   const [active, setActive] = useState<number | null>(null);
-  const current = active === null ? null : speakers[active];
+
+  const nodeAt = (i: number) =>
+    i === -1
+      ? { ...pointOf(speakerCore.x, speakerCore.y), color: '#00E5FF' }
+      : {
+          ...pointOf(speakers[i].x, speakers[i].y),
+          color: speakerThemes[speakers[i].theme],
+        };
 
   return (
     <section
       id="speakers"
       className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28"
     >
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/3 h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-cyan/[0.07] blur-[140px]" />
-      </div>
-
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
         <div className="mb-3 flex items-center gap-2.5 text-xs uppercase tracking-[0.22em] text-cyan">
           <FlaskMark />
@@ -56,149 +51,251 @@ export default function SpeakersMolecule() {
           Практики, которые строят системы вознаграждения в крупных компаниях
         </h2>
 
-        {/* --- Молекула: только десктоп --- */}
-        <div className="relative mx-auto mt-14 hidden aspect-[16/10] w-full max-w-[1080px] lg:block">
-          {/* Связи от ядра к узлам */}
+        {/* --- Молекула: десктоп --- */}
+        <div
+          className="relative mx-auto mt-16 hidden w-full lg:block"
+          style={{ aspectRatio: `${W} / ${H}` }}
+        >
+          {/* Связи: объёмные стеклянные перемычки со световым импульсом */}
           <svg
-            viewBox="0 0 1000 625"
+            viewBox={`0 0 ${W} ${H}`}
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full"
+            className="absolute inset-0 h-full w-full overflow-visible"
           >
-            {speakers.map((s, i) => {
-              const p = pos(s.angle);
-              const x = (p.x / 100) * 1000;
-              const y = (p.y / 100) * 625;
-              const on = active === i;
+            <defs>
+              {speakerBonds.map(([a, b], i) => {
+                const p1 = nodeAt(a);
+                const p2 = nodeAt(b);
+                return (
+                  <linearGradient
+                    key={i}
+                    id={`bond-${i}`}
+                    x1={p1.x}
+                    y1={p1.y}
+                    x2={p2.x}
+                    y2={p2.y}
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0%" stopColor={p1.color} stopOpacity="0.5" />
+                    <stop offset="100%" stopColor={p2.color} stopOpacity="0.5" />
+                  </linearGradient>
+                );
+              })}
+            </defs>
+
+            {speakerBonds.map(([a, b], i) => {
+              const p1 = nodeAt(a);
+              const p2 = nodeAt(b);
+              const on = active !== null && (active === a || active === b);
               return (
-                <line
-                  key={s.name}
-                  x1="500"
-                  y1="312"
-                  x2={x}
-                  y2={y}
-                  stroke={on ? s.color : 'rgba(255,255,255,0.16)'}
-                  strokeWidth={on ? 2 : 1.2}
-                  className="transition-all duration-300"
-                />
+                <g key={i}>
+                  {/* Тело связи — толстая полупрозрачная перемычка */}
+                  <line
+                    x1={p1.x}
+                    y1={p1.y}
+                    x2={p2.x}
+                    y2={p2.y}
+                    stroke={`url(#bond-${i})`}
+                    strokeWidth={on ? 13 : 10}
+                    strokeLinecap="round"
+                    opacity={on ? 0.5 : 0.28}
+                    className="transition-all duration-300"
+                  />
+                  {/* Светлая сердцевина — стекло, а не плоская линия */}
+                  <line
+                    x1={p1.x}
+                    y1={p1.y}
+                    x2={p2.x}
+                    y2={p2.y}
+                    stroke="rgba(255,255,255,0.5)"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    opacity={on ? 0.6 : 0.3}
+                    className="transition-opacity duration-300"
+                  />
+                  {/* Импульс, бегущий внутри связи */}
+                  <circle r="2.6" fill={p2.color} opacity="0.9">
+                    <animateMotion
+                      dur={`${3.2 + (i % 4) * 0.9}s`}
+                      repeatCount="indefinite"
+                      begin={`${i * -0.7}s`}
+                      path={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`}
+                    />
+                  </circle>
+                </g>
               );
             })}
           </svg>
 
-          {/* Ядро молекулы */}
-          <div className="absolute left-1/2 top-1/2 flex h-[168px] w-[168px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-cyan/40 bg-bg-deep/80 backdrop-blur-md">
-            <div className="absolute inset-0 rounded-full bg-cyan/10 blur-xl" />
-            <span
-              className="relative text-3xl font-extrabold text-white"
-              style={{ fontFamily: 'var(--font-outfit)' }}
+          {/* Ядро — тёмный стеклянный шар */}
+          <div
+            className="absolute -translate-x-1/2 -translate-y-1/2 animate-float"
+            style={{
+              left: `${speakerCore.x}%`,
+              top: `${speakerCore.y}%`,
+              width: speakerCore.size,
+              height: speakerCore.size,
+              animationDelay: '0.4s',
+            }}
+          >
+            <div
+              className="relative flex h-full w-full flex-col items-center justify-center rounded-full border border-cyan/45 bg-bg-deep/90"
+              style={{ boxShadow: '0 0 46px rgba(0,229,255,0.28), inset 0 2px 18px rgba(255,255,255,0.12)' }}
             >
-              C&amp;B
-            </span>
-            <span className="relative mt-1 text-sm uppercase tracking-[0.3em] text-cyan">
-              lab
-            </span>
+              {/* Внутренний блик стекла */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full"
+                style={{
+                  background:
+                    'radial-gradient(circle at 32% 24%, rgba(255,255,255,0.30), rgba(255,255,255,0) 52%)',
+                }}
+              />
+              <span
+                className="relative text-3xl font-extrabold text-white"
+                style={{ fontFamily: 'var(--font-outfit)' }}
+              >
+                C&amp;B
+              </span>
+              <span className="relative mt-0.5 text-[13px] uppercase tracking-[0.32em] text-cyan">
+                lab
+              </span>
+            </div>
           </div>
 
-          {/* Узлы-спикеры */}
+          {/* Атомы-спикеры */}
           {speakers.map((s, i) => {
-            const p = pos(s.angle);
+            const color = speakerThemes[s.theme];
             const on = active === i;
             return (
               <button
                 key={s.name}
                 type="button"
                 onClick={() => setActive(on ? null : i)}
-                aria-pressed={on}
-                /* Кнопка размером ровно с аватар — тогда координата попадает
-                   в центр кружка, куда и приходит связь. Подпись висит сбоку */
-                className="absolute h-[92px] w-[92px] -translate-x-1/2 -translate-y-1/2"
-                style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                aria-label={`${s.name}, ${s.role}, ${s.company}`}
+                className="animate-float absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-transform duration-300 hover:scale-[1.06]"
+                style={{
+                  left: `${s.x}%`,
+                  top: `${s.y}%`,
+                  width: s.size,
+                  height: s.size,
+                  animationDelay: `${i * 0.7}s`,
+                }}
               >
                 <span
-                  className="flex h-full w-full items-center justify-center rounded-full border-2 bg-bg-deep transition-transform duration-300 hover:scale-105"
+                  className="relative block h-full w-full overflow-hidden rounded-full border"
                   style={{
-                    borderColor: s.color,
-                    boxShadow: on ? `0 0 26px ${s.color}66` : `0 0 14px ${s.color}22`,
+                    borderColor: `${color}88`,
+                    boxShadow: on
+                      ? `0 0 42px ${color}66, inset 0 2px 16px rgba(255,255,255,0.18)`
+                      : `0 0 26px ${color}33, inset 0 2px 14px rgba(255,255,255,0.12)`,
                   }}
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={asset(s.photo)}
+                    alt=""
+                    aria-hidden="true"
+                    width={320}
+                    height={320}
+                    className="h-full w-full object-cover"
+                    style={{ filter: 'saturate(0.85) contrast(1.05) brightness(0.92)' }}
+                  />
+                  {/* Стекло поверх фотографии: вуаль темы и блик */}
                   <span
-                    className="text-2xl font-extrabold"
-                    style={{ fontFamily: 'var(--font-outfit)', color: s.color }}
-                  >
-                    {initials(s.name)}
-                  </span>
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 rounded-full"
+                    style={{ background: `linear-gradient(160deg, ${color}22, rgba(6,11,25,0.55))` }}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 rounded-full"
+                    style={{
+                      background:
+                        'radial-gradient(circle at 30% 22%, rgba(255,255,255,0.34), rgba(255,255,255,0) 48%)',
+                    }}
+                  />
+                  {/* Частицы внутри — у части атомов */}
+                  {i % 3 === 0 && (
+                    <span aria-hidden="true" className="pointer-events-none absolute inset-0">
+                      {[0, 1, 2].map((b) => (
+                        <span
+                          key={b}
+                          className="animate-bubble absolute rounded-full bg-white/70"
+                          style={{
+                            left: `${38 + b * 12}%`,
+                            bottom: `${18 + b * 6}%`,
+                            width: 3 - b * 0.5,
+                            height: 3 - b * 0.5,
+                            ['--rise' as string]: `${s.size * 0.3}px`,
+                            ['--bubble-duration' as string]: '6s',
+                            animationDelay: `${b * 1.6}s`,
+                          }}
+                        />
+                      ))}
+                    </span>
+                  )}
                 </span>
 
+                {/* Подпись: имя, должность, компания */}
                 <span
-                  className={`absolute top-1/2 w-[168px] -translate-y-1/2 leading-tight ${
-                    s.side === 'left' ? 'right-[110px] text-right' : 'left-[110px] text-left'
+                  className={`absolute w-[190px] leading-tight ${
+                    s.label === 'above'
+                      ? 'bottom-full left-1/2 mb-3 -translate-x-1/2'
+                      : s.label === 'right'
+                        ? 'left-full top-1/2 ml-4 -translate-y-1/2 text-left'
+                        : 'left-1/2 top-full mt-3 -translate-x-1/2'
                   }`}
                 >
-                  <span className="block text-[15px] font-bold" style={{ color: s.color }}>
-                    {s.name}
+                  <span className="block text-[15px] font-bold text-white">{s.name}</span>
+                  <span className="mt-0.5 block text-[13px] text-text-muted">{s.role}</span>
+                  <span className="block text-[13px]" style={{ color }}>
+                    {s.company}
                   </span>
-                  <span className="mt-1 block text-[13px] text-text-muted">{s.role}</span>
-                  <span className="block text-[13px] text-text-muted">{s.company}</span>
                 </span>
               </button>
             );
           })}
         </div>
 
-        {/* Раскрытая тема выступления */}
-        <div className="mt-8 hidden lg:block">
-          {current ? (
-            <div className="mx-auto flex max-w-[720px] items-start gap-4 rounded-2xl border border-glass-border bg-glass p-6">
-              <span
-                className="mt-0.5 rounded-full px-3 py-1 text-xs font-semibold"
-                style={{ background: `${current.color}22`, color: current.color }}
-              >
-                {current.day}
-              </span>
-              <span>
-                <span className="block text-lg font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  {current.topic}
-                </span>
-                <span className="mt-1.5 block text-base text-text-muted">
-                  {current.name} · {current.role}, {current.company}
-                </span>
-              </span>
-            </div>
-          ) : (
-            <p className="flex items-center justify-center gap-2.5 text-center text-base text-text-muted">
-              <FlaskMark className="!h-5" />
-              Нажмите на элемент, чтобы познакомиться с экспертом и его темой
-            </p>
-          )}
-        </div>
+        <p className="mt-14 hidden items-center justify-center gap-2.5 text-center text-base text-text-muted lg:flex">
+          <FlaskMark className="!h-5" />
+          Нажмите на элемент, чтобы познакомиться с экспертом и его темой
+        </p>
 
-        {/* --- Мобильная версия: карточки вместо молекулы --- */}
+        {/* --- Мобильная версия --- */}
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">
-          {speakers.map((s) => (
-            <article
-              key={s.name}
-              className="flex gap-4 rounded-2xl border border-glass-border bg-glass p-5"
-            >
-              <span
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 bg-bg-deep"
-                style={{ borderColor: s.color }}
+          {speakers.map((s) => {
+            const color = speakerThemes[s.theme];
+            return (
+              <article
+                key={s.name}
+                className="flex items-center gap-4 rounded-2xl border border-glass-border bg-glass p-4"
               >
                 <span
-                  className="text-lg font-extrabold"
-                  style={{ fontFamily: 'var(--font-outfit)', color: s.color }}
+                  className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-full border"
+                  style={{ borderColor: `${color}88`, boxShadow: `0 0 18px ${color}33` }}
                 >
-                  {initials(s.name)}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={asset(s.photo)}
+                    alt=""
+                    aria-hidden="true"
+                    width={320}
+                    height={320}
+                    className="h-full w-full object-cover"
+                  />
                 </span>
-              </span>
-              <span className="leading-tight">
-                <span className="block font-bold">{s.name}</span>
-                <span className="mt-1 block text-base text-text-muted">{s.role}</span>
-                <span className="block text-base text-text-muted">{s.company}</span>
-                <span className="mt-2.5 block text-base" style={{ color: s.color }}>
-                  {s.topic}
+                <span className="leading-tight">
+                  <span className="block font-bold">{s.name}</span>
+                  <span className="mt-0.5 block text-base text-text-muted">{s.role}</span>
+                  <span className="block text-base" style={{ color }}>
+                    {s.company}
+                  </span>
                 </span>
-              </span>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
