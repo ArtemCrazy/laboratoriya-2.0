@@ -178,15 +178,15 @@ export default function LiquidButton({
       ref={rootRef}
       href={href}
       className={`liquid-btn group relative inline-flex items-center justify-center px-8 py-4 text-center font-semibold transition-transform duration-200 active:scale-[0.97] ${
-        primary ? 'text-text-dark' : 'text-white'
+        primary ? 'text-accent' : 'text-white'
       } ${className}`}
     >
       {/* Подложка для устройств без hover — там жидкость не рисуется */}
       {!hasHover && (
         <span
           aria-hidden="true"
-          className={`absolute inset-0 rounded-full ${
-            primary ? 'bg-accent' : 'border border-glass-border bg-white/[0.06]'
+          className={`absolute inset-0 rounded-full border ${
+            primary ? 'border-accent/55 bg-accent/12' : 'border-glass-border bg-white/[0.06]'
           }`}
         />
       )}
@@ -203,15 +203,17 @@ export default function LiquidButton({
             height: `calc(100% + ${PAD * 2}px)`,
           }}
         >
+          {/* Обе кнопки прозрачные: внутри будто плещется раствор,
+              у главной он жёлтый, у второй — циановый */}
           <path
             ref={backRef}
-            fill={primary ? 'rgba(255, 213, 79, 0.45)' : 'rgba(0, 229, 255, 0.18)'}
+            fill={primary ? 'rgba(255, 213, 79, 0.28)' : 'rgba(0, 229, 255, 0.18)'}
           />
           <path
             ref={frontRef}
-            fill={primary ? '#FFD54F' : 'rgba(255, 255, 255, 0.07)'}
-            stroke={primary ? 'none' : 'rgba(0, 229, 255, 0.45)'}
-            strokeWidth={primary ? 0 : 1}
+            fill={primary ? 'rgba(255, 213, 79, 0.12)' : 'rgba(255, 255, 255, 0.07)'}
+            stroke={primary ? 'rgba(255, 213, 79, 0.55)' : 'rgba(0, 229, 255, 0.45)'}
+            strokeWidth={1}
           />
         </svg>
       )}
