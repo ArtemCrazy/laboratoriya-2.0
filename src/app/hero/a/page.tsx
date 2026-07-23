@@ -38,6 +38,18 @@ const orbitPlates = [
   { angle: 90, hue: 80 }, // фиолетовый
 ];
 
+/** Орбиты атома: наклон, сжатие эллипса, цвет линии и электрона */
+const atomOrbits = [
+  { tilt: 0, ry: 19, speed: 14, stroke: 'rgba(0, 229, 255, 0.42)', electron: '#00E5FF' },
+  { tilt: 60, ry: 17, speed: 18, stroke: 'rgba(255, 255, 255, 0.26)', electron: '#FFD54F' },
+  { tilt: 120, ry: 21, speed: 22, stroke: 'rgba(0, 229, 255, 0.28)', electron: '#00E5FF' },
+];
+
+/** Эллипс как path — по нему и рисуется орбита, и бежит электрон */
+function ellipsePath(cx: number, cy: number, rx: number, ry: number) {
+  return `M ${cx - rx} ${cy} a ${rx} ${ry} 0 1 0 ${rx * 2} 0 a ${rx} ${ry} 0 1 0 ${-rx * 2} 0`;
+}
+
 export default function ConceptA() {
   return (
     <>
@@ -88,35 +100,38 @@ export default function ConceptA() {
               Круг срезает углы иллюстрации, где впечатаны её собственные
               подписи, поэтому понятия C&B выносим своими плашками вокруг. */}
           <div className="relative mx-auto hidden aspect-square w-full max-w-[600px] items-center justify-center lg:flex">
-            {/* Две орбиты из точек вокруг фотографии. Точки — точечный пунктир
-                у окружности, вращаются в разные стороны и с разной скоростью */}
+            {/* Атомная модель: три эллиптические орбиты под углами 0/60/120°,
+                по каждой бежит электрон. Орбиты — точечный пунктир, вся
+                система медленно поворачивается */}
             <svg
               viewBox="0 0 100 100"
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full"
+              className="absolute inset-0 h-full w-full origin-center animate-[spin_120s_linear_infinite]"
             >
-              <circle
-                cx="50"
-                cy="50"
-                r="46"
-                fill="none"
-                stroke="rgba(0, 229, 255, 0.45)"
-                strokeWidth="0.7"
-                strokeLinecap="round"
-                strokeDasharray="0.1 3"
-                className="origin-center animate-[spin_90s_linear_infinite]"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="39.5"
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.28)"
-                strokeWidth="0.5"
-                strokeLinecap="round"
-                strokeDasharray="0.1 2.2"
-                className="origin-center animate-[spin_70s_linear_infinite_reverse]"
-              />
+              {atomOrbits.map((o, i) => (
+                <g key={o.tilt} transform={`rotate(${o.tilt} 50 50)`}>
+                  <ellipse
+                    cx="50"
+                    cy="50"
+                    rx="46"
+                    ry={o.ry}
+                    fill="none"
+                    stroke={o.stroke}
+                    strokeWidth="0.6"
+                    strokeLinecap="round"
+                    strokeDasharray="0.1 2.6"
+                  />
+                  {/* Электрон бежит по той же орбите */}
+                  <circle r="1.15" fill={o.electron} style={{ filter: `drop-shadow(0 0 1.5px ${o.electron})` }}>
+                    <animateMotion
+                      dur={`${o.speed}s`}
+                      repeatCount="indefinite"
+                      path={ellipsePath(50, 50, 46, o.ry)}
+                      begin={`${i * -2.5}s`}
+                    />
+                  </circle>
+                </g>
+              ))}
             </svg>
 
             <div className="absolute inset-[14%] overflow-hidden rounded-full">
