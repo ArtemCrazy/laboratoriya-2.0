@@ -1,12 +1,4 @@
 import { audience, audienceTitle } from '@/content/hero';
-
-/** Цвета групп — как категории элементов в периодической таблице */
-const accentColors: Record<string, string> = {
-  cyan: '#00E5FF',
-  yellow: '#FFD54F',
-  violet: '#A78BFA',
-  green: '#34D399',
-};
 import FlaskMark from '@/components/FlaskMark';
 import { asset } from '@/lib/paths';
 
@@ -76,56 +68,38 @@ export default function AudienceTable() {
             </figcaption>
           </figure>
 
-          {/* --- Таблица аудиторий ---
-              Ячейки разделены линиями в один пиксель и сидят в общей рамке,
-              как вырезка из настоящей периодической таблицы */}
-          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-glass-border bg-glass-border sm:grid-cols-2">
-            {audience.map((a, i) => {
-              const color = accentColors[a.accent];
-              return (
-                <article
-                  key={a.symbol}
-                  className="animate-rise group relative flex flex-col bg-bg-main px-5 py-4 transition-colors duration-300 hover:bg-glass-hover"
-                  style={{ animationDelay: `${i * 0.1}s` }}
+          {/* --- Таблица аудиторий --- */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {audience.map((a, i) => (
+              <article
+                key={a.symbol}
+                className="animate-rise group flex flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan/50 hover:bg-glass-hover hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="flex items-start justify-between">
+                  <span className="text-[13px] text-text-muted">{a.num}</span>
+                  <span className="h-2 w-2 rounded-full bg-cyan/30 transition-colors group-hover:bg-cyan" />
+                </div>
+
+                <div
+                  className="mt-2 text-[clamp(36px,3vw,46px)] font-extrabold leading-none text-white transition-colors group-hover:text-cyan"
+                  style={{ fontFamily: 'var(--font-outfit)' }}
                 >
-                  {/* Полоса категории сверху — как цвет группы в таблице */}
-                  <span
-                    className="absolute inset-x-0 top-0 h-[3px] opacity-70 transition-opacity group-hover:opacity-100"
-                    style={{ background: color }}
-                  />
+                  {a.symbol}
+                </div>
 
-                  {/* Как в настоящей ячейке таблицы: символ прижат влево,
-                      порядковый номер — справа сверху, название снизу */}
-                  <div className="flex items-start justify-between gap-3">
-                    <span
-                      className="text-[clamp(44px,4vw,60px)] font-extrabold leading-[0.85] transition-colors"
-                      style={{ fontFamily: 'var(--font-outfit)', color }}
-                    >
-                      {a.symbol}
-                    </span>
-                    <span className="font-mono text-[15px] leading-none text-text-muted">
-                      {a.num}
-                    </span>
-                  </div>
-
-                  <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
-                    {a.group}
-                  </div>
-
+                <div className="mt-4 border-t border-glass-border pt-4">
                   <h3
-                    className="mt-2 text-[17px] font-bold leading-tight"
+                    className="text-[18px] font-bold leading-tight"
                     style={{ fontFamily: 'var(--font-outfit)' }}
                   >
                     {a.role}
                   </h3>
-
                   {/* 16px — нижняя граница по ТЗ 5.2 для основного текста */}
-                  <p className="mt-3.5 border-t border-glass-border pt-3.5 text-base leading-snug text-text-muted">
-                    {a.task}
-                  </p>
-                </article>
-              );
-            })}
+                  <p className="mt-2.5 text-base leading-relaxed text-text-muted">{a.task}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </div>
