@@ -52,18 +52,21 @@ export default function SpeakerCard({
         className="absolute inset-0 cursor-default bg-bg-deep/80 backdrop-blur-sm"
       />
 
+      {/* Рамка нейтральная: цвет темы живёт в полосе и свечении сверху,
+          по периметру он превращал карточку в игровое окно */}
       <div
-        className="relative w-full max-w-[380px] overflow-hidden rounded-3xl border bg-bg-main"
-        style={{
-          borderColor: `${color}40`,
-          boxShadow: `0 30px 90px rgba(0,0,0,0.6), 0 0 60px ${color}1f`,
-        }}
+        className="relative w-full max-w-[400px] overflow-hidden rounded-3xl border border-glass-border bg-bg-main"
+        style={{ boxShadow: '0 30px 90px rgba(0,0,0,0.6)' }}
       >
-        {/* Полоса цвета темы сверху */}
         <span
           aria-hidden="true"
           className="absolute inset-x-0 top-0 h-[3px]"
           style={{ background: color }}
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-32"
+          style={{ background: `linear-gradient(to bottom, ${color}1c, transparent)` }}
         />
 
         <div className="flex items-center justify-between px-6 pt-5">
@@ -87,24 +90,9 @@ export default function SpeakerCard({
           </button>
         </div>
 
-        {/* Символ элемента, портрет и имя */}
-        <div className="flex items-start gap-4 px-6 pt-4">
-          <span
-            className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border text-xl font-extrabold"
-            style={{
-              borderColor: `${color}55`,
-              color,
-              background: `${color}12`,
-              fontFamily: 'var(--font-outfit)',
-            }}
-          >
-            {s.symbol}
-          </span>
-
-          <span
-            className="relative block h-[92px] w-[78px] shrink-0 overflow-hidden rounded-xl border"
-            style={{ borderColor: `${color}40` }}
-          >
+        {/* Портрет — главный элемент шапки, символ стоит меткой в его углу */}
+        <div className="relative flex items-center gap-4 px-6 pt-4">
+          <span className="relative block h-[140px] w-[118px] shrink-0 overflow-hidden rounded-2xl border border-glass-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={asset(s.photo)}
@@ -114,17 +102,27 @@ export default function SpeakerCard({
               height={400}
               className="h-full w-full object-cover"
             />
+            <span
+              className="absolute left-2 top-2 rounded-lg px-2 py-0.5 text-[15px] font-extrabold backdrop-blur-sm"
+              style={{
+                color,
+                background: 'rgba(3,6,16,0.72)',
+                fontFamily: 'var(--font-outfit)',
+              }}
+            >
+              {s.symbol}
+            </span>
           </span>
 
-          <span className="min-w-0 pt-0.5">
+          <span className="min-w-0">
             <span
-              className="block text-[22px] font-extrabold leading-[1.15]"
+              className="block text-[24px] font-extrabold leading-[1.12]"
               style={{ fontFamily: 'var(--font-outfit)' }}
             >
               {s.name}
             </span>
-            <span className="mt-2 block text-sm text-text-muted">{s.role}</span>
-            <span className="mt-1 flex items-center gap-1.5 text-sm text-text-muted">
+            <span className="mt-2.5 block text-sm text-text-muted">{s.role}</span>
+            <span className="mt-1.5 flex items-center gap-1.5 text-sm text-text-muted">
               <span
                 aria-hidden="true"
                 className="h-1.5 w-1.5 rounded-full"
@@ -135,15 +133,16 @@ export default function SpeakerCard({
           </span>
         </div>
 
-        <div className="mx-6 mt-5 border-t border-glass-border" />
+        <div className="mx-6 mt-6 border-t border-glass-border" />
 
         {/* Тема выступления */}
         <div className="px-6 pt-5">
           <div className="text-[10px] uppercase tracking-[0.2em]" style={{ color }}>
             Тема выступления
           </div>
+          {/* Тема — главный повод открыть карточку, поэтому крупнее имени по весу */}
           <p
-            className="mt-2 text-[17px] font-bold leading-snug"
+            className="mt-2.5 text-[20px] font-bold leading-[1.28]"
             style={{ fontFamily: 'var(--font-outfit)' }}
           >
             {s.topic}
@@ -174,60 +173,55 @@ export default function SpeakerCard({
           </div>
         </div>
 
-        {/* Опыт и статус */}
-        <div className="mt-5 grid grid-cols-2 gap-px border-y border-glass-border bg-glass-border">
-          <div className="bg-bg-main px-6 py-4">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Опыт</div>
-            <div className="mt-1.5 flex items-start gap-2 text-sm">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={asset('/img/flask-icon.webp')}
-                alt=""
-                aria-hidden="true"
-                width={226}
-                height={320}
-                className="mt-0.5 h-5 w-auto"
+        {/* Опыт и статус — одной строкой, без сетки: так карточка короче */}
+        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 px-6 text-sm text-text-muted">
+          <span className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={asset('/img/flask-icon.webp')}
+              alt=""
+              aria-hidden="true"
+              width={226}
+              height={320}
+              className="h-[18px] w-auto"
+            />
+            {s.experience}
+          </span>
+          <span className="flex items-center gap-2">
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 18 18"
+              fill="none"
+              aria-hidden="true"
+              className="shrink-0"
+              style={{ color }}
+            >
+              <path
+                d="M9 1.8 15 4v5c0 3.6-2.5 6.4-6 7.2C5.5 15.4 3 12.6 3 9V4l6-2.2Z"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinejoin="round"
               />
-              {s.experience}
-            </div>
-          </div>
-          <div className="bg-bg-main px-6 py-4">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Статус</div>
-            <div className="mt-1.5 flex items-start gap-2 text-sm">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
-                aria-hidden="true"
-                className="mt-0.5 shrink-0"
-                style={{ color }}
-              >
-                <path
-                  d="M9 1.8 15 4v5c0 3.6-2.5 6.4-6 7.2C5.5 15.4 3 12.6 3 9V4l6-2.2Z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="m6.4 9 1.9 1.9L11.8 7.4"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              {s.status}
-            </div>
-          </div>
+              <path
+                d="m6.4 9 1.9 1.9L11.8 7.4"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            {s.status}
+          </span>
         </div>
 
-        <div className="p-6">
+        {/* Текстовая ссылка вместо крупной капсулы — низ карточки легче */}
+        <div className="mt-6 border-t border-glass-border px-6 py-4">
           <a
             href="#program"
             onClick={onClose}
-            className="flex items-center justify-center gap-2 rounded-full border py-3 text-sm font-semibold transition-colors"
-            style={{ borderColor: `${color}55`, color }}
+            className="inline-flex items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-80"
+            style={{ color }}
           >
             Подробнее о выступлении
             <span aria-hidden="true">→</span>

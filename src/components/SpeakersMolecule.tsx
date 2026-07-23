@@ -24,6 +24,16 @@ const H = 620;
 
 const pointOf = (x: number, y: number) => ({ x: (x / 100) * W, y: (y / 100) * H });
 
+/**
+ * Планы глубины. Дальние атомы темнее и мягче, ближние — контрастнее
+ * и лежат выше по слоям, поэтому композиция перестаёт быть плоской.
+ */
+const depthStyles = {
+  front: { z: 30, brightness: 1, blur: 0, shadowAlpha: '38' },
+  mid: { z: 20, brightness: 0.9, blur: 0.3, shadowAlpha: '2a' },
+  back: { z: 10, brightness: 0.78, blur: 0.8, shadowAlpha: '1e' },
+} as const;
+
 export default function SpeakersMolecule() {
   const [active, setActive] = useState<number | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -148,6 +158,7 @@ export default function SpeakersMolecule() {
               top: `${speakerCore.y}%`,
               width: speakerCore.size,
               height: speakerCore.size,
+              zIndex: 25,
             }}
           >
             <div
@@ -165,12 +176,12 @@ export default function SpeakersMolecule() {
                 }}
               />
               <span
-                className="relative text-2xl font-extrabold text-white"
+                className="relative text-xl font-extrabold text-white"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
                 C&amp;B
               </span>
-              <span className="relative text-[11px] uppercase tracking-[0.3em] text-cyan">lab</span>
+              <span className="relative text-[10px] uppercase tracking-[0.28em] text-cyan">lab</span>
             </div>
           </div>
 
@@ -178,6 +189,7 @@ export default function SpeakersMolecule() {
           {speakers.map((s, i) => {
             const color = speakerThemes[s.theme];
             const isHot = hovered === i;
+            const d = depthStyles[s.depth];
             return (
               <button
                 key={s.name}
@@ -195,18 +207,19 @@ export default function SpeakersMolecule() {
                   width: s.size,
                   height: s.size,
                   transform: isHot
-                    ? 'translate(-50%, -50%) scale(1.08)'
+                    ? 'translate(-50%, -50%) scale(1.06)'
                     : 'translate(-50%, -50%)',
-                  zIndex: isHot ? 20 : 10,
+                  zIndex: isHot ? 40 : d.z,
                 }}
               >
                 <span
                   className="relative block h-full w-full overflow-hidden rounded-full border transition-all duration-300"
                   style={{
-                    borderColor: isHot ? color : `${color}80`,
+                    borderColor: isHot ? color : `${color}70`,
                     boxShadow: isHot
-                      ? `0 0 48px ${color}55, inset 0 3px 20px rgba(255,255,255,0.20)`
-                      : `0 0 24px ${color}2e, inset 0 3px 16px rgba(255,255,255,0.12)`,
+                      ? `0 0 44px ${color}55, inset 0 3px 20px rgba(255,255,255,0.20)`
+                      : `0 0 22px ${color}${d.shadowAlpha}, inset 0 3px 16px rgba(255,255,255,0.10)`,
+                    filter: isHot ? 'none' : `brightness(${d.brightness}) blur(${d.blur}px)`,
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
