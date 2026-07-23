@@ -1,9 +1,9 @@
 import { asset } from '@/lib/paths';
 
 /**
- * Пробирка со светящейся жидкостью — маркер перед надзаголовками секций.
- * Заменила декоративную горизонтальную черту: тот же ритм, но элемент
- * фирменный. Фон вырезан по цветности, свечение вокруг сохранено.
+ * Пробирка — маркер перед надзаголовками секций, вместо длинного тире.
+ * Вырезана строго по силуэту: ширину задаёт крышка, ореол свечения
+ * вокруг отсечён — это служебный элемент, подсвечивать его нечему.
  */
 export default function FlaskMark({ className = '' }: { className?: string }) {
   return (
@@ -12,9 +12,9 @@ export default function FlaskMark({ className = '' }: { className?: string }) {
       src={asset('/img/flask.webp')}
       alt=""
       aria-hidden="true"
-      width={267}
-      height={400}
-      className={`-my-2 h-9 w-auto shrink-0 ${className}`}
+      width={75}
+      height={320}
+      className={`-my-1.5 h-8 w-auto shrink-0 ${className}`}
     />
   );
 }
