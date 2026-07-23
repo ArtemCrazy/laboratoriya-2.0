@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { speakers, speakerCore, speakerBonds, speakerThemes } from '@/content/hero';
 import { asset } from '@/lib/paths';
 import FlaskMark from '@/components/FlaskMark';
+import SpeakerCard from '@/components/SpeakerCard';
 
 /**
  * Блок «Спикеры» (ТЗ 4.4) — плотная молекулярная структура из девяти
@@ -39,7 +40,7 @@ export default function SpeakersMolecule() {
   return (
     <section
       id="speakers"
-      className="relative border-t border-glass-border bg-bg-main py-16 lg:py-20"
+      className="relative border-t border-glass-border bg-bg-main py-20 lg:py-32"
     >
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
         <div className="mb-3 flex items-center gap-2.5 text-xs uppercase tracking-[0.22em] text-cyan">
@@ -55,7 +56,7 @@ export default function SpeakersMolecule() {
 
         {/* --- Молекула: десктоп. Занимает всю ширину блока --- */}
         <div
-          className="relative mx-auto mt-16 hidden w-full lg:block"
+          className="relative mx-auto mt-20 hidden w-full lg:mb-10 lg:block"
           style={{ aspectRatio: `${W} / ${H}` }}
         >
           <svg
@@ -181,7 +182,7 @@ export default function SpeakersMolecule() {
               <button
                 key={s.name}
                 type="button"
-                onClick={() => setActive(active === i ? null : i)}
+                onClick={() => setActive(i)}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
                 aria-label={`${s.name}, ${s.role}, ${s.company}`}
@@ -293,6 +294,9 @@ export default function SpeakersMolecule() {
           })}
         </div>
       </div>
+
+      {/* Карточка спикера — открывается по клику на атом */}
+      <SpeakerCard index={active} onClose={() => setActive(null)} />
     </section>
   );
 }
