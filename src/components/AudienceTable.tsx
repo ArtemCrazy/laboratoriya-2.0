@@ -1,6 +1,5 @@
 import { audience, audienceTitle } from '@/content/hero';
 import FlaskMark from '@/components/FlaskMark';
-import BubblingFlask from '@/components/BubblingFlask';
 import { asset } from '@/lib/paths';
 
 /**
@@ -19,13 +18,6 @@ export default function AudienceTable() {
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-[380px] w-[680px] -translate-x-1/2 rounded-full bg-cyan/[0.06] blur-[130px]" />
-
-        {/* Пробирка у нижнего края — вторая точка бурления на странице */}
-        <BubblingFlask
-          height={190}
-          opacity={0.3}
-          className="absolute bottom-[8%] right-[5%] hidden xl:block"
-        />
       </div>
 
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">

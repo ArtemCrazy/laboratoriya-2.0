@@ -4,7 +4,6 @@ import ConceptSwitcher from '@/components/ConceptSwitcher';
 import AudienceTable from '@/components/AudienceTable';
 import LiquidButton from '@/components/LiquidButton';
 import DateWidget from '@/components/DateWidget';
-import BubblingFlask from '@/components/BubblingFlask';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
@@ -29,13 +28,6 @@ export default function ConceptA() {
           <DotField />
           <div className="absolute -left-40 top-0 h-[500px] w-[500px] rounded-full bg-cyan/10 blur-[130px]" />
           <div className="absolute -right-20 bottom-0 h-[420px] w-[420px] rounded-full bg-accent/10 blur-[130px]" />
-
-          {/* Пробирка у верхнего края — периодически бурлит */}
-          <BubblingFlask
-            height={150}
-            opacity={0.35}
-            className="absolute left-[6%] top-[14%] hidden xl:block"
-          />
         </div>
 
         <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-16">

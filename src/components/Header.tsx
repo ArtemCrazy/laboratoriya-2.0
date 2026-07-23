@@ -41,13 +41,16 @@ export default function Header() {
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 lg:px-10">
           {/* Логотип без «2.0» — в первой конференции его в шапке не было,
               версия живёт в заголовке первого экрана */}
-          <a href="#" className="relative flex items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={asset('/img/logo.png')}
-              alt="C&B Лаборатория"
-              className="h-7 w-auto lg:h-9"
-            />
+          {/* logo-flask качается при наведении: точка вращения у надписи,
+              поэтому ходит колба — как будто её встряхнули в руке */}
+          <a href="#" className="logo-link relative flex items-center">
+            <span className="logo-flask relative block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={asset('/img/logo.png')}
+                alt="C&B Лаборатория"
+                className="h-7 w-auto lg:h-9"
+              />
 
             {/* Колба в логотипе периодически бурлит. Слой накрывает только её:
                 в макете логотипа колба занимает первые 17% ширины */}
@@ -70,6 +73,7 @@ export default function Header() {
                   }}
                 />
               ))}
+              </span>
             </span>
           </a>
 

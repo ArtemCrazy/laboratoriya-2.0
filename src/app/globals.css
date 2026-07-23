@@ -116,6 +116,45 @@ body {
   animation: bubble-rise var(--bubble-duration, 7s) ease-in infinite;
 }
 
+/* Встряхивание логотипа: точка вращения у надписи, поэтому ходит
+   в основном колба — как будто её встряхнули в руке */
+@keyframes flask-shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(-4.5deg);
+  }
+  32% {
+    transform: rotate(3.5deg);
+  }
+  48% {
+    transform: rotate(-2.5deg);
+  }
+  64% {
+    transform: rotate(1.8deg);
+  }
+  80% {
+    transform: rotate(-1deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.logo-link .logo-flask {
+  transform-origin: 92% 50%;
+}
+
+.logo-link:hover .logo-flask {
+  animation: flask-shake 0.8s ease-in-out;
+}
+
+/* Встряхнули — раствор забурлил активнее */
+.logo-link:hover .animate-bubble {
+  animation-duration: 2.4s;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
