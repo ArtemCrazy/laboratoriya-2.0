@@ -41,40 +41,47 @@ export default function Header() {
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 lg:px-10">
           {/* Логотип без «2.0» — в первой конференции его в шапке не было,
               версия живёт в заголовке первого экрана */}
-          {/* logo-flask качается при наведении: точка вращения у надписи,
-              поэтому ходит колба — как будто её встряхнули в руке */}
-          <a href="#" className="logo-link relative flex items-center">
+          {/* Логотип разрезан на две картинки: колба и надпись. Качается
+              и бурлит только колба, надпись при этом стоит неподвижно */}
+          <a href="#" className="logo-link flex items-center gap-1" aria-label="C&B Лаборатория">
             <span className="logo-flask relative block">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={asset('/img/logo.png')}
-                alt="C&B Лаборатория"
+                src={asset('/img/logo-flask.png')}
+                alt=""
+                aria-hidden="true"
+                width={100}
+                height={160}
                 className="h-7 w-auto lg:h-9"
               />
 
-            {/* Колба в логотипе периодически бурлит. Слой накрывает только её:
-                в макете логотипа колба занимает первые 17% ширины */}
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 left-0 w-[17%] overflow-hidden"
-            >
-              {logoBubbles.map((b, i) => (
-                <span
-                  key={i}
-                  className="animate-bubble absolute rounded-full bg-cyan"
-                  style={{
-                    left: b.left,
-                    bottom: b.bottom,
-                    width: b.size,
-                    height: b.size,
-                    ['--rise' as string]: '11px',
-                    ['--bubble-duration' as string]: '6s',
-                    animationDelay: `${b.delay}s`,
-                  }}
-                />
-              ))}
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0">
+                {logoBubbles.map((b, i) => (
+                  <span
+                    key={i}
+                    className="animate-bubble absolute rounded-full bg-cyan"
+                    style={{
+                      left: b.left,
+                      bottom: b.bottom,
+                      width: b.size,
+                      height: b.size,
+                      ['--rise' as string]: '9px',
+                      ['--bubble-duration' as string]: '6s',
+                      animationDelay: `${b.delay}s`,
+                    }}
+                  />
+                ))}
               </span>
             </span>
+
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={asset('/img/logo-text.png')}
+              alt="C&B Лаборатория"
+              width={493}
+              height={160}
+              className="h-7 w-auto lg:h-9"
+            />
           </a>
 
           {/* Десктопное меню — от 1280px, иначе 8 пунктов не помещаются рядом с CTA */}

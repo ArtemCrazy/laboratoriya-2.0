@@ -116,8 +116,8 @@ body {
   animation: bubble-rise var(--bubble-duration, 7s) ease-in infinite;
 }
 
-/* Встряхивание логотипа: точка вращения у надписи, поэтому ходит
-   в основном колба — как будто её встряхнули в руке */
+/* Встряхивание колбы: она отдельная картинка, надпись рядом стоит.
+   Точка вращения у горлышка — колбу словно держат сверху */
 @keyframes flask-shake {
   0% {
     transform: rotate(0deg);
@@ -143,7 +143,7 @@ body {
 }
 
 .logo-link .logo-flask {
-  transform-origin: 92% 50%;
+  transform-origin: 50% 12%;
 }
 
 .logo-link:hover .logo-flask {
