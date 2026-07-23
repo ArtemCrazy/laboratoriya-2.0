@@ -53,6 +53,9 @@ export default function SpeakersMolecule() {
         >
           Практики, которые строят системы вознаграждения в крупных компаниях
         </h2>
+        <p className="mt-4 text-[17px] text-text-muted">
+          Эксперты C&amp;B&nbsp;Lab и ведущих компаний России
+        </p>
 
         {/* --- Молекула: десктоп. Занимает всю ширину блока --- */}
         <div
@@ -201,12 +204,11 @@ export default function SpeakersMolecule() {
                 }}
               >
                 <span
-                  className="relative block h-full w-full overflow-hidden rounded-full border transition-all duration-300"
+                  className="relative block h-full w-full overflow-hidden rounded-full transition-shadow duration-300"
                   style={{
-                    borderColor: isHot ? color : `${color}80`,
                     boxShadow: isHot
-                      ? `0 0 48px ${color}55, inset 0 3px 20px rgba(255,255,255,0.20)`
-                      : `0 0 24px ${color}2e, inset 0 3px 16px rgba(255,255,255,0.12)`,
+                      ? `0 0 48px ${color}55`
+                      : `0 0 24px ${color}2e`,
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -222,7 +224,7 @@ export default function SpeakersMolecule() {
                       только под текстом, само фото остаётся чистым */}
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] rounded-b-full"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%]"
                     style={{
                       background:
                         'linear-gradient(to top, rgba(3,6,16,0.92) 38%, rgba(3,6,16,0) 100%)',
@@ -233,6 +235,18 @@ export default function SpeakersMolecule() {
                     <span className="mt-0.5 block text-[11px] text-text-muted">{s.role}</span>
                   </span>
                 </span>
+
+                {/* Обводка отдельным кольцом поверх фото: не режется вместе
+                    с картинкой, поэтому край ровный и без «пунктира» */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 rounded-full transition-shadow duration-300"
+                  style={{
+                    boxShadow: isHot
+                      ? `inset 0 0 0 2px ${color}, inset 0 3px 20px rgba(255,255,255,0.20)`
+                      : `inset 0 0 0 1.5px ${color}80, inset 0 3px 16px rgba(255,255,255,0.12)`,
+                  }}
+                />
 
                 {/* Компания — единственное, что осталось снаружи атома */}
                 <span
