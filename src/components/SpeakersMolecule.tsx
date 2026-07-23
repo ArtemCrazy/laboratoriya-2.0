@@ -220,8 +220,23 @@ export default function SpeakersMolecule() {
                     height={400}
                     className="h-full w-full object-cover"
                   />
-                  {/* Фото остаётся чистым: имя и должность ушли в карточку,
-                      здесь картинка — главный элемент */}
+                  {/* Имя и компания внутри фото, у нижнего края: снаружи
+                      подпись резали соседние атомы. Затемнение только под
+                      текстом, верх фото чистый */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%]"
+                    style={{
+                      background:
+                        'linear-gradient(to top, rgba(3,6,16,0.94) 34%, rgba(3,6,16,0) 100%)',
+                    }}
+                  />
+                  <span className="absolute inset-x-[12%] bottom-[11%] block text-center leading-tight">
+                    <span className="block text-[14px] font-bold text-white">{s.name}</span>
+                    <span className="mt-0.5 block text-[12px]" style={{ color }}>
+                      {s.company}
+                    </span>
+                  </span>
                 </span>
 
                 {/* Обводка отдельным кольцом поверх фото: не режется вместе
@@ -236,18 +251,6 @@ export default function SpeakersMolecule() {
                   }}
                 />
 
-                {/* Снаружи только имя и компания — для узнавания с одного
-                    взгляда; должность и тема раскрываются в карточке */}
-                <span
-                  className={`absolute left-1/2 w-[168px] -translate-x-1/2 text-center leading-tight ${
-                    s.label === 'above' ? 'bottom-full mb-3' : 'top-full mt-3'
-                  }`}
-                >
-                  <span className="block text-[15px] font-bold text-white">{s.name}</span>
-                  <span className="mt-0.5 block text-[13px]" style={{ color }}>
-                    {s.company}
-                  </span>
-                </span>
               </button>
             );
           })}
