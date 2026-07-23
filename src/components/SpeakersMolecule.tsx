@@ -218,42 +218,31 @@ export default function SpeakersMolecule() {
                     height={400}
                     className="h-full w-full object-cover"
                   />
-                  {/* Тёмное стекло поверх портрета */}
+                  {/* Имя и должность живут внутри атома: затемнение снизу
+                      только под текстом, само фото остаётся чистым */}
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 rounded-full"
-                    style={{
-                      background: `linear-gradient(165deg, ${color}1f, rgba(6,11,25,0.5))`,
-                    }}
-                  />
-                  {/* Внутренний блик */}
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 rounded-full"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] rounded-b-full"
                     style={{
                       background:
-                        'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.32), rgba(255,255,255,0) 46%)',
+                        'linear-gradient(to top, rgba(3,6,16,0.92) 38%, rgba(3,6,16,0) 100%)',
                     }}
                   />
+                  <span className="absolute inset-x-[14%] bottom-[13%] block text-center leading-tight">
+                    <span className="block text-[13px] font-bold text-white">{s.name}</span>
+                    <span className="mt-0.5 block text-[11px] text-text-muted">{s.role}</span>
+                  </span>
                 </span>
 
-                {/* Подпись у атома */}
+                {/* Компания — единственное, что осталось снаружи атома */}
                 <span
-                  /* 172px — ширина промежутка между соседними атомами:
-                     шире подпись начинает наезжать на чужие портреты */
-                  className={`absolute w-[172px] leading-tight ${
-                    s.label === 'above'
-                      ? 'bottom-full left-1/2 mb-4 -translate-x-1/2'
-                      : s.label === 'left'
-                        ? 'right-full top-1/2 mr-4 -translate-y-1/2 text-right'
-                        : 'left-1/2 top-full mt-4 -translate-x-1/2'
+                  className={`absolute left-1/2 w-[172px] -translate-x-1/2 text-center text-[13px] ${
+                    s.label === 'above' ? 'bottom-full mb-2.5' : 'top-full mt-2.5'
                   }`}
+                  style={{ color }}
                 >
-                  <span className="block text-[17px] font-bold text-white">{s.name}</span>
-                  <span className="mt-1 block text-[14px] text-text-muted">{s.role}</span>
-                  <span className="block text-[14px] text-text-muted">{s.company}</span>
+                  {s.company}
                 </span>
-
               </button>
             );
           })}

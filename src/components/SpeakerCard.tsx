@@ -90,9 +90,11 @@ export default function SpeakerCard({
           </button>
         </div>
 
-        {/* Портрет — главный элемент шапки, символ стоит меткой в его углу */}
-        <div className="relative flex items-center gap-4 px-6 pt-4">
-          <span className="relative block h-[140px] w-[118px] shrink-0 overflow-hidden rounded-2xl border border-glass-border">
+        {/* Шапка: символ слева, имя по центру, портрет прижат к правому краю
+            во всю высоту — как в макете */}
+        <div className="relative h-[168px] pt-3">
+          {/* Портрет: уходит под правый край карточки, слева растворяется */}
+          <span className="absolute inset-y-0 right-0 block w-[150px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={asset(s.photo)}
@@ -101,39 +103,52 @@ export default function SpeakerCard({
               width={400}
               height={400}
               className="h-full w-full object-cover"
+              style={{ objectPosition: 'center 22%' }}
             />
             <span
-              className="absolute left-2 top-2 rounded-lg px-2 py-0.5 text-[15px] font-extrabold backdrop-blur-sm"
+              aria-hidden="true"
+              className="absolute inset-0"
               style={{
+                background:
+                  'linear-gradient(to right, var(--color-bg-main) 0%, rgba(6,11,25,0.55) 35%, rgba(6,11,25,0) 75%)',
+              }}
+            />
+          </span>
+
+          <div className="relative flex h-full items-center gap-4 pl-6 pr-[150px]">
+            <span
+              className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-2xl border text-[24px] font-extrabold"
+              style={{
+                borderColor: `${color}4d`,
                 color,
-                background: 'rgba(3,6,16,0.72)',
+                background: `${color}12`,
                 fontFamily: 'var(--font-outfit)',
               }}
             >
               {s.symbol}
             </span>
-          </span>
 
-          <span className="min-w-0">
-            <span
-              className="block text-[24px] font-extrabold leading-[1.12]"
-              style={{ fontFamily: 'var(--font-outfit)' }}
-            >
-              {s.name}
-            </span>
-            <span className="mt-2.5 block text-sm text-text-muted">{s.role}</span>
-            <span className="mt-1.5 flex items-center gap-1.5 text-sm text-text-muted">
+            <span className="min-w-0">
               <span
-                aria-hidden="true"
-                className="h-1.5 w-1.5 rounded-full"
-                style={{ background: color }}
-              />
-              {s.company}
+                className="block text-[22px] font-extrabold leading-[1.15]"
+                style={{ fontFamily: 'var(--font-outfit)' }}
+              >
+                {s.name}
+              </span>
+              <span className="mt-2 block text-sm text-text-muted">{s.role}</span>
+              <span className="mt-1.5 flex items-center gap-1.5 text-sm text-text-muted">
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: color }}
+                />
+                {s.company}
+              </span>
             </span>
-          </span>
+          </div>
         </div>
 
-        <div className="mx-6 mt-6 border-t border-glass-border" />
+        <div className="mx-6 border-t border-glass-border" />
 
         {/* Тема выступления */}
         <div className="px-6 pt-5">
@@ -215,18 +230,8 @@ export default function SpeakerCard({
           </span>
         </div>
 
-        {/* Текстовая ссылка вместо крупной капсулы — низ карточки легче */}
-        <div className="mt-6 border-t border-glass-border px-6 py-4">
-          <a
-            href="#program"
-            onClick={onClose}
-            className="inline-flex items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-80"
-            style={{ color }}
-          >
-            Подробнее о выступлении
-            <span aria-hidden="true">→</span>
-          </a>
-        </div>
+        {/* Ссылки на выступление нет: карточка самодостаточна как справка */}
+        <div className="pb-6" />
       </div>
     </div>
   );
