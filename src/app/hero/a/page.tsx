@@ -16,6 +16,7 @@ const ticker = [
   { kind: 'days' as const, text: 'Два дня практики' },
   { kind: 'date' as const, text: hero.dates },
   { kind: 'place' as const, text: `${hero.location}, ${hero.address}` },
+  { kind: 'expo' as const, text: 'Конференция + Выставка' },
   // ⚠️ ПЛЕЙСХОЛДЕРЫ: состав спикеров и программа ещё не переданы заказчиком
   { kind: 'speakers' as const, text: '10 спикеров' },
   { kind: 'cases' as const, text: 'Разбор реальных кейсов' },
@@ -187,7 +188,10 @@ export default function ConceptA() {
 
         {/* Бегущая строка — приём первой конференции. Теперь в ней едут
             дата и площадка, формулы работают фоном между ними */}
-        <div className="relative border-y border-glass-border bg-bg-deep/50 py-3 backdrop-blur-sm">
+        {/* overflow-hidden обязателен: без него браузер держит слой во всю
+            ширину трека (около 5000px) и анимация начинает подёргиваться.
+            Размытие с полосы снято по той же причине */}
+        <div className="relative overflow-hidden border-y border-glass-border bg-bg-deep/70 py-3">
           <div className="animate-marquee flex w-max items-center whitespace-nowrap">
             {[...tickerHalf, ...tickerHalf].map((item, i) => (
               <span key={i} className="flex items-center">
@@ -226,9 +230,25 @@ const tickerIcons = {
   days: <IconFlask />,
   date: <IconCalendar />,
   place: <IconPin />,
+  expo: <IconExpo />,
   speakers: <IconSpeakers />,
   cases: <IconCases />,
 };
+
+function IconExpo() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M2 5.5h12M2.8 5.5v7.6M13.2 5.5v7.6M2 13.1h12"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path d="M1.4 5.5 3 2.6h10l1.6 2.9" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M6.2 13.1V9.4h3.6v3.7" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 function IconSpeakers() {
   return (

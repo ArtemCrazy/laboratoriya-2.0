@@ -83,12 +83,14 @@ body {
   }
 }
 
+/* translate3d вместо translateX — анимация уходит на видеокарту и перестаёт
+   дёргаться на широком треке */
 @keyframes marquee {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -171,6 +173,8 @@ body {
 }
 .animate-marquee {
   animation: marquee 40s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 .animate-rise {
   animation: rise 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
