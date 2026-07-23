@@ -8,13 +8,6 @@ const concepts = [
     desc: 'Эволюция первого экрана первой конференции: маскоты, плавающие плашки с понятиями C&B, интерактивное поле точек, бегущая строка формул.',
     note: 'Максимальная узнаваемость бренда',
   },
-  {
-    key: 'B',
-    href: '/hero/b/',
-    title: 'Таблица элементов',
-    desc: 'Понятия C&B поданы как химические элементы — Mo, Bn, Wb, Rw. Факты первой конференции стоят прямо под кнопкой покупки.',
-    note: 'Сильнее всех работает на конверсию',
-  },
 ];
 
 export default function Index() {
@@ -28,14 +21,14 @@ export default function Index() {
           className="text-[clamp(30px,4vw,48px)] font-extrabold leading-tight"
           style={{ fontFamily: 'var(--font-outfit)' }}
         >
-          Две концепции первого экрана
+          Концепция первого экрана
         </h1>
         <p className="mt-4 max-w-[640px] text-text-muted">
-          Обе собраны на одном контенте — сравнивается именно визуальное решение.
-          Внутри каждой есть переключатель, чтобы быстро листать варианты.
+          Развитие визуального языка первой конференции: тёмная лаборатория,
+          маскоты и живое поле точек.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-5 md:max-w-[380px]">
           {concepts.map((c) => (
             <Link
               key={c.key}
