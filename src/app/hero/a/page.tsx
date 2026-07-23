@@ -16,11 +16,17 @@ const ticker = [
   { kind: 'days' as const, text: 'Два дня практики' },
   { kind: 'date' as const, text: hero.dates },
   { kind: 'place' as const, text: `${hero.location}, ${hero.address}` },
+  // ⚠️ ПЛЕЙСХОЛДЕРЫ: состав спикеров и программа ещё не переданы заказчиком
+  { kind: 'speakers' as const, text: '10 спикеров' },
+  { kind: 'cases' as const, text: 'Разбор реальных кейсов' },
 ];
 
 // Половина ленты должна быть шире экрана, иначе при сдвиге на -50%
-// в строке появятся пустоты — поэтому набор повторяется трижды
-const tickerHalf = [...ticker, ...ticker, ...ticker];
+// в строке появятся пустоты
+const tickerHalf = [...ticker, ...ticker];
+
+/** Углы плашек на орбите, градусы: 0 — справа, отсчёт против часовой */
+const orbitAngles = [145, 35, 215, 325, 90];
 
 export default function ConceptA() {
   return (
@@ -72,10 +78,41 @@ export default function ConceptA() {
               Круг срезает углы иллюстрации, где впечатаны её собственные
               подписи, поэтому понятия C&B выносим своими плашками вокруг. */}
           <div className="relative mx-auto hidden aspect-square w-full max-w-[600px] items-center justify-center lg:flex">
-            {/* Круг ~500px — как в первой конференции, где он был 450px */}
-            <div className="absolute inset-[8%] rounded-full border border-cyan/20" />
-            <div className="absolute inset-0 rounded-full border border-white/5" />
-            <div className="absolute inset-[8%] overflow-hidden rounded-full">
+            {/* Две орбиты из точек вокруг фотографии. Точки — точечный пунктир
+                у окружности, вращаются в разные стороны и с разной скоростью */}
+            <svg
+              viewBox="0 0 100 100"
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="46"
+                fill="none"
+                stroke="rgba(0, 229, 255, 0.45)"
+                strokeWidth="0.7"
+                strokeLinecap="round"
+                strokeDasharray="0.1 3"
+                className="origin-center animate-[spin_90s_linear_infinite]"
+              />
+              <circle
+                cx="50"
+                cy="50"
+                r="39.5"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.28)"
+                strokeWidth="0.5"
+                strokeLinecap="round"
+                strokeDasharray="0.1 2.2"
+                className="origin-center animate-[spin_70s_linear_infinite_reverse]"
+              />
+              {/* Тонкие направляющие окружности под точками */}
+              <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(0,229,255,0.08)" strokeWidth="0.25" />
+              <circle cx="50" cy="50" r="39.5" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.25" />
+            </svg>
+
+            <div className="absolute inset-[14%] overflow-hidden rounded-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={asset('/img/mascots-lab.webp')}
@@ -86,24 +123,38 @@ export default function ConceptA() {
               />
             </div>
 
-            {/* Плавающие плашки с понятиями C&B вокруг фотографии */}
+            {/* Плашки сидят прямо на внешней орбите: угол задаёт точку,
+                координаты считаются по окружности радиуса 46% */}
             {terms.map((t, i) => {
-              // Плашки стоят по краям круга, не заезжая на фотографию
-              const positions = [
-                'left-[-4%] top-[18%]',
-                'right-[-6%] top-[30%]',
-                'left-[2%] bottom-[20%]',
-                'right-[0%] bottom-[28%]',
-                'left-1/2 top-[-2%] -translate-x-1/2',
-              ];
+              const angle = orbitAngles[i];
+              const rad = (angle * Math.PI) / 180;
+              const left = 50 + 46 * Math.cos(rad);
+              const top = 50 - 46 * Math.sin(rad);
               return (
                 <div
                   key={t.label}
-                  className={`animate-float absolute ${positions[i]} flex items-center gap-2 rounded-2xl border border-glass-border bg-bg-deep/80 px-4 py-2.5 backdrop-blur-md`}
-                  style={{ animationDelay: `${i * 0.8}s` }}
+                  className="animate-float absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2.5 rounded-2xl border border-glass-border bg-bg-deep/85 py-2 pl-2.5 pr-4 backdrop-blur-md"
+                  style={{
+                    left: `${left}%`,
+                    top: `${top}%`,
+                    animationDelay: `${i * 0.8}s`,
+                  }}
                 >
-                  <span aria-hidden="true">{t.icon}</span>
-                  <span className="text-sm font-medium">{t.label}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={asset('/img/flask.webp')}
+                    alt=""
+                    aria-hidden="true"
+                    width={75}
+                    height={320}
+                    className="h-7 w-auto"
+                  />
+                  <span className="leading-tight">
+                    <span className="block text-[11px] text-text-muted">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="block text-sm font-medium">{t.label}</span>
+                  </span>
                 </div>
               );
             })}
@@ -118,14 +169,14 @@ export default function ConceptA() {
             {[...tickerHalf, ...tickerHalf].map((item, i) => (
               <span key={i} className="flex items-center">
                 <span className="flex items-center gap-2 rounded-full border border-glass-border bg-glass px-4 py-1.5 text-sm font-medium">
-                  <span className={item.kind === 'place' ? 'text-cyan' : 'text-accent'}>
-                    {item.kind === 'date' ? (
-                      <IconCalendar />
-                    ) : item.kind === 'place' ? (
-                      <IconPin />
-                    ) : (
-                      <IconFlask />
-                    )}
+                  <span
+                    className={
+                      item.kind === 'place' || item.kind === 'cases'
+                        ? 'text-cyan'
+                        : 'text-accent'
+                    }
+                  >
+                    {tickerIcons[item.kind]}
                   </span>
                   {item.text}
                 </span>
@@ -147,6 +198,48 @@ export default function ConceptA() {
 }
 
 /* --- Иконки бегущей строки --- */
+
+const tickerIcons = {
+  days: <IconFlask />,
+  date: <IconCalendar />,
+  place: <IconPin />,
+  speakers: <IconSpeakers />,
+  cases: <IconCases />,
+};
+
+function IconSpeakers() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="6" cy="5.5" r="2.6" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M1.8 14c0-2.4 1.9-4.1 4.2-4.1s4.2 1.7 4.2 4.1"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M11 3.4a2.5 2.5 0 0 1 0 4.6M12.4 10.4c1.2.6 1.9 1.8 1.9 3.3"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function IconCases() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="1.8" y="4.5" width="12.4" height="9.2" rx="1.8" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M5.8 4.5V3.4c0-.6.5-1.1 1.1-1.1h2.2c.6 0 1.1.5 1.1 1.1v1.1M1.8 8.4h12.4"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 function IconCalendar() {
   return (
