@@ -42,10 +42,12 @@ export default function AudienceTable() {
           </h2>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(320px,0.85fr)_1.15fr] lg:gap-8">
+        {/* Колонки тянутся до общей высоты: портрет занимает всё, что
+            остаётся над цитатой, поэтому левый блок равен правому */}
+        <div className="mt-12 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(320px,0.85fr)_1.15fr] lg:gap-8">
           {/* --- Портрет: фон вырезан, бюст стоит прямо на странице --- */}
-          <figure className="relative">
-            <div className="relative aspect-square">
+          <figure className="relative flex h-full flex-col">
+            <div className="relative min-h-[320px] flex-1">
               {/* Свечение под бюстом — чтобы вырезанная фигура не висела в пустоте */}
               <div className="pointer-events-none absolute inset-x-[8%] bottom-[6%] top-[18%] rounded-full bg-cyan/[0.07] blur-[70px]" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
