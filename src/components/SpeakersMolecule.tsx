@@ -1,41 +1,84 @@
 'use client';
 
 import { useState } from 'react';
-import { speakers, speakerCore, speakerBonds, speakerThemes } from '@/content/hero';
+import { speakers, speakerThemes } from '@/content/hero';
 import { asset } from '@/lib/paths';
 import FlaskMark from '@/components/FlaskMark';
 import SpeakerCard from '@/components/SpeakerCard';
 
 /**
- * Блок «Спикеры» (ТЗ 4.4) — плотная молекулярная структура из девяти
- * спикеров и элемента C&B LAB.
+ * Блок «Спикеры» (ТЗ 4.4) — регулярная ромбическая решётка.
  *
- * Раскладка задана вручную (см. speakers в content/hero): три сцепленных
- * кольца, каждый атом связан минимум с двумя соседями, C&B LAB замыкает
- * правое кольцо наравне с остальными и центром не является.
+ * Узлы стоят на треугольной решётке: соседние ряды сдвинуты на полшага,
+ * поэтому все связи одинаковой длины и между ними складываются ромбы.
+ * Структура симметрична и достраивается вниз — добавили ряд, стало больше
+ * мест. Один узел отдан C&B LAB, остальные — спикерам.
  *
- * ⚠️ Портреты тестовые: стоковые снимки, приведённые к единой цветовой
- * обработке. Имена, компании и темы — плейсхолдеры.
+ * Данные и фото — реальные спикеры первой конференции (cblabconference.ru).
  */
 
-/** Сцена: в этих координатах считаются и связи, и позиции атомов */
 const W = 1400;
 const H = 680;
+const ATOM = 168; // одинаковый диаметр атома — решётка регулярная
 
-const pointOf = (x: number, y: number) => ({ x: (x / 100) * W, y: (y / 100) * H });
+/** Ряды решётки: количество узлов. Добавить ряд — структура растёт вниз */
+const ROWS = [3, 4, 3];
+/** Индекс узла, отданного под C&B LAB (второй в среднем ряду) */
+const LAB_INDEX = 4;
+
+/** Горизонтальный шаг и вертикальные уровни в процентах сцены */
+const DX = 25.3;
+const Y = [18, 50, 82];
+
+/** Позиции всех узлов решётки, слева направо, сверху вниз */
+const NODES: { x: number; y: number }[] = ROWS.flatMap((count, r) => {
+  const span = (count - 1) * DX;
+  return Array.from({ length: count }, (_, c) => ({
+    x: 50 - span / 2 + c * DX,
+    y: Y[r],
+  }));
+});
+
+/** Связи: узлы соседних рядов на расстоянии ~полушага по горизонтали */
+const BONDS: [number, number][] = (() => {
+  const bonds: [number, number][] = [];
+  let base = 0;
+  for (let r = 0; r < ROWS.length - 1; r++) {
+    const upStart = base;
+    const downStart = base + ROWS[r];
+    for (let i = 0; i < ROWS[r]; i++) {
+      for (let j = 0; j < ROWS[r + 1]; j++) {
+        const dx = Math.abs(NODES[upStart + i].x - NODES[downStart + j].x);
+        if (dx < DX * 0.6) bonds.push([upStart + i, downStart + j]);
+      }
+    }
+    base += ROWS[r];
+  }
+  return bonds;
+})();
+
+/** Соответствие узел → спикер: LAB-узел пропускаем */
+const NODE_SPEAKER: (number | null)[] = (() => {
+  const map: (number | null)[] = [];
+  let si = 0;
+  for (let i = 0; i < NODES.length; i++) {
+    map.push(i === LAB_INDEX ? null : si++);
+  }
+  return map;
+})();
+
+const pointOf = (n: { x: number; y: number }) => ({ x: (n.x / 100) * W, y: (n.y / 100) * H });
 
 export default function SpeakersMolecule() {
   const [active, setActive] = useState<number | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
-  const lit = hovered ?? active;
+  const litSpeaker = hovered ?? active;
+  const litNode = litSpeaker === null ? null : NODE_SPEAKER.indexOf(litSpeaker);
 
-  const nodeAt = (i: number) =>
-    i === -1
-      ? { ...pointOf(speakerCore.x, speakerCore.y), color: '#00E5FF' }
-      : {
-          ...pointOf(speakers[i].x, speakers[i].y),
-          color: speakerThemes[speakers[i].theme],
-        };
+  const colorOfNode = (i: number) => {
+    const sp = NODE_SPEAKER[i];
+    return sp === null ? '#00E5FF' : speakerThemes[speakers[sp].theme];
+  };
 
   return (
     <section
@@ -53,13 +96,10 @@ export default function SpeakersMolecule() {
         >
           Практики, которые строят системы вознаграждения в крупных компаниях
         </h2>
-        <p className="mt-4 text-[17px] text-text-muted">
-          Эксперты C&amp;B&nbsp;Lab и ведущих компаний России
-        </p>
 
-        {/* --- Молекула: десктоп. Занимает всю ширину блока --- */}
+        {/* --- Решётка: десктоп --- */}
         <div
-          className="relative mx-auto mt-20 hidden w-full lg:mb-10 lg:block"
+          className="relative mx-auto mt-16 hidden w-full lg:block"
           style={{ aspectRatio: `${W} / ${H}` }}
         >
           <svg
@@ -68,9 +108,9 @@ export default function SpeakersMolecule() {
             className="absolute inset-0 h-full w-full overflow-visible"
           >
             <defs>
-              {speakerBonds.map(([a, b], i) => {
-                const p1 = nodeAt(a);
-                const p2 = nodeAt(b);
+              {BONDS.map(([a, b], i) => {
+                const p1 = pointOf(NODES[a]);
+                const p2 = pointOf(NODES[b]);
                 return (
                   <linearGradient
                     key={i}
@@ -81,20 +121,19 @@ export default function SpeakersMolecule() {
                     y2={p2.y}
                     gradientUnits="userSpaceOnUse"
                   >
-                    <stop offset="0%" stopColor={p1.color} stopOpacity="0.55" />
-                    <stop offset="100%" stopColor={p2.color} stopOpacity="0.55" />
+                    <stop offset="0%" stopColor={colorOfNode(a)} stopOpacity="0.55" />
+                    <stop offset="100%" stopColor={colorOfNode(b)} stopOpacity="0.55" />
                   </linearGradient>
                 );
               })}
             </defs>
 
-            {speakerBonds.map(([a, b], i) => {
-              const p1 = nodeAt(a);
-              const p2 = nodeAt(b);
-              const on = lit !== null && (lit === a || lit === b);
+            {BONDS.map(([a, b], i) => {
+              const p1 = pointOf(NODES[a]);
+              const p2 = pointOf(NODES[b]);
+              const on = litNode !== null && (litNode === a || litNode === b);
               return (
                 <g key={i}>
-                  {/* Стеклянная трубка: тело, светлая грань сверху и тень снизу */}
                   <line
                     x1={p1.x}
                     y1={p1.y}
@@ -121,14 +160,14 @@ export default function SpeakersMolecule() {
                     y1={p1.y}
                     x2={p2.x}
                     y2={p2.y}
-                    stroke="rgba(255,255,255,0.55)"
+                    stroke="rgba(255,255,255,0.5)"
                     strokeWidth="2"
                     strokeLinecap="round"
                     opacity={on ? 0.7 : 0.35}
                     className="transition-opacity duration-300"
                     style={{ transform: 'translateY(-3px)' }}
                   />
-                  <circle r="3.2" fill={p2.color} opacity="0.9">
+                  <circle r="3.2" fill={colorOfNode(b)} opacity="0.9">
                     <animateMotion
                       dur={`${3.4 + (i % 4) * 0.8}s`}
                       repeatCount="indefinite"
@@ -141,75 +180,73 @@ export default function SpeakersMolecule() {
             })}
           </svg>
 
-          {/* C&B LAB — такой же атом структуры, замыкает правое кольцо.
-              Без анимации парения: она перезаписывает transform целиком
-              и сбивает центрирование атома по его координате */}
-          <div
-            className="absolute -translate-x-1/2 -translate-y-1/2"
-            style={{
-              left: `${speakerCore.x}%`,
-              top: `${speakerCore.y}%`,
-              width: speakerCore.size,
-              height: speakerCore.size,
-            }}
-          >
-            <div
-              className="relative flex h-full w-full flex-col items-center justify-center rounded-full border border-cyan/45 bg-bg-deep/90"
-              style={{
-                boxShadow: '0 0 34px rgba(0,229,255,0.25), inset 0 3px 18px rgba(255,255,255,0.12)',
-              }}
-            >
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 rounded-full"
-                style={{
-                  background:
-                    'radial-gradient(circle at 32% 24%, rgba(255,255,255,0.28), rgba(255,255,255,0) 52%)',
-                }}
-              />
-              <span
-                className="relative text-2xl font-extrabold text-white"
-                style={{ fontFamily: 'var(--font-outfit)' }}
-              >
-                C&amp;B
-              </span>
-              <span className="relative text-[11px] uppercase tracking-[0.3em] text-cyan">lab</span>
-            </div>
-          </div>
+          {NODES.map((node, i) => {
+            const sp = NODE_SPEAKER[i];
 
-          {/* Атомы-спикеры */}
-          {speakers.map((s, i) => {
+            // Узел C&B LAB
+            if (sp === null) {
+              return (
+                <div
+                  key="lab"
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${node.x}%`, top: `${node.y}%`, width: ATOM, height: ATOM }}
+                >
+                  <div
+                    className="relative flex h-full w-full flex-col items-center justify-center rounded-full border border-cyan/45 bg-bg-deep/90"
+                    style={{
+                      boxShadow:
+                        '0 0 34px rgba(0,229,255,0.25), inset 0 3px 18px rgba(255,255,255,0.12)',
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 rounded-full"
+                      style={{
+                        background:
+                          'radial-gradient(circle at 32% 24%, rgba(255,255,255,0.28), rgba(255,255,255,0) 52%)',
+                      }}
+                    />
+                    <span
+                      className="relative text-2xl font-extrabold text-white"
+                      style={{ fontFamily: 'var(--font-outfit)' }}
+                    >
+                      C&amp;B
+                    </span>
+                    <span className="relative text-[11px] uppercase tracking-[0.3em] text-cyan">
+                      lab
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+
+            // Узел-спикер
+            const s = speakers[sp];
             const color = speakerThemes[s.theme];
-            const isHot = hovered === i;
+            const isHot = hovered === sp;
             return (
               <button
                 key={s.name}
                 type="button"
-                onClick={() => setActive(i)}
-                onMouseEnter={() => setHovered(i)}
+                onClick={() => setActive(sp)}
+                onMouseEnter={() => setHovered(sp)}
                 onMouseLeave={() => setHovered(null)}
                 aria-label={`${s.name}, ${s.role}, ${s.company}`}
-                /* Курсор-указатель: по клику будет открываться карточка
-                   спикера — её оформление ещё не согласовано */
                 className="absolute cursor-pointer rounded-full transition-transform duration-300"
                 style={{
-                  left: `${s.x}%`,
-                  top: `${s.y}%`,
-                  width: s.size,
-                  height: s.size,
+                  left: `${node.x}%`,
+                  top: `${node.y}%`,
+                  width: ATOM,
+                  height: ATOM,
                   transform: isHot
-                    ? 'translate(-50%, -50%) scale(1.08)'
+                    ? 'translate(-50%, -50%) scale(1.06)'
                     : 'translate(-50%, -50%)',
                   zIndex: isHot ? 20 : 10,
                 }}
               >
                 <span
                   className="relative block h-full w-full overflow-hidden rounded-full transition-shadow duration-300"
-                  style={{
-                    boxShadow: isHot
-                      ? `0 0 48px ${color}55`
-                      : `0 0 24px ${color}2e`,
-                  }}
+                  style={{ boxShadow: isHot ? `0 0 48px ${color}55` : `0 0 24px ${color}2e` }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -220,9 +257,6 @@ export default function SpeakersMolecule() {
                     height={400}
                     className="h-full w-full object-cover"
                   />
-                  {/* Имя и компания внутри фото, у нижнего края: снаружи
-                      подпись резали соседние атомы. Затемнение только под
-                      текстом, верх фото чистый */}
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%]"
@@ -239,8 +273,7 @@ export default function SpeakersMolecule() {
                   </span>
                 </span>
 
-                {/* Обводка отдельным кольцом поверх фото: не режется вместе
-                    с картинкой, поэтому край ровный и без «пунктира» */}
+                {/* Обводка отдельным кольцом — край ровный, без «пунктира» */}
                 <span
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 rounded-full transition-shadow duration-300"
@@ -250,7 +283,6 @@ export default function SpeakersMolecule() {
                       : `inset 0 0 0 1.5px ${color}80, inset 0 3px 16px rgba(255,255,255,0.12)`,
                   }}
                 />
-
               </button>
             );
           })}
@@ -258,12 +290,14 @@ export default function SpeakersMolecule() {
 
         {/* --- Мобильная версия --- */}
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">
-          {speakers.map((s) => {
+          {speakers.map((s, i) => {
             const color = speakerThemes[s.theme];
             return (
-              <article
+              <button
                 key={s.name}
-                className="flex items-center gap-4 rounded-2xl border border-glass-border bg-glass p-4"
+                type="button"
+                onClick={() => setActive(i)}
+                className="flex items-center gap-4 rounded-2xl border border-glass-border bg-glass p-4 text-left"
               >
                 <span
                   className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-full border"
@@ -286,7 +320,7 @@ export default function SpeakersMolecule() {
                     {s.company}
                   </span>
                 </span>
-              </article>
+              </button>
             );
           })}
         </div>
