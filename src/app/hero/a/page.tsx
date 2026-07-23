@@ -87,13 +87,12 @@ export default function ConceptA() {
 
             {/* Плавающие плашки с понятиями C&B вокруг фотографии */}
             {terms.map((t, i) => {
-              // Правые плашки уведены внутрь круга: у самого края экрана
-              // теперь едет закреплённый виджет с датой
+              // Плашки стоят по краям круга, не заезжая на фотографию
               const positions = [
-                'left-[-6%] top-[18%]',
-                'right-[30%] top-[24%]',
-                'left-[0%] bottom-[20%]',
-                'right-[32%] bottom-[8%]',
+                'left-[-4%] top-[18%]',
+                'right-[-6%] top-[30%]',
+                'left-[2%] bottom-[20%]',
+                'right-[0%] bottom-[28%]',
                 'left-1/2 top-[-2%] -translate-x-1/2',
               ];
               return (
@@ -130,7 +129,7 @@ export default function ConceptA() {
 
       {/* Виджет с датой и местом закреплён справа и едет вместе со страницей.
           На мобильном его нет — там он стоит в потоке под кнопками. */}
-      <div className="fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 lg:block">
+      <div className="fixed bottom-8 right-6 z-40 hidden lg:block">
         <DateWidget floating />
       </div>
 
