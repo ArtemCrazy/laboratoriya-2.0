@@ -194,17 +194,7 @@ export default function SpeakerCard({
           </div>
         </div>
 
-        {/* Подвал: статус и опыт */}
-        <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-glass-border px-8 py-5 text-sm text-text-muted">
-          <span className="flex items-center gap-2">
-            <ShieldGlyph color={color} />
-            {s.status}
-          </span>
-          <span className="flex items-center gap-2">
-            <FlaskGlyph color={color} />
-            {s.experience}
-          </span>
-        </div>
+        <div className="pb-8" />
       </div>
     </div>
   );
