@@ -122,7 +122,7 @@ export const speakers = [
     company: 'АльфаСтрахование',
     photo: '/img/speakers/1.webp',
     theme: 'culture' as const,
-    x: 7,
+    x: 14.8,
     y: 47,
     size: 152,
     label: 'left' as const,
@@ -133,7 +133,7 @@ export const speakers = [
     company: 'НоваТек',
     photo: '/img/speakers/2.webp',
     theme: 'analytics' as const,
-    x: 17.3,
+    x: 25.1,
     y: 26,
     size: 150,
     label: 'above' as const,
@@ -144,7 +144,7 @@ export const speakers = [
     company: 'OZON',
     photo: '/img/speakers/3.webp',
     theme: 'rewards' as const,
-    x: 17.3,
+    x: 25.1,
     y: 70,
     size: 148,
     label: 'below' as const,
@@ -155,7 +155,7 @@ export const speakers = [
     company: 'ВкусВилл',
     photo: '/img/speakers/4.webp',
     theme: 'wellbeing' as const,
-    x: 29.2,
+    x: 37.0,
     y: 47,
     size: 166,
     label: 'above' as const,
@@ -166,7 +166,7 @@ export const speakers = [
     company: 'Газпром нефть',
     photo: '/img/speakers/5.webp',
     theme: 'motivation' as const,
-    x: 41,
+    x: 48.8,
     y: 24,
     size: 154,
     label: 'above' as const,
@@ -177,7 +177,7 @@ export const speakers = [
     company: 'СберМаркет',
     photo: '/img/speakers/6.webp',
     theme: 'wellbeing' as const,
-    x: 41,
+    x: 48.8,
     y: 72,
     size: 150,
     label: 'below' as const,
@@ -188,7 +188,7 @@ export const speakers = [
     company: 'Яндекс',
     photo: '/img/speakers/7.webp',
     theme: 'rewards' as const,
-    x: 53.5,
+    x: 61.3,
     y: 47,
     size: 164,
     label: 'above' as const,
@@ -199,7 +199,7 @@ export const speakers = [
     company: 'МТС',
     photo: '/img/speakers/8.webp',
     theme: 'analytics' as const,
-    x: 65.9,
+    x: 73.7,
     y: 26,
     size: 152,
     label: 'above' as const,
@@ -210,7 +210,7 @@ export const speakers = [
     company: 'Северсталь',
     photo: '/img/speakers/9.webp',
     theme: 'culture' as const,
-    x: 65.9,
+    x: 73.7,
     y: 70,
     size: 148,
     label: 'below' as const,
@@ -218,7 +218,7 @@ export const speakers = [
 ] as const;
 
 /** C&B LAB — небольшой элемент, встроенный в связку, а не центр молекулы */
-export const speakerCore = { x: 77.8, y: 47, size: 138 };
+export const speakerCore = { x: 85.6, y: 47, size: 138 };
 
 /**
  * Связи молекулы. -1 — ядро, остальные индексы из speakers.

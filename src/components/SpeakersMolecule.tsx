@@ -55,7 +55,7 @@ export default function SpeakersMolecule() {
 
         {/* --- Молекула: десктоп. Занимает всю ширину блока --- */}
         <div
-          className="relative mx-auto mt-8 hidden w-full lg:block"
+          className="relative mx-auto mt-16 hidden w-full lg:block"
           style={{ aspectRatio: `${W} / ${H}` }}
         >
           <svg
@@ -137,15 +137,16 @@ export default function SpeakersMolecule() {
             })}
           </svg>
 
-          {/* C&B LAB — такой же атом структуры, замыкает правое кольцо */}
+          {/* C&B LAB — такой же атом структуры, замыкает правое кольцо.
+              Без анимации парения: она перезаписывает transform целиком
+              и сбивает центрирование атома по его координате */}
           <div
-            className="animate-float absolute -translate-x-1/2 -translate-y-1/2"
+            className="absolute -translate-x-1/2 -translate-y-1/2"
             style={{
               left: `${speakerCore.x}%`,
               top: `${speakerCore.y}%`,
               width: speakerCore.size,
               height: speakerCore.size,
-              animationDelay: '0.4s',
             }}
           >
             <div
@@ -184,13 +185,14 @@ export default function SpeakersMolecule() {
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
                 aria-label={`${s.name}, ${s.role}, ${s.company}`}
-                className="animate-float absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-transform duration-300"
+                /* Курсор-указатель: по клику будет открываться карточка
+                   спикера — её оформление ещё не согласовано */
+                className="absolute cursor-pointer rounded-full transition-transform duration-300"
                 style={{
                   left: `${s.x}%`,
                   top: `${s.y}%`,
                   width: s.size,
                   height: s.size,
-                  animationDelay: `${i * 0.6}s`,
                   transform: isHot
                     ? 'translate(-50%, -50%) scale(1.08)'
                     : 'translate(-50%, -50%)',
@@ -251,27 +253,10 @@ export default function SpeakersMolecule() {
                   <span className="block text-[14px] text-text-muted">{s.company}</span>
                 </span>
 
-                {/* Подпись действия — только на наведённом атоме */}
-                <span
-                  className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1 text-[12px] font-semibold transition-opacity duration-200"
-                  style={{
-                    color,
-                    background: 'rgba(3,6,16,0.9)',
-                    opacity: isHot ? 1 : 0,
-                    marginTop: s.label === 'below' ? 90 : 8,
-                  }}
-                >
-                  Смотреть выступление →
-                </span>
               </button>
             );
           })}
         </div>
-
-        <p className="mt-6 hidden items-center justify-center gap-2.5 text-center text-base text-text-muted lg:flex">
-          <FlaskMark className="!h-5" />
-          Нажмите на элемент, чтобы познакомиться с экспертом и его темой
-        </p>
 
         {/* --- Мобильная версия --- */}
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">

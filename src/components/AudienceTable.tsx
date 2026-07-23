@@ -87,11 +87,10 @@ export default function AudienceTable() {
 
           {/* --- Таблица аудиторий --- */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {audience.map((a, i) => (
+            {audience.map((a) => (
               <article
                 key={a.symbol}
-                className="animate-rise group flex flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan/50 hover:bg-glass-hover hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
-                style={{ animationDelay: `${i * 0.1}s` }}
+                className="group flex flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan/50 hover:bg-glass-hover hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
               >
                 <div className="flex items-start justify-between">
                   <span className="text-[13px] text-text-muted">{a.num}</span>
