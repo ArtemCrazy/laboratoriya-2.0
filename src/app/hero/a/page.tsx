@@ -3,6 +3,7 @@ import DotField from '@/components/DotField';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
 import AudienceTable from '@/components/AudienceTable';
 import LiquidButton from '@/components/LiquidButton';
+import DateWidget from '@/components/DateWidget';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
@@ -32,16 +33,6 @@ export default function ConceptA() {
         <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-16">
           {/* --- Текстовая колонка --- */}
           <div className="animate-rise">
-            <div className="mb-6 inline-flex flex-wrap items-center gap-x-3 gap-y-1 rounded-full border border-glass-border bg-glass px-4 py-2 text-sm backdrop-blur-sm">
-              <span className="font-semibold text-accent">{hero.days}</span>
-              <span className="text-cyan-dim">|</span>
-              <span>📅 {hero.dates}</span>
-              <span className="text-cyan-dim">|</span>
-              <span className="text-text-muted">
-                📍 {hero.location}, {hero.locationNote}
-              </span>
-            </div>
-
             {/* Вторая строка держится в один ряд вместе с «2.0» — на узких
                 экранах перенос разрешаем, иначе строка не поместится */}
             <h1
@@ -69,6 +60,11 @@ export default function ConceptA() {
                 {hero.ctaSecondary}
               </LiquidButton>
             </div>
+
+            {/* На мобильном визуальной колонки нет — виджет встаёт в поток */}
+            <div className="mt-8 lg:hidden">
+              <DateWidget />
+            </div>
           </div>
 
           {/* --- Визуальная колонка: сцена лаборатории в круге + плашки ---
@@ -89,13 +85,12 @@ export default function ConceptA() {
               />
             </div>
 
-            {/* Плавающие стеклянные плашки с понятиями C&B */}
-            {terms.map((t, i) => {
+            {/* Плавающие плашки с понятиями C&B — только верхняя часть круга,
+                низ отдан виджету с датой */}
+            {terms.slice(0, 3).map((t, i) => {
               const positions = [
-                'left-[-4%] top-[18%]',
-                'right-[-6%] top-[30%]',
-                'left-[2%] bottom-[20%]',
-                'right-[0%] bottom-[12%]',
+                'left-[-4%] top-[16%]',
+                'right-[-6%] top-[28%]',
                 'left-1/2 top-[-2%] -translate-x-1/2',
               ];
               return (
@@ -109,6 +104,11 @@ export default function ConceptA() {
                 </div>
               );
             })}
+
+            {/* Виджет с датой и местом — парит у нижнего края круга */}
+            <div className="absolute bottom-[-2%] left-[-8%]" style={{ animationDelay: '1.2s' }}>
+              <DateWidget floating />
+            </div>
           </div>
         </div>
 
