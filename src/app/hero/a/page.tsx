@@ -71,7 +71,7 @@ export default function ConceptA() {
             {/* Вторая строка держится в один ряд вместе с «2.0» — на узких
                 экранах перенос разрешаем, иначе строка не поместится */}
             <h1
-              className="text-[clamp(30px,4vw,56px)] font-extrabold leading-[1.08] tracking-tight"
+              className="text-[clamp(32px,4.1vw,58px)] font-extrabold leading-[1.08] tracking-tight"
               style={{ fontFamily: 'var(--font-outfit)' }}
             >
               {hero.titleMain}
