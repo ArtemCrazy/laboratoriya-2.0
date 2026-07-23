@@ -14,7 +14,7 @@ export default function FlaskMark({ className = '' }: { className?: string }) {
       aria-hidden="true"
       width={75}
       height={320}
-      className={`-my-1.5 h-8 w-auto shrink-0 ${className}`}
+      className={`-my-0.5 h-5 w-auto shrink-0 ${className}`}
     />
   );
 }
