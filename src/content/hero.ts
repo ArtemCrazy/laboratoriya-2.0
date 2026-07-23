@@ -64,8 +64,6 @@ export const audience = [
   {
     num: '01',
     symbol: 'Cb',
-    // «Атомная масса» ячейки — грейд аудитории, как подпись под символом
-    mass: 'lead',
     group: 'Управление',
     accent: 'cyan',
     role: 'Руководителям C&B',
@@ -74,7 +72,6 @@ export const audience = [
   {
     num: '02',
     symbol: 'Sp',
-    mass: 'expert',
     group: 'Практика',
     accent: 'yellow',
     role: 'Специалистам C&B',
@@ -83,7 +80,6 @@ export const audience = [
   {
     num: '03',
     symbol: 'Hr',
-    mass: 'chief',
     group: 'Стратегия',
     accent: 'violet',
     role: 'Директорам по персоналу',
@@ -92,7 +88,6 @@ export const audience = [
   {
     num: '04',
     symbol: 'Wb',
-    mass: 'care',
     group: 'Благополучие',
     accent: 'green',
     role: 'Директорам по социальной политике',

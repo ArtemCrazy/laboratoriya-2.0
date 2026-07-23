@@ -57,15 +57,21 @@ export default function AudienceTable() {
                 className="relative h-full w-full object-contain object-bottom"
               />
             </div>
-            <figcaption className="mt-2">
-              <div
-                className="text-2xl font-extrabold leading-none text-white"
+            {/* Фраза-манифест под портретом. Намеренно без подписи автора:
+                рядом с Менделеевым любая атрибуция читалась бы как его слова */}
+            <figcaption className="relative mt-4 border-l-2 border-cyan/40 pl-5">
+              <span
+                aria-hidden="true"
+                className="absolute -left-1.5 -top-7 select-none text-[72px] leading-none text-cyan/15"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
-                Своя таблица
-              </div>
-              <p className="mt-2.5 text-base leading-snug text-text-muted">
-                Только вместо элементов — те, кто отвечает за вознаграждение и мотивацию
+                «
+              </span>
+              <p
+                className="relative text-[19px] font-semibold leading-snug text-white"
+                style={{ fontFamily: 'var(--font-outfit)' }}
+              >
+                Когда каждый элемент на своём месте, система работает
               </p>
             </figcaption>
           </figure>
@@ -79,7 +85,7 @@ export default function AudienceTable() {
               return (
                 <article
                   key={a.symbol}
-                  className="animate-rise group relative flex flex-col bg-bg-main p-6 transition-colors duration-300 hover:bg-glass-hover"
+                  className="animate-rise group relative flex flex-col bg-bg-main px-5 py-4 transition-colors duration-300 hover:bg-glass-hover"
                   style={{ animationDelay: `${i * 0.1}s` }}
                 >
                   {/* Полоса категории сверху — как цвет группы в таблице */}
@@ -88,32 +94,28 @@ export default function AudienceTable() {
                     style={{ background: color }}
                   />
 
-                  {/* Шапка ячейки: порядковый номер и «атомная масса» */}
-                  <div className="flex items-baseline justify-between font-mono text-[13px] text-text-muted">
-                    <span>{a.num}</span>
-                    <span className="tracking-wide">{a.mass}</span>
-                  </div>
+                  <div className="font-mono text-[12px] text-text-muted">{a.num}</div>
 
                   {/* Символ по центру — главный элемент ячейки */}
                   <div
-                    className="mt-5 text-center text-[clamp(52px,5vw,72px)] font-extrabold leading-none transition-colors"
+                    className="mt-1 text-center text-[clamp(38px,3.2vw,50px)] font-extrabold leading-none transition-colors"
                     style={{ fontFamily: 'var(--font-outfit)', color }}
                   >
                     {a.symbol}
                   </div>
 
                   <h3
-                    className="mt-4 text-center text-[17px] font-bold leading-tight"
+                    className="mt-2.5 text-center text-[16px] font-bold leading-tight"
                     style={{ fontFamily: 'var(--font-outfit)' }}
                   >
                     {a.role}
                   </h3>
-                  <div className="mt-1.5 text-center font-mono text-[12px] uppercase tracking-[0.18em] text-text-muted">
+                  <div className="mt-1 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
                     {a.group}
                   </div>
 
                   {/* 16px — нижняя граница по ТЗ 5.2 для основного текста */}
-                  <p className="mt-5 border-t border-glass-border pt-5 text-base leading-relaxed text-text-muted">
+                  <p className="mt-3.5 border-t border-glass-border pt-3.5 text-base leading-snug text-text-muted">
                     {a.task}
                   </p>
                 </article>
