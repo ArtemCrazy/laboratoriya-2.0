@@ -9,12 +9,18 @@ import { asset } from '@/lib/paths';
 
 export const metadata = { title: 'Концепция A — «Живая формула» | C&B-лаборатория 2.0' };
 
-const formulas = [
-  'Мотивация = (Признание × Справедливость) + Смысл',
-  'ROI льгот = Δ вовлечённость ÷ затраты',
-  'Удержание = Ясность грейдов × Доверие',
-  'Total Rewards = Оклад + Бонус + Льготы + Развитие',
-  'eNPS ↑ когда прозрачность ↑',
+/**
+ * Лента внизу первого экрана. Дата и площадка идут акцентными пилюлями,
+ * формулы между ними — приглушённым фоном, чтобы главное читалось сразу.
+ */
+const ticker = [
+  { kind: 'date' as const, text: hero.dates },
+  { kind: 'formula' as const, text: 'Мотивация = (Признание × Справедливость) + Смысл' },
+  { kind: 'place' as const, text: `${hero.location} · ${hero.locationNote}` },
+  { kind: 'formula' as const, text: 'ROI льгот = Δ вовлечённость ÷ затраты' },
+  { kind: 'days' as const, text: 'Два дня практики' },
+  { kind: 'formula' as const, text: 'Удержание = Ясность грейдов × Доверие' },
+  { kind: 'formula' as const, text: 'Total Rewards = Оклад + Бонус + Льготы + Развитие' },
 ];
 
 export default function ConceptA() {
@@ -30,7 +36,7 @@ export default function ConceptA() {
           <div className="absolute -right-20 bottom-0 h-[420px] w-[420px] rounded-full bg-accent/10 blur-[130px]" />
         </div>
 
-        <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-16">
+        <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-6">
           {/* --- Текстовая колонка --- */}
           <div className="animate-rise">
             {/* Вторая строка держится в один ряд вместе с «2.0» — на узких
@@ -110,15 +116,34 @@ export default function ConceptA() {
           </div>
         </div>
 
-        {/* Бегущая строка с формулами — приём первой конференции */}
-        <div className="relative border-y border-glass-border bg-bg-deep/50 py-3.5 backdrop-blur-sm">
-          <div className="animate-marquee flex w-max gap-10 whitespace-nowrap">
-            {[...formulas, ...formulas].map((f, i) => (
-              <span key={i} className="text-sm text-text-muted">
-                <span className="mr-3 text-cyan">◆</span>
-                {f}
-              </span>
-            ))}
+        {/* Бегущая строка — приём первой конференции. Теперь в ней едут
+            дата и площадка, формулы работают фоном между ними */}
+        <div className="relative border-y border-glass-border bg-bg-deep/50 py-3 backdrop-blur-sm">
+          <div className="animate-marquee flex w-max items-center gap-8 whitespace-nowrap">
+            {[...ticker, ...ticker].map((item, i) =>
+              item.kind === 'formula' ? (
+                <span key={i} className="flex items-center gap-3 text-sm text-text-muted">
+                  <span className="h-1 w-1 rounded-full bg-cyan/40" />
+                  {item.text}
+                </span>
+              ) : (
+                <span
+                  key={i}
+                  className="flex items-center gap-2 rounded-full border border-glass-border bg-glass px-4 py-1.5 text-sm font-medium"
+                >
+                  <span className={item.kind === 'place' ? 'text-cyan' : 'text-accent'}>
+                    {item.kind === 'date' ? (
+                      <IconCalendar />
+                    ) : item.kind === 'place' ? (
+                      <IconPin />
+                    ) : (
+                      <IconFlask />
+                    )}
+                  </span>
+                  {item.text}
+                </span>
+              )
+            )}
           </div>
         </div>
         </section>
@@ -135,5 +160,44 @@ export default function ConceptA() {
 
       <ConceptSwitcher current="a" />
     </>
+  );
+}
+
+/* --- Иконки бегущей строки --- */
+
+function IconCalendar() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconPin() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M8 14.5s5-4.6 5-8a5 5 0 0 0-10 0c0 3.4 5 8 5 8Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="6.4" r="1.7" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
+function IconFlask() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M6.5 1.5v4.2L3 12.2A1.4 1.4 0 0 0 4.2 14.5h7.6A1.4 1.4 0 0 0 13 12.2L9.5 5.7V1.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="M5.5 1.5h5M4.6 9.8h6.8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
   );
 }
