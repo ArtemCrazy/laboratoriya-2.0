@@ -20,7 +20,7 @@ import SpeakerCard from '@/components/SpeakerCard';
 
 /** Сцена: в этих координатах считаются и связи, и позиции атомов */
 const W = 1400;
-const H = 620;
+const H = 680;
 
 const pointOf = (x: number, y: number) => ({ x: (x / 100) * W, y: (y / 100) * H });
 
@@ -220,20 +220,8 @@ export default function SpeakersMolecule() {
                     height={400}
                     className="h-full w-full object-cover"
                   />
-                  {/* Имя и должность живут внутри атома: затемнение снизу
-                      только под текстом, само фото остаётся чистым */}
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%]"
-                    style={{
-                      background:
-                        'linear-gradient(to top, rgba(3,6,16,0.92) 38%, rgba(3,6,16,0) 100%)',
-                    }}
-                  />
-                  <span className="absolute inset-x-[14%] bottom-[13%] block text-center leading-tight">
-                    <span className="block text-[13px] font-bold text-white">{s.name}</span>
-                    <span className="mt-0.5 block text-[11px] text-text-muted">{s.role}</span>
-                  </span>
+                  {/* Фото остаётся чистым: имя и должность ушли в карточку,
+                      здесь картинка — главный элемент */}
                 </span>
 
                 {/* Обводка отдельным кольцом поверх фото: не режется вместе
@@ -248,14 +236,17 @@ export default function SpeakersMolecule() {
                   }}
                 />
 
-                {/* Компания — единственное, что осталось снаружи атома */}
+                {/* Снаружи только имя и компания — для узнавания с одного
+                    взгляда; должность и тема раскрываются в карточке */}
                 <span
-                  className={`absolute left-1/2 w-[172px] -translate-x-1/2 text-center text-[13px] ${
-                    s.label === 'above' ? 'bottom-full mb-2.5' : 'top-full mt-2.5'
+                  className={`absolute left-1/2 w-[168px] -translate-x-1/2 text-center leading-tight ${
+                    s.label === 'above' ? 'bottom-full mb-3' : 'top-full mt-3'
                   }`}
-                  style={{ color }}
                 >
-                  {s.company}
+                  <span className="block text-[15px] font-bold text-white">{s.name}</span>
+                  <span className="mt-0.5 block text-[13px]" style={{ color }}>
+                    {s.company}
+                  </span>
                 </span>
               </button>
             );
