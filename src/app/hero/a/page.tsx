@@ -3,25 +3,24 @@ import DotField from '@/components/DotField';
 import ConceptSwitcher from '@/components/ConceptSwitcher';
 import AudienceTable from '@/components/AudienceTable';
 import LiquidButton from '@/components/LiquidButton';
-import DateWidget from '@/components/DateWidget';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
 export const metadata = { title: 'Концепция A — «Живая формула» | C&B-лаборатория 2.0' };
 
 /**
- * Лента внизу первого экрана. Дата и площадка идут акцентными пилюлями,
- * формулы между ними — приглушённым фоном, чтобы главное читалось сразу.
+ * Лента внизу первого экрана: только суть события — сколько дней,
+ * когда и где. Формулы убраны, чтобы не размывать сообщение.
  */
 const ticker = [
-  { kind: 'date' as const, text: hero.dates },
-  { kind: 'formula' as const, text: 'Мотивация = (Признание × Справедливость) + Смысл' },
-  { kind: 'place' as const, text: `${hero.location} · ${hero.locationNote}` },
-  { kind: 'formula' as const, text: 'ROI льгот = Δ вовлечённость ÷ затраты' },
   { kind: 'days' as const, text: 'Два дня практики' },
-  { kind: 'formula' as const, text: 'Удержание = Ясность грейдов × Доверие' },
-  { kind: 'formula' as const, text: 'Total Rewards = Оклад + Бонус + Льготы + Развитие' },
+  { kind: 'date' as const, text: hero.dates },
+  { kind: 'place' as const, text: `${hero.location}, ${hero.address}` },
 ];
+
+// Половина ленты должна быть шире экрана, иначе при сдвиге на -50%
+// в строке появятся пустоты — поэтому набор повторяется трижды
+const tickerHalf = [...ticker, ...ticker, ...ticker];
 
 export default function ConceptA() {
   return (
@@ -67,10 +66,6 @@ export default function ConceptA() {
               </LiquidButton>
             </div>
 
-            {/* На мобильном визуальной колонки нет — виджет встаёт в поток */}
-            <div className="mt-8 lg:hidden">
-              <DateWidget />
-            </div>
           </div>
 
           {/* --- Визуальная колонка: сцена лаборатории в круге + плашки ---
@@ -119,18 +114,10 @@ export default function ConceptA() {
         {/* Бегущая строка — приём первой конференции. Теперь в ней едут
             дата и площадка, формулы работают фоном между ними */}
         <div className="relative border-y border-glass-border bg-bg-deep/50 py-3 backdrop-blur-sm">
-          <div className="animate-marquee flex w-max items-center gap-8 whitespace-nowrap">
-            {[...ticker, ...ticker].map((item, i) =>
-              item.kind === 'formula' ? (
-                <span key={i} className="flex items-center gap-3 text-sm text-text-muted">
-                  <span className="h-1 w-1 rounded-full bg-cyan/40" />
-                  {item.text}
-                </span>
-              ) : (
-                <span
-                  key={i}
-                  className="flex items-center gap-2 rounded-full border border-glass-border bg-glass px-4 py-1.5 text-sm font-medium"
-                >
+          <div className="animate-marquee flex w-max items-center whitespace-nowrap">
+            {[...tickerHalf, ...tickerHalf].map((item, i) => (
+              <span key={i} className="flex items-center">
+                <span className="flex items-center gap-2 rounded-full border border-glass-border bg-glass px-4 py-1.5 text-sm font-medium">
                   <span className={item.kind === 'place' ? 'text-cyan' : 'text-accent'}>
                     {item.kind === 'date' ? (
                       <IconCalendar />
@@ -142,8 +129,10 @@ export default function ConceptA() {
                   </span>
                   {item.text}
                 </span>
-              )
-            )}
+                {/* Разделитель между пилюлями */}
+                <span className="mx-6 h-1 w-1 rounded-full bg-cyan/40" />
+              </span>
+            ))}
           </div>
         </div>
         </section>
@@ -151,12 +140,6 @@ export default function ConceptA() {
         {/* ТЗ 4.3 — «Для кого конференция» */}
         <AudienceTable />
       </main>
-
-      {/* Виджет с датой и местом закреплён справа и едет вместе со страницей.
-          На мобильном его нет — там он стоит в потоке под кнопками. */}
-      <div className="fixed bottom-8 right-6 z-40 hidden lg:block">
-        <DateWidget floating />
-      </div>
 
       <ConceptSwitcher current="a" />
     </>
