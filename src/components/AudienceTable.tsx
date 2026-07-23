@@ -1,4 +1,12 @@
 import { audience, audienceTitle } from '@/content/hero';
+
+/** Цвета групп — как категории элементов в периодической таблице */
+const accentColors: Record<string, string> = {
+  cyan: '#00E5FF',
+  yellow: '#FFD54F',
+  violet: '#A78BFA',
+  green: '#34D399',
+};
 import FlaskMark from '@/components/FlaskMark';
 import { asset } from '@/lib/paths';
 
@@ -62,38 +70,55 @@ export default function AudienceTable() {
             </figcaption>
           </figure>
 
-          {/* --- Таблица аудиторий --- */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {audience.map((a, i) => (
-              <article
-                key={a.symbol}
-                className="animate-rise group flex flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan/50 hover:bg-glass-hover hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <div className="flex items-start justify-between">
-                  <span className="text-[13px] text-text-muted">{a.num}</span>
-                  <span className="h-2 w-2 rounded-full bg-cyan/30 transition-colors group-hover:bg-cyan" />
-                </div>
-
-                <div
-                  className="mt-2 text-[clamp(36px,3vw,46px)] font-extrabold leading-none text-white transition-colors group-hover:text-cyan"
-                  style={{ fontFamily: 'var(--font-outfit)' }}
+          {/* --- Таблица аудиторий ---
+              Ячейки разделены линиями в один пиксель и сидят в общей рамке,
+              как вырезка из настоящей периодической таблицы */}
+          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-glass-border bg-glass-border sm:grid-cols-2">
+            {audience.map((a, i) => {
+              const color = accentColors[a.accent];
+              return (
+                <article
+                  key={a.symbol}
+                  className="animate-rise group relative flex flex-col bg-bg-main p-6 transition-colors duration-300 hover:bg-glass-hover"
+                  style={{ animationDelay: `${i * 0.1}s` }}
                 >
-                  {a.symbol}
-                </div>
+                  {/* Полоса категории сверху — как цвет группы в таблице */}
+                  <span
+                    className="absolute inset-x-0 top-0 h-[3px] opacity-70 transition-opacity group-hover:opacity-100"
+                    style={{ background: color }}
+                  />
 
-                <div className="mt-4 border-t border-glass-border pt-4">
+                  {/* Шапка ячейки: порядковый номер и «атомная масса» */}
+                  <div className="flex items-baseline justify-between font-mono text-[13px] text-text-muted">
+                    <span>{a.num}</span>
+                    <span className="tracking-wide">{a.mass}</span>
+                  </div>
+
+                  {/* Символ по центру — главный элемент ячейки */}
+                  <div
+                    className="mt-5 text-center text-[clamp(52px,5vw,72px)] font-extrabold leading-none transition-colors"
+                    style={{ fontFamily: 'var(--font-outfit)', color }}
+                  >
+                    {a.symbol}
+                  </div>
+
                   <h3
-                    className="text-[18px] font-bold leading-tight"
+                    className="mt-4 text-center text-[17px] font-bold leading-tight"
                     style={{ fontFamily: 'var(--font-outfit)' }}
                   >
                     {a.role}
                   </h3>
+                  <div className="mt-1.5 text-center font-mono text-[12px] uppercase tracking-[0.18em] text-text-muted">
+                    {a.group}
+                  </div>
+
                   {/* 16px — нижняя граница по ТЗ 5.2 для основного текста */}
-                  <p className="mt-2.5 text-base leading-relaxed text-text-muted">{a.task}</p>
-                </div>
-              </article>
-            ))}
+                  <p className="mt-5 border-t border-glass-border pt-5 text-base leading-relaxed text-text-muted">
+                    {a.task}
+                  </p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </div>
