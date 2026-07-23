@@ -68,7 +68,7 @@ export default function SpeakerCard({
 
         <div className="relative flex items-center justify-between px-8 pt-7">
           <span className="font-mono text-[12px] uppercase tracking-[0.24em] text-text-muted">
-            Элемент / {s.num}
+            Спикер / {s.num}
           </span>
           <button
             type="button"
