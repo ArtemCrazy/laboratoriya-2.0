@@ -66,9 +66,11 @@ export default function Home() {
           <div className="absolute -right-20 bottom-0 h-[420px] w-[420px] rounded-full bg-accent/10 blur-[130px]" />
         </div>
 
-        <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-6">
+        {/* Правки 24.07: блок названия выше и в одну линию с картинкой,
+            слева небольшой воздух, чтобы не прижимался к краю */}
+        <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-start gap-8 px-5 pb-28 pt-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-6 lg:pt-14">
           {/* --- Текстовая колонка --- */}
-          <div className="animate-rise">
+          <div className="animate-rise lg:pl-4">
             {/* Вторая строка держится в один ряд вместе с «2.0» — на узких
                 экранах перенос разрешаем, иначе строка не поместится */}
             <h1
@@ -78,13 +80,27 @@ export default function Home() {
               {hero.titleMain}
               <br />
               <span className="xl:whitespace-nowrap">
-                <span className="text-gradient">{hero.titleAccent}</span>
-                {/* Версия верхним индексом — как заряд в химической формуле */}
-                <sup className="ml-1.5 align-super text-[0.42em] font-extrabold text-accent">
-                  {hero.version}
-                </sup>
+                <span className="text-gradient">{hero.titleAccent}</span>{' '}
+                <span className="text-accent">{hero.version}</span>
               </span>
             </h1>
+
+            {/* Дата и место с иконками — сразу под названием */}
+            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[15px] text-text-muted">
+              <span className="flex items-center gap-2">
+                <span className="text-cyan">
+                  <IconCalendar />
+                </span>
+                {hero.dates}
+              </span>
+              <span className="text-cyan-dim">|</span>
+              <span className="flex items-center gap-2">
+                <span className="text-accent">
+                  <IconPin />
+                </span>
+                {hero.location}, {hero.locationNote}, зал «Архангельск»
+              </span>
+            </div>
 
             <p className="mt-6 max-w-[560px] text-[17px] leading-relaxed text-text-muted">
               {hero.subtitle}
