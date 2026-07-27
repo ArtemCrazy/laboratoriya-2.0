@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import DotField from '@/components/DotField';
-import AudienceTable from '@/components/AudienceTable';
+import AboutSection from '@/components/AboutSection';
 import SpeakersMolecule from '@/components/SpeakersMolecule';
 import LiquidButton from '@/components/LiquidButton';
 import { hero, terms } from '@/content/hero';
@@ -230,8 +230,8 @@ export default function Home() {
         </div>
         </section>
 
-        {/* ТЗ 4.3 — «Для кого конференция» */}
-        <AudienceTable />
+        {/* Правки 24.07 — «О конференции» + цифры + для кого конференция */}
+        <AboutSection />
 
         {/* ТЗ 4.4 — «Спикеры» */}
         <SpeakersMolecule />
