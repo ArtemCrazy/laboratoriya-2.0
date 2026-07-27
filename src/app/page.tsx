@@ -1,7 +1,8 @@
 import Header from '@/components/Header';
 import DotField from '@/components/DotField';
 import AboutSection from '@/components/AboutSection';
-import SpeakersMolecule from '@/components/SpeakersMolecule';
+import KeyThemes from '@/components/KeyThemes';
+import SpeakersCarousel from '@/components/SpeakersCarousel';
 import LiquidButton from '@/components/LiquidButton';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
@@ -233,8 +234,11 @@ export default function Home() {
         {/* Правки 24.07 — «О конференции» + цифры + для кого конференция */}
         <AboutSection />
 
-        {/* ТЗ 4.4 — «Спикеры» */}
-        <SpeakersMolecule />
+        {/* Правки 24.07 — «Ключевые темы» (молекула переехала сюда) */}
+        <KeyThemes />
+
+        {/* Правки 24.07 — «Спикеры» каруселью (было: молекула) */}
+        <SpeakersCarousel />
       </main>
 
     </>
