@@ -11,21 +11,31 @@ export const metadata = {
 };
 
 /**
- * Лента внизу первого экрана: только суть события — сколько дней,
- * когда и где. Формулы убраны, чтобы не размывать сообщение.
+ * Правки 24.07: бегущая строка — динамический тематический элемент.
+ * Дата, адрес и цифры убраны, вместо них слова из тематики мероприятия.
  */
 const ticker = [
-  { kind: 'days' as const, text: 'Два дня практики' },
-  { kind: 'date' as const, text: hero.dates },
-  { kind: 'place' as const, text: `${hero.location}, ${hero.address}` },
-  { kind: 'expo' as const, text: 'Конференция + Выставка' },
-  // ⚠️ ПЛЕЙСХОЛДЕРЫ: состав спикеров и программа ещё не переданы заказчиком
-  { kind: 'speakers' as const, text: '10 спикеров' },
-  { kind: 'cases' as const, text: 'Разбор реальных кейсов' },
+  'Вознаграждение',
+  'Мотивация',
+  'Благополучие',
+  'Льготы',
+  'eNPS',
+  'Премирование',
+  'Поощрение',
+  'Total Rewards',
+  'ФОТ',
+  'KPI',
+  'Удержание',
+  'Вовлечённость',
+  'Аналитика',
+  'Автоматизация',
+  'Персонализация',
+  'Эффективность',
+  'HR Tech',
 ];
 
 // Половина ленты должна быть шире экрана, иначе при сдвиге на -50%
-// в строке появятся пустоты
+// в строке появятся пустоты — набор повторяется дважды в каждой половине
 const tickerHalf = [...ticker, ...ticker];
 
 /**
@@ -66,11 +76,9 @@ export default function Home() {
           <div className="absolute -right-20 bottom-0 h-[420px] w-[420px] rounded-full bg-accent/10 blur-[130px]" />
         </div>
 
-        {/* Правки 24.07: блок названия выше и в одну линию с картинкой,
-            слева небольшой воздух, чтобы не прижимался к краю */}
-        <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-start gap-8 px-5 pb-28 pt-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-6 lg:pt-14">
+        <div className="relative mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 items-center gap-8 px-5 pb-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:px-10 lg:pb-6">
           {/* --- Текстовая колонка --- */}
-          <div className="animate-rise lg:pl-4">
+          <div className="animate-rise">
             {/* Вторая строка держится в один ряд вместе с «2.0» — на узких
                 экранах перенос разрешаем, иначе строка не поместится */}
             <h1
@@ -211,22 +219,11 @@ export default function Home() {
             Размытие с полосы снято по той же причине */}
         <div className="relative overflow-hidden border-y border-glass-border bg-bg-deep/70 py-3">
           <div className="animate-marquee flex w-max items-center whitespace-nowrap">
-            {[...tickerHalf, ...tickerHalf].map((item, i) => (
+            {[...tickerHalf, ...tickerHalf].map((word, i) => (
               <span key={i} className="flex items-center">
-                <span className="flex items-center gap-2 rounded-full border border-glass-border bg-glass px-4 py-1.5 text-sm font-medium">
-                  <span
-                    className={
-                      item.kind === 'place' || item.kind === 'cases'
-                        ? 'text-cyan'
-                        : 'text-accent'
-                    }
-                  >
-                    {tickerIcons[item.kind]}
-                  </span>
-                  {item.text}
-                </span>
-                {/* Разделитель между пилюлями */}
-                <span className="mx-6 h-1 w-1 rounded-full bg-cyan/40" />
+                <span className="text-sm font-medium text-text-muted">{word}</span>
+                {/* Разделитель-точка в акцентном цвете */}
+                <span className="mx-5 h-1 w-1 rounded-full bg-cyan/50" />
               </span>
             ))}
           </div>
@@ -244,65 +241,8 @@ export default function Home() {
   );
 }
 
-/* --- Иконки бегущей строки --- */
 
-const tickerIcons = {
-  days: <IconFlask />,
-  date: <IconCalendar />,
-  place: <IconPin />,
-  expo: <IconExpo />,
-  speakers: <IconSpeakers />,
-  cases: <IconCases />,
-};
 
-function IconExpo() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M2 5.5h12M2.8 5.5v7.6M13.2 5.5v7.6M2 13.1h12"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-      <path d="M1.4 5.5 3 2.6h10l1.6 2.9" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M6.2 13.1V9.4h3.6v3.7" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function IconSpeakers() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="6" cy="5.5" r="2.6" stroke="currentColor" strokeWidth="1.4" />
-      <path
-        d="M1.8 14c0-2.4 1.9-4.1 4.2-4.1s4.2 1.7 4.2 4.1"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-      <path
-        d="M11 3.4a2.5 2.5 0 0 1 0 4.6M12.4 10.4c1.2.6 1.9 1.8 1.9 3.3"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconCases() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <rect x="1.8" y="4.5" width="12.4" height="9.2" rx="1.8" stroke="currentColor" strokeWidth="1.4" />
-      <path
-        d="M5.8 4.5V3.4c0-.6.5-1.1 1.1-1.1h2.2c.6 0 1.1.5 1.1 1.1v1.1M1.8 8.4h12.4"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 function IconCalendar() {
   return (
@@ -327,16 +267,3 @@ function IconPin() {
   );
 }
 
-function IconFlask() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M6.5 1.5v4.2L3 12.2A1.4 1.4 0 0 0 4.2 14.5h7.6A1.4 1.4 0 0 0 13 12.2L9.5 5.7V1.5"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-      <path d="M5.5 1.5h5M4.6 9.8h6.8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    </svg>
-  );
-}
