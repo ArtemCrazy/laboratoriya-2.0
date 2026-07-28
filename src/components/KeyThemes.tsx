@@ -1,4 +1,4 @@
-import { keyThemes, keyThemesQuote } from '@/content/hero';
+import { keyThemes } from '@/content/hero';
 
 /** Цвета тем — акценты элементов молекулярной схемы */
 const accentColors: Record<string, string> = {
@@ -39,35 +39,12 @@ export default function KeyThemes() {
       </div>
 
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <h2
-            className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.15] tracking-tight"
-            style={{ fontFamily: 'var(--font-outfit)' }}
-          >
-            Ключевые темы конференции
-          </h2>
-
-          {/* Плашка-манифест, переехала из блока «Для кого» */}
-          <div className="relative max-w-[420px] overflow-hidden rounded-2xl border border-glass-border bg-glass px-6 py-4">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-2 -top-8 select-none text-[110px] leading-none text-cyan/[0.08]"
-              style={{ fontFamily: 'var(--font-outfit)' }}
-            >
-              «
-            </span>
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-0 left-0 w-[3px] bg-gradient-to-b from-cyan/70 via-cyan/25 to-transparent"
-            />
-            <p
-              className="relative text-[17px] font-bold leading-snug"
-              style={{ fontFamily: 'var(--font-outfit)' }}
-            >
-              {keyThemesQuote}
-            </p>
-          </div>
-        </div>
+        <h2
+          className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.15] tracking-tight"
+          style={{ fontFamily: 'var(--font-outfit)' }}
+        >
+          Ключевые темы конференции
+        </h2>
 
         {/* --- Молекулярная схема: десктоп --- */}
         <div
