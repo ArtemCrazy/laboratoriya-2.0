@@ -124,7 +124,7 @@ export default function KeyThemes() {
                     animationDelay: `${i * 0.6}s`,
                   }}
                 >
-                  <span className="font-mono text-[11px] text-text-muted">{t.num}</span>
+                  {/* Номер убран — символ по центру атома */}
                   <span
                     className="text-3xl font-extrabold leading-none"
                     style={{ fontFamily: 'var(--font-outfit)', color }}
