@@ -1,22 +1,25 @@
 import { participants } from '@/content/hero';
+import { asset } from '@/lib/paths';
 import FlaskMark from '@/components/FlaskMark';
 
 /**
- * Блок «Наши участники» (ТЗ 4.7). Авто-карусель логотипов, все серые,
- * цвет — при наведении. Формулировка строго «Участники конференции»:
+ * Блок «Наши участники» (ТЗ 4.7). Авто-карусель логотипов: нейтральный вид,
+ * подсветка при наведении. Формулировка строго «Участники конференции» —
  * ТЗ запрещает называть эти компании партнёрами или клиентами.
  *
- * ⚠️ ЛОГОТИПЫ НЕ ПЕРЕДАНЫ: пакет лежит на Яндекс.Диске заказчика. Пока
- * вместо картинок — названия компаний в единой типографике. Как придут
- * SVG, меняется только содержимое плитки, лента остаётся прежней.
+ * Логотипы белые с прозрачностью, поэтому «серость» задаётся прозрачностью,
+ * а не цветом файла: так все девять выглядят одинаково по плотности.
+ * Цветных версий заказчик не передавал, поэтому hover — подсветка до белого.
  */
 export default function Participants() {
-  // Лента едет бесконечно, поэтому набор дублируется: вторая половина
-  // подхватывает первую в момент сдвига на -50%
+  // Лента бесшовная: набор дублируется, сдвиг на -50% возвращает в начало
   const row = [...participants, ...participants];
 
   return (
-    <section id="participants" className="relative border-t border-glass-border bg-bg-main py-20 lg:py-24">
+    <section
+      id="participants"
+      className="relative border-t border-glass-border bg-bg-main py-20 lg:py-24"
+    >
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
         <div className="mb-3 flex items-center gap-2.5 text-xs uppercase tracking-[0.22em] text-cyan">
           <FlaskMark />
@@ -31,21 +34,28 @@ export default function Participants() {
         </h2>
       </div>
 
-      {/* Лента во всю ширину, по краям — растворение в фон */}
-      <div className="relative mt-10 overflow-hidden">
-        <div className="animate-marquee flex w-max items-center gap-4">
-          {row.map((name, i) => (
+      <div className="relative mt-12 overflow-hidden">
+        <div className="animate-marquee flex w-max items-center gap-3">
+          {row.map((p, i) => (
             <span
               key={i}
-              className="flex h-20 min-w-[190px] items-center justify-center rounded-2xl border border-glass-border bg-glass px-7 text-[17px] font-semibold text-text-muted grayscale transition-all duration-300 hover:border-cyan/40 hover:text-white hover:grayscale-0"
-              style={{ fontFamily: 'var(--font-outfit)' }}
+              className="group flex h-24 w-[210px] shrink-0 items-center justify-center rounded-2xl border border-glass-border bg-glass px-7 transition-colors hover:border-cyan/40"
             >
-              {name}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={asset(p.logo)}
+                alt={p.name}
+                width={400}
+                height={130}
+                loading="lazy"
+                // Логотипы разной ширины, поэтому ограничиваем и высоту, и ширину
+                className="max-h-9 w-auto max-w-full opacity-55 transition-opacity duration-300 group-hover:opacity-100"
+              />
             </span>
           ))}
         </div>
 
-        {/* Маски по краям — чтобы лента уходила в фон, а не обрывалась */}
+        {/* Края растворяются в фон, чтобы лента не обрывалась */}
         <span
           aria-hidden="true"
           className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-bg-main to-transparent lg:w-28"
