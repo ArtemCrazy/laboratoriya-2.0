@@ -52,7 +52,7 @@ export default function SpeakersCarousel() {
               type="button"
               onClick={() => scrollByCards(-1)}
               aria-label="Назад"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-glass-border text-text-muted transition-colors hover:border-cyan/50 hover:text-white"
+              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-glass-border text-text-muted transition-colors hover:border-cyan/50 hover:text-white"
             >
               <Arrow dir="left" />
             </button>
@@ -60,7 +60,7 @@ export default function SpeakersCarousel() {
               type="button"
               onClick={() => scrollByCards(1)}
               aria-label="Вперёд"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-glass-border text-text-muted transition-colors hover:border-cyan/50 hover:text-white"
+              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-glass-border text-text-muted transition-colors hover:border-cyan/50 hover:text-white"
             >
               <Arrow dir="right" />
             </button>

@@ -111,7 +111,7 @@ export default function Header() {
               aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-lg border border-glass-border xl:hidden"
+              className="flex h-10 w-10 cursor-pointer flex-col items-center justify-center gap-[5px] rounded-lg border border-glass-border xl:hidden"
             >
               <span
                 className={`block h-[2px] w-5 bg-white transition-transform ${

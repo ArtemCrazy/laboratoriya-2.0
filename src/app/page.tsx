@@ -4,6 +4,16 @@ import AboutSection from '@/components/AboutSection';
 import KeyThemes from '@/components/KeyThemes';
 import SpeakersCarousel from '@/components/SpeakersCarousel';
 import Program from '@/components/Program';
+import Formats from '@/components/Formats';
+import Benefits from '@/components/Benefits';
+import Recap from '@/components/Recap';
+import Participants from '@/components/Participants';
+import Reviews from '@/components/Reviews';
+import Pricing from '@/components/Pricing';
+import Partners from '@/components/Partners';
+import Venue from '@/components/Venue';
+import FinalCta from '@/components/FinalCta';
+import Footer from '@/components/Footer';
 import LiquidButton from '@/components/LiquidButton';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
@@ -243,8 +253,20 @@ export default function Home() {
 
         {/* ТЗ 4.5 — «Программа на два дня» */}
         <Program />
+
+        {/* Дальше — порядок блоков по ТЗ §3 */}
+        <Formats />
+        <Benefits />
+        <Recap />
+        <Participants />
+        <Reviews />
+        <Pricing />
+        <Partners />
+        <Venue />
+        <FinalCta />
       </main>
 
+      <Footer />
     </>
   );
 }
