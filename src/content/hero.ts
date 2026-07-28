@@ -360,6 +360,45 @@ export const speakerBonds: [number, number][] = [
   [8, -1],
 ];
 
+/**
+ * Блок «Программа на два дня» (ТЗ 4.5).
+ * ⚠️ РАСПИСАНИЕ-ПЛЕЙСХОЛДЕР: реальная программа второй конференции ещё не
+ * передана. Сессии собраны из реальных спикеров и их тем с первой конференции.
+ * speaker — индекс в массиве speakers; сервисные строки идут с title.
+ */
+type Session = { time: string; format: string; title?: string; speaker?: number };
+type ProgramDay = { day: string; date: string; sessions: Session[] };
+
+export const program: ProgramDay[] = [
+  {
+    day: 'День 1',
+    date: '21 октября',
+    sessions: [
+      { time: '09:30', format: 'Регистрация', title: 'Сбор гостей, приветственный кофе' },
+      { time: '10:00', format: 'Доклад', speaker: 0 },
+      { time: '11:15', format: 'Дебаты', speaker: 1 },
+      { time: '12:30', format: 'Импровизация', speaker: 2 },
+      { time: '13:30', format: 'Перерыв', title: 'Обед' },
+      { time: '14:30', format: 'Доклад', speaker: 3 },
+      { time: '15:45', format: 'Мастер-класс', speaker: 4 },
+      { time: '19:00', format: 'Нетворкинг', title: 'Гала-ужин и вечерняя программа' },
+    ],
+  },
+  {
+    day: 'День 2',
+    date: '22 октября',
+    sessions: [
+      { time: '10:00', format: 'Дебаты', speaker: 5 },
+      { time: '11:15', format: 'Дебаты', speaker: 6 },
+      { time: '12:30', format: 'Доклад', speaker: 7 },
+      { time: '13:30', format: 'Перерыв', title: 'Обед' },
+      { time: '14:30', format: 'Консилиум', speaker: 8 },
+      { time: '15:45', format: 'Мастер-класс', speaker: 9 },
+      { time: '17:00', format: 'Итоги', title: 'Подведение итогов и закрытие' },
+    ],
+  },
+];
+
 /** «Элементы» C&B — концепция B, метафора периодической таблицы */
 export const elements = [
   { symbol: 'Mo', name: 'Мотивация', num: '01' },

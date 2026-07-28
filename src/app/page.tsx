@@ -3,6 +3,7 @@ import DotField from '@/components/DotField';
 import AboutSection from '@/components/AboutSection';
 import KeyThemes from '@/components/KeyThemes';
 import SpeakersCarousel from '@/components/SpeakersCarousel';
+import Program from '@/components/Program';
 import LiquidButton from '@/components/LiquidButton';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
@@ -239,6 +240,9 @@ export default function Home() {
 
         {/* Правки 24.07 — «Спикеры» каруселью (было: молекула) */}
         <SpeakersCarousel />
+
+        {/* ТЗ 4.5 — «Программа на два дня» */}
+        <Program />
       </main>
 
     </>
