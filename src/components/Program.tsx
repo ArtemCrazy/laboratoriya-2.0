@@ -53,7 +53,7 @@ export default function Program() {
                 type="button"
                 onClick={() => setDay(i)}
                 aria-pressed={active}
-                className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+                className={`cursor-pointer rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
                   active ? 'bg-accent text-text-dark' : 'text-text-muted hover:text-white'
                 }`}
               >
@@ -95,8 +95,10 @@ export default function Program() {
                         : 'border-glass-border bg-glass hover:border-cyan/40'
                     }`}
                   >
+                    {/* Прописные без нижних выносных прижимаются к верху плашки:
+                        паддинг сверху чуть больше — так текст оптически по центру */}
                     <span
-                      className="inline-block rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wider"
+                      className="inline-block rounded-full border px-3 pb-[3px] pt-[5px] text-[11px] font-semibold uppercase tracking-wider"
                       style={{ borderColor: `${color}55`, color }}
                     >
                       {s.format}
