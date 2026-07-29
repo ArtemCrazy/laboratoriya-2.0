@@ -105,16 +105,20 @@ export default function Home() {
               </span>
             </h1>
 
-            {/* Дата и место с иконками — сразу под названием */}
-            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[15px] text-text-muted">
-              <span className="flex items-center gap-2">
+            <p className="mt-6 max-w-[560px] text-[17px] leading-relaxed text-text-muted">
+              {hero.subtitle}
+            </p>
+
+            {/* Правки 29.07: дата и место крупнее и жирнее, прямо над кнопками */}
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[clamp(16px,1.35vw,20px)] font-semibold">
+              <span className="flex items-center gap-2.5">
                 <span className="text-cyan">
                   <IconCalendar />
                 </span>
                 {hero.dates}
               </span>
               <span className="text-cyan-dim">|</span>
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2.5">
                 <span className="text-accent">
                   <IconPin />
                 </span>
@@ -122,11 +126,7 @@ export default function Home() {
               </span>
             </div>
 
-            <p className="mt-6 max-w-[560px] text-[17px] leading-relaxed text-text-muted">
-              {hero.subtitle}
-            </p>
-
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <LiquidButton href="#price">{hero.ctaPrimary}</LiquidButton>
               <LiquidButton href="#program" variant="ghost">
                 {hero.ctaSecondary}
@@ -276,7 +276,7 @@ export default function Home() {
 
 function IconCalendar() {
   return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.4" />
       <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
@@ -285,7 +285,7 @@ function IconCalendar() {
 
 function IconPin() {
   return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path
         d="M8 14.5s5-4.6 5-8a5 5 0 0 0-10 0c0 3.4 5 8 5 8Z"
         stroke="currentColor"

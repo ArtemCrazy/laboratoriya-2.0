@@ -66,7 +66,7 @@ export default function Recap() {
           className="max-w-[820px] text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.15] tracking-tight"
           style={{ fontFamily: 'var(--font-outfit)' }}
         >
-          Первая C&B-лаборатория: 100 руководителей и четыре новых формата
+          Итоги первой C&B Лаборатории
         </h2>
 
         {/* Видео слева, коллаж справа. На мобильном видео идёт первым */}
@@ -138,7 +138,7 @@ export default function Recap() {
         </p>
 
         <div className="mt-10 flex flex-col gap-8 border-t border-glass-border pt-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-3 lg:gap-x-14">
+          <div className="grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-4 lg:gap-x-14">
             {recap.facts.map((f) => (
               <div key={f.label}>
                 <div

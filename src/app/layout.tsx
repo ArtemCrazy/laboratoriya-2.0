@@ -5,7 +5,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'C&B-лаборатория 2.0 — концепции первого экрана',
   description:
-    'Двухдневная практическая конференция для HR. 21–22 октября 2026, Москва.',
+    'Двухдневная практическая конференция для HR. 22–23 октября 2026, Москва.',
 };
 
 export default function RootLayout({

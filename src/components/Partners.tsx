@@ -35,38 +35,40 @@ export default function Partners() {
           </a>
         </div>
 
+        {/* Правки 29.07: статус без партнёров со страницы убирается —
+            достаточно поставить ему slots: 0 в контенте */}
         <div className="mt-12 flex flex-col gap-10">
-          {partnerCategories.map((c) => (
-            <div key={c.level}>
-              <div className="flex items-center gap-4">
-                <span className="text-xs uppercase tracking-[0.18em] text-text-muted">
-                  {c.level}
-                </span>
-                <span className="h-px flex-1 bg-glass-border" />
-              </div>
+          {partnerCategories
+            .filter((c) => c.slots > 0)
+            .map((c) => (
+              <div key={c.level}>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs uppercase tracking-[0.18em] text-text-muted">
+                    {c.level}
+                  </span>
+                  <span className="h-px flex-1 bg-glass-border" />
+                </div>
 
-              <div
-                className={`mt-5 grid gap-4 ${
-                  c.slots === 1
-                    ? 'sm:grid-cols-2 lg:grid-cols-3'
-                    : c.slots === 2
+                <div
+                  className={`mt-5 grid gap-4 ${
+                    c.slots <= 2
                       ? 'sm:grid-cols-2 lg:grid-cols-3'
                       : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
-                }`}
-              >
-                {Array.from({ length: c.slots }).map((_, i) => (
-                  <span
-                    key={i}
-                    className={`flex items-center justify-center rounded-2xl border border-dashed border-glass-border bg-glass/50 text-[13px] text-text-muted ${
-                      c.slots === 1 ? 'h-28' : 'h-20'
-                    }`}
-                  >
-                    Логотип
-                  </span>
-                ))}
+                  }`}
+                >
+                  {Array.from({ length: c.slots }).map((_, i) => (
+                    <span
+                      key={i}
+                      className={`flex items-center justify-center rounded-2xl border border-dashed border-glass-border bg-glass/50 text-[13px] text-text-muted ${
+                        c.slots === 1 ? 'h-28' : 'h-20'
+                      }`}
+                    >
+                      Логотип
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </section>

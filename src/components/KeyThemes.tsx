@@ -1,33 +1,38 @@
-import { keyThemes } from '@/content/hero';
+import { keyThemes, keyThemesQuote } from '@/content/hero';
 
-/** Цвета тем — акценты элементов молекулярной схемы */
-const accentColors: Record<string, string> = {
-  cyan: '#00E5FF',
-  yellow: '#FFD54F',
-  violet: '#A78BFA',
-  green: '#34D399',
-  pink: '#F472B6',
-};
+/**
+ * Блок «Ключевые темы конференции» (правки 24.07) — молекулярная схема,
+ * каждая тема отдельным элементом.
+ *
+ * Правки 29.07: тем шесть, буквы внутри атомов убраны, атомы одинаковые
+ * бледно-голубые. Раз акцентных цветов больше нет, связи и электроны тоже
+ * однотонные — схема читается как одна структура, а не набор разных узлов.
+ */
+
+/** Единый цвет схемы — бледно-голубой */
+const TINT = '#00E5FF';
 
 /** Сцена молекулы: по этим координатам считаются атомы и связи */
 const W = 1400;
 const H = 520;
 
-/** Пять атомов зигзагом, соединены цепочкой — молекулярная схема тем */
+/** Шесть атомов зигзагом, соединены цепочкой */
 const NODES = [
-  { x: 12, y: 38, label: 'above' as const },
-  { x: 31, y: 70, label: 'below' as const },
-  { x: 50, y: 38, label: 'above' as const },
-  { x: 69, y: 70, label: 'below' as const },
-  { x: 88, y: 38, label: 'above' as const },
+  { x: 9, y: 38, label: 'above' as const },
+  { x: 25.4, y: 70, label: 'below' as const },
+  { x: 41.8, y: 38, label: 'above' as const },
+  { x: 58.2, y: 70, label: 'below' as const },
+  { x: 74.6, y: 38, label: 'above' as const },
+  { x: 91, y: 70, label: 'below' as const },
 ];
 const BONDS: [number, number][] = [
   [0, 1],
   [1, 2],
   [2, 3],
   [3, 4],
+  [4, 5],
 ];
-const ATOM = 128;
+const ATOM = 104;
 
 const pt = (i: number) => ({ x: (NODES[i].x / 100) * W, y: (NODES[i].y / 100) * H });
 
@@ -46,6 +51,14 @@ export default function KeyThemes() {
           Ключевые темы конференции
         </h2>
 
+        {/* Правки 29.07: плашка с фразой вернулась под заголовок */}
+        <p
+          className="mt-6 inline-block rounded-full border border-cyan/35 bg-cyan/[0.07] px-6 py-3 text-[clamp(15px,1.4vw,19px)] font-medium text-cyan"
+          style={{ fontFamily: 'var(--font-outfit)' }}
+        >
+          {keyThemesQuote}
+        </p>
+
         {/* --- Молекулярная схема: десктоп --- */}
         <div
           className="relative mx-auto mt-14 hidden w-full lg:block"
@@ -56,33 +69,14 @@ export default function KeyThemes() {
             aria-hidden="true"
             className="absolute inset-0 h-full w-full overflow-visible"
           >
-            <defs>
-              {BONDS.map(([a, b], i) => {
-                const p1 = pt(a);
-                const p2 = pt(b);
-                return (
-                  <linearGradient
-                    key={i}
-                    id={`kt-bond-${i}`}
-                    x1={p1.x}
-                    y1={p1.y}
-                    x2={p2.x}
-                    y2={p2.y}
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop offset="0%" stopColor={accentColors[keyThemes[a].accent]} stopOpacity="0.55" />
-                    <stop offset="100%" stopColor={accentColors[keyThemes[b].accent]} stopOpacity="0.55" />
-                  </linearGradient>
-                );
-              })}
-            </defs>
             {BONDS.map(([a, b], i) => {
               const p1 = pt(a);
               const p2 = pt(b);
               return (
                 <g key={i}>
+                  {/* Тёмная подложка отделяет связь от фонового свечения */}
                   <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="rgba(6,11,25,0.85)" strokeWidth="16" strokeLinecap="round" />
-                  <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={`url(#kt-bond-${i})`} strokeWidth="12" strokeLinecap="round" opacity="0.5" />
+                  <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={TINT} strokeWidth="12" strokeLinecap="round" opacity="0.28" />
                   <line
                     x1={p1.x}
                     y1={p1.y}
@@ -91,10 +85,11 @@ export default function KeyThemes() {
                     stroke="rgba(255,255,255,0.5)"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    opacity="0.35"
+                    opacity="0.3"
                     style={{ transform: 'translateY(-3px)' }}
                   />
-                  <circle r="3" fill={accentColors[keyThemes[b].accent]} opacity="0.9">
+                  {/* Импульс по связи — схема остаётся живой */}
+                  <circle r="3" fill={TINT} opacity="0.85">
                     <animateMotion
                       dur={`${3.4 + i * 0.7}s`}
                       repeatCount="indefinite"
@@ -107,39 +102,33 @@ export default function KeyThemes() {
             })}
           </svg>
 
-          {keyThemes.map((t, i) => {
+          {keyThemes.map((title, i) => {
             const node = NODES[i];
-            const color = accentColors[t.accent];
             return (
               <div
-                key={t.symbol}
+                key={title}
                 className="absolute -translate-x-1/2 -translate-y-1/2"
                 style={{ left: `${node.x}%`, top: `${node.y}%`, width: ATOM, height: ATOM, zIndex: 10 }}
               >
+                {/* Атом пустой: буквы убраны, остаётся бледно-голубая заливка */}
                 <div
-                  className="animate-float flex h-full w-full flex-col items-center justify-center rounded-full border bg-bg-deep/90"
+                  className="animate-float h-full w-full rounded-full border"
                   style={{
-                    borderColor: `${color}80`,
-                    boxShadow: `0 0 26px ${color}33, inset 0 3px 16px rgba(255,255,255,0.10)`,
+                    background:
+                      'radial-gradient(circle at 34% 30%, rgba(255,255,255,0.16), rgba(0,229,255,0.16) 60%, rgba(0,229,255,0.09))',
+                    borderColor: 'rgba(0,229,255,0.45)',
+                    boxShadow: '0 0 26px rgba(0,229,255,0.16), inset 0 3px 16px rgba(255,255,255,0.10)',
                     animationDelay: `${i * 0.6}s`,
                   }}
-                >
-                  {/* Номер убран — символ по центру атома */}
-                  <span
-                    className="text-3xl font-extrabold leading-none"
-                    style={{ fontFamily: 'var(--font-outfit)', color }}
-                  >
-                    {t.symbol}
-                  </span>
-                </div>
+                />
 
                 {/* Название темы — подписью у атома, со стороны без связи */}
                 <span
-                  className={`absolute left-1/2 w-[230px] -translate-x-1/2 text-center text-[15px] font-medium leading-snug ${
+                  className={`absolute left-1/2 w-[215px] -translate-x-1/2 text-center text-[15px] font-medium leading-snug ${
                     node.label === 'above' ? 'bottom-full mb-4' : 'top-full mt-4'
                   }`}
                 >
-                  {t.title}
+                  {title}
                 </span>
               </div>
             );
@@ -148,28 +137,23 @@ export default function KeyThemes() {
 
         {/* --- Мобильная версия: список элементов --- */}
         <div className="mt-10 flex flex-col gap-3 lg:hidden">
-          {keyThemes.map((t) => {
-            const color = accentColors[t.accent];
-            return (
-              <article
-                key={t.symbol}
-                className="flex items-center gap-4 rounded-2xl border border-glass-border bg-glass p-4"
-              >
-                <span
-                  className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-full border bg-bg-deep"
-                  style={{ borderColor: `${color}80`, boxShadow: `0 0 16px ${color}2e` }}
-                >
-                  <span
-                    className="text-lg font-extrabold leading-none"
-                    style={{ fontFamily: 'var(--font-outfit)', color }}
-                  >
-                    {t.symbol}
-                  </span>
-                </span>
-                <span className="text-base font-medium leading-snug">{t.title}</span>
-              </article>
-            );
-          })}
+          {keyThemes.map((title) => (
+            <article
+              key={title}
+              className="flex items-center gap-4 rounded-2xl border border-glass-border bg-glass p-4"
+            >
+              <span
+                className="h-11 w-11 shrink-0 rounded-full border"
+                style={{
+                  background:
+                    'radial-gradient(circle at 34% 30%, rgba(255,255,255,0.16), rgba(0,229,255,0.16) 60%, rgba(0,229,255,0.09))',
+                  borderColor: 'rgba(0,229,255,0.45)',
+                  boxShadow: '0 0 16px rgba(0,229,255,0.18)',
+                }}
+              />
+              <span className="text-base font-medium leading-snug">{title}</span>
+            </article>
+          ))}
         </div>
       </div>
     </section>

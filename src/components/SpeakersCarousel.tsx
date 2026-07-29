@@ -43,7 +43,7 @@ export default function SpeakersCarousel() {
             className="max-w-[820px] text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.15] tracking-tight"
             style={{ fontFamily: 'var(--font-outfit)' }}
           >
-            Практики, которые строят системы вознаграждения в крупных компаниях
+            Эксперты, которые выстраивают системы мотивации в компаниях
           </h2>
 
           {/* Стрелки навигации — десктоп */}

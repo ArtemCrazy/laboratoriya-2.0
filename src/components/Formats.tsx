@@ -29,7 +29,7 @@ export default function Formats() {
           className="max-w-[820px] text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.15] tracking-tight"
           style={{ fontFamily: 'var(--font-outfit)' }}
         >
-          Шесть форматов, в которых работают участники
+          Разные форматы — от выступлений до совместной практической работы
         </h2>
 
         <p className="mt-5 max-w-[640px] text-[17px] leading-relaxed text-text-muted">

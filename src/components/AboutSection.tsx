@@ -41,19 +41,23 @@ export default function AboutSection() {
             ))}
           </div>
 
+          {/* Правки 29.07: рамка заметная и жёлтая, на наведении плашка
+              подсвечивается — цифра и фон уходят в акцентный цвет */}
           <div className="grid grid-cols-2 gap-4">
             {about.stats.map((s) => (
               <div
                 key={s.label}
-                className="rounded-2xl border border-glass-border bg-glass p-6 transition-colors hover:border-cyan/40 hover:bg-glass-hover"
+                className="group rounded-2xl border-2 border-accent/55 bg-glass p-6 transition-colors duration-300 hover:border-accent hover:bg-accent/10"
               >
                 <div
-                  className="text-[clamp(30px,3.4vw,44px)] font-extrabold leading-none text-cyan"
+                  className="text-[clamp(30px,3.4vw,44px)] font-extrabold leading-none text-cyan transition-colors duration-300 group-hover:text-accent"
                   style={{ fontFamily: 'var(--font-outfit)' }}
                 >
                   {s.value}
                 </div>
-                <div className="mt-2 text-sm text-text-muted">{s.label}</div>
+                <div className="mt-2 text-sm text-text-muted transition-colors duration-300 group-hover:text-white">
+                  {s.label}
+                </div>
               </div>
             ))}
           </div>
@@ -69,10 +73,12 @@ export default function AboutSection() {
           </h3>
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Правки 29.07: рамки ярче. Держим их голубыми — жёлтый занят
+                цифрами выше, а разноцветные рамки заказчик просил убрать */}
             {audience.map((a) => (
               <article
                 key={a.role}
-                className="rounded-2xl border border-glass-border bg-glass p-5 transition-colors hover:border-cyan/40 hover:bg-glass-hover"
+                className="rounded-2xl border-2 border-cyan/45 bg-glass p-5 transition-colors duration-300 hover:border-cyan hover:bg-cyan/[0.07]"
               >
                 <h4
                   className="text-[16px] font-bold leading-tight"
