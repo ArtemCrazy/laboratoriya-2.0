@@ -40,9 +40,16 @@ const R = (W * ATOM_PCT) / 100 / 2;
 
 const pt = (i: number) => ({ x: (NODES[i].x / 100) * W, y: (NODES[i].y / 100) * H });
 
+/** Самая толстая линия связи — её половина «вылезает» за счёт круглого конца */
+const BOND_WIDTH = 16;
+
 /**
  * Связь между атомами обрезаем по их краям: линия от центра к центру
  * просвечивала бы сквозь полупрозрачный круг и торчала внутри него.
+ *
+ * К радиусу добавляем половину толщины линии: strokeLinecap="round"
+ * дорисовывает на конце полукруг, и без этого запаса связь всё равно
+ * подлезала под атом.
  */
 function bondPath(a: number, b: number) {
   const p1 = pt(a);
@@ -50,7 +57,7 @@ function bondPath(a: number, b: number) {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
   const len = Math.hypot(dx, dy);
-  const gap = R + 5;
+  const gap = R + BOND_WIDTH / 2 + 4;
   const ux = (dx / len) * gap;
   const uy = (dy / len) * gap;
   return { x1: p1.x + ux, y1: p1.y + uy, x2: p2.x - ux, y2: p2.y - uy };
@@ -135,8 +142,8 @@ export default function KeyThemes() {
                   zIndex: 10,
                 }}
               >
-                {/* Атом пустой: буквы убраны, остаётся бледно-голубая заливка.
-                    Плотность держим выше, иначе круг теряется на фоне */}
+                {/* Атом пустой: по правке 29.07 внутри ничего нет —
+                    ни букв, ни ядра, только бледно-голубая заливка */}
                 <div
                   className="animate-float h-full w-full rounded-full border"
                   style={{
@@ -172,9 +179,9 @@ export default function KeyThemes() {
                 className="h-11 w-11 shrink-0 rounded-full border"
                 style={{
                   background:
-                    'radial-gradient(circle at 34% 30%, rgba(255,255,255,0.16), rgba(0,229,255,0.16) 60%, rgba(0,229,255,0.09))',
-                  borderColor: 'rgba(0,229,255,0.45)',
-                  boxShadow: '0 0 16px rgba(0,229,255,0.18)',
+                    'radial-gradient(circle at 34% 30%, rgba(255,255,255,0.24), rgba(0,229,255,0.22) 58%, rgba(0,229,255,0.12))',
+                  borderColor: 'rgba(0,229,255,0.55)',
+                  boxShadow: '0 0 16px rgba(0,229,255,0.2)',
                 }}
               />
               <span className="text-base font-medium leading-snug">{title}</span>
