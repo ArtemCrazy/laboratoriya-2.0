@@ -12,8 +12,16 @@ import FlaskMark from '@/components/FlaskMark';
  * Цветных версий заказчик не передавал, поэтому hover — подсветка до белого.
  */
 export default function Participants() {
-  // Лента бесшовная: набор дублируется, сдвиг на -50% возвращает в начало
-  const row = [...participants, ...participants];
+  /**
+   * Лента едет на -50% и должна стыковаться без шва, поэтому:
+   * 1) половина ленты обязана быть шире экрана, иначе справа появляется
+   *    пустота — набор из девяти логотипов на широком мониторе не покрывает
+   *    ширину, поэтому в половину кладём набор дважды;
+   * 2) отступ вшит в саму карточку (mr-3), а не задан через gap: gap между
+   *    половинами не учитывается в 50%, и на стыке лента дёргается.
+   */
+  const half = [...participants, ...participants];
+  const row = [...half, ...half];
 
   return (
     <section
@@ -35,11 +43,11 @@ export default function Participants() {
       </div>
 
       <div className="relative mt-12 overflow-hidden">
-        <div className="animate-marquee flex w-max items-center gap-3">
+        <div className="animate-marquee flex w-max items-center">
           {row.map((p, i) => (
             <span
               key={i}
-              className="group flex h-24 w-[210px] shrink-0 items-center justify-center rounded-2xl border border-glass-border bg-glass px-7 transition-colors hover:border-cyan/40"
+              className="group mr-3 flex h-24 w-[210px] shrink-0 items-center justify-center rounded-2xl border border-glass-border bg-glass px-7 transition-colors hover:border-cyan/40"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

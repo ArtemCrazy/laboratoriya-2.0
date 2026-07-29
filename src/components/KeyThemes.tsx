@@ -32,9 +32,29 @@ const BONDS: [number, number][] = [
   [3, 4],
   [4, 5],
 ];
-const ATOM = 104;
+
+/** Диаметр атома в % от ширины сцены — чтобы он масштабировался вместе с SVG */
+const ATOM_PCT = 7.6;
+/** Тот же радиус в единицах viewBox: по нему обрезаются связи */
+const R = (W * ATOM_PCT) / 100 / 2;
 
 const pt = (i: number) => ({ x: (NODES[i].x / 100) * W, y: (NODES[i].y / 100) * H });
+
+/**
+ * Связь между атомами обрезаем по их краям: линия от центра к центру
+ * просвечивала бы сквозь полупрозрачный круг и торчала внутри него.
+ */
+function bondPath(a: number, b: number) {
+  const p1 = pt(a);
+  const p2 = pt(b);
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  const len = Math.hypot(dx, dy);
+  const gap = R + 5;
+  const ux = (dx / len) * gap;
+  const uy = (dy / len) * gap;
+  return { x1: p1.x + ux, y1: p1.y + uy, x2: p2.x - ux, y2: p2.y - uy };
+}
 
 export default function KeyThemes() {
   return (
@@ -70,18 +90,17 @@ export default function KeyThemes() {
             className="absolute inset-0 h-full w-full overflow-visible"
           >
             {BONDS.map(([a, b], i) => {
-              const p1 = pt(a);
-              const p2 = pt(b);
+              const { x1, y1, x2, y2 } = bondPath(a, b);
               return (
                 <g key={i}>
                   {/* Тёмная подложка отделяет связь от фонового свечения */}
-                  <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="rgba(6,11,25,0.85)" strokeWidth="16" strokeLinecap="round" />
-                  <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={TINT} strokeWidth="12" strokeLinecap="round" opacity="0.28" />
+                  <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(6,11,25,0.85)" strokeWidth="16" strokeLinecap="round" />
+                  <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={TINT} strokeWidth="11" strokeLinecap="round" opacity="0.34" />
                   <line
-                    x1={p1.x}
-                    y1={p1.y}
-                    x2={p2.x}
-                    y2={p2.y}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
                     stroke="rgba(255,255,255,0.5)"
                     strokeWidth="2"
                     strokeLinecap="round"
@@ -89,12 +108,12 @@ export default function KeyThemes() {
                     style={{ transform: 'translateY(-3px)' }}
                   />
                   {/* Импульс по связи — схема остаётся живой */}
-                  <circle r="3" fill={TINT} opacity="0.85">
+                  <circle r="3.4" fill={TINT} opacity="0.9">
                     <animateMotion
                       dur={`${3.4 + i * 0.7}s`}
                       repeatCount="indefinite"
                       begin={`${i * -0.6}s`}
-                      path={`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`}
+                      path={`M ${x1} ${y1} L ${x2} ${y2}`}
                     />
                   </circle>
                 </g>
@@ -108,16 +127,23 @@ export default function KeyThemes() {
               <div
                 key={title}
                 className="absolute -translate-x-1/2 -translate-y-1/2"
-                style={{ left: `${node.x}%`, top: `${node.y}%`, width: ATOM, height: ATOM, zIndex: 10 }}
+                style={{
+                  left: `${node.x}%`,
+                  top: `${node.y}%`,
+                  width: `${ATOM_PCT}%`,
+                  aspectRatio: '1',
+                  zIndex: 10,
+                }}
               >
-                {/* Атом пустой: буквы убраны, остаётся бледно-голубая заливка */}
+                {/* Атом пустой: буквы убраны, остаётся бледно-голубая заливка.
+                    Плотность держим выше, иначе круг теряется на фоне */}
                 <div
                   className="animate-float h-full w-full rounded-full border"
                   style={{
                     background:
-                      'radial-gradient(circle at 34% 30%, rgba(255,255,255,0.16), rgba(0,229,255,0.16) 60%, rgba(0,229,255,0.09))',
-                    borderColor: 'rgba(0,229,255,0.45)',
-                    boxShadow: '0 0 26px rgba(0,229,255,0.16), inset 0 3px 16px rgba(255,255,255,0.10)',
+                      'radial-gradient(circle at 34% 28%, rgba(255,255,255,0.28), rgba(0,229,255,0.26) 58%, rgba(0,229,255,0.14))',
+                    borderColor: 'rgba(0,229,255,0.6)',
+                    boxShadow: '0 0 30px rgba(0,229,255,0.22), inset 0 3px 18px rgba(255,255,255,0.14)',
                     animationDelay: `${i * 0.6}s`,
                   }}
                 />

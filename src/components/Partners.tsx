@@ -1,15 +1,24 @@
+'use client';
+
+import { useState } from 'react';
 import { partnerCategories } from '@/content/hero';
 import FlaskMark from '@/components/FlaskMark';
+import PartnerModal from '@/components/PartnerModal';
 
 /**
- * Блок «Партнёры» (ТЗ 4.10). Категории: генеральный / стратегические /
- * партнёры / информационные. CTA «Стать партнёром».
+ * Блок «Партнёры» (ТЗ 4.10). Категории: генеральный / стратегический /
+ * партнёр конференции / партнёр выставки. CTA «Стать партнёром».
+ *
+ * Партнёрство — отдельный сценарий конверсии (ТЗ §6), не покупка билета,
+ * поэтому кнопка открывает свою форму, а не ведёт в общий CTA.
  *
  * ⚠️ ЛОГОТИПЫ И ССЫЛКИ НЕ ПЕРЕДАНЫ: пока показываем структуру уровней с
  * пустыми слотами. Как придут логотипы с URL — слот заменяется на ссылку
  * с target="_blank" и UTM (требование ТЗ).
  */
 export default function Partners() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <section id="partners" className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28">
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
@@ -26,13 +35,14 @@ export default function Partners() {
             Компании, которые делают лабораторию вместе с нами
           </h2>
 
-          <a
-            href="#final-cta"
-            className="inline-flex shrink-0 items-center gap-2.5 self-start rounded-full bg-accent px-5 py-3 text-sm font-semibold text-text-dark transition-colors hover:bg-accent-hover lg:self-auto"
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="inline-flex shrink-0 cursor-pointer items-center gap-2.5 self-start rounded-full bg-accent px-5 py-3 text-sm font-semibold text-text-dark transition-colors hover:bg-accent-hover lg:self-auto"
           >
             Стать партнёром
             <IconArrow />
-          </a>
+          </button>
         </div>
 
         {/* Правки 29.07: статус без партнёров со страницы убирается —
@@ -71,6 +81,8 @@ export default function Partners() {
             ))}
         </div>
       </div>
+
+      <PartnerModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </section>
   );
 }

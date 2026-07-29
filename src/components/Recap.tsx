@@ -109,8 +109,10 @@ export default function Recap() {
             )}
           </div>
 
-          {/* Фотоколлаж 2×2, клик открывает lightbox */}
-          <div className="grid aspect-video grid-cols-2 grid-rows-2 gap-3">
+          {/* Фотоколлаж 2×2, клик открывает lightbox.
+              На десктопе высоту задаёт видео, коллаж тянется под него: у колонок
+              разная ширина, и собственный 16:9 разводил их по высоте */}
+          <div className="grid aspect-video grid-cols-2 grid-rows-2 gap-3 lg:aspect-auto lg:h-full">
             {collage.map((src, i) => (
               <button
                 key={src}

@@ -131,45 +131,29 @@ export default function Venue() {
             <p className="mt-8 max-w-[560px] text-[16px] leading-relaxed text-text-muted">
               {location.about}
             </p>
+          </div>
+
+          {/* Встроенная карта (ТЗ 4.11). Кнопка перехода — поверх карты справа
+              внизу, чтобы не дублировать ссылку в текстовой колонке */}
+          <div className="relative min-h-[340px] overflow-hidden rounded-2xl border border-glass-border">
+            <iframe
+              src={location.mapEmbed}
+              title={`${location.name} на Яндекс.Картах`}
+              loading="lazy"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full border-0"
+            />
 
             <a
               href={location.mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-glass-border bg-glass px-5 py-3 text-sm font-semibold transition-colors hover:border-cyan/50 hover:text-cyan"
+              className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-2 rounded-full border border-glass-border bg-bg-deep/90 px-4 py-2.5 text-[13px] font-semibold backdrop-blur-sm transition-colors hover:border-cyan/50 hover:text-cyan"
             >
-              Открыть на Яндекс.Картах
+              Открыть в Яндекс.Картах
               <IconArrow />
             </a>
           </div>
-
-          {/* Карта: пока превью-плитка со ссылкой, встроим после согласий на куки */}
-          <a
-            href={location.mapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex min-h-[280px] items-center justify-center overflow-hidden rounded-2xl border border-glass-border bg-glass transition-colors hover:border-cyan/40"
-          >
-            {/* Абстрактная сетка кварталов — интерфейсная графика вместо скриншота */}
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 opacity-[0.18]"
-              style={{
-                backgroundImage:
-                  'linear-gradient(rgba(0,229,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.5) 1px, transparent 1px)',
-                backgroundSize: '44px 44px',
-              }}
-            />
-            <span className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,229,255,0.16),transparent_62%)]" />
-
-            <span className="relative flex flex-col items-center gap-3 text-center">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-accent/50 bg-bg-deep/70 text-accent transition-transform group-hover:scale-105">
-                <IconPin />
-              </span>
-              <span className="text-[15px] font-semibold">Раменский бульвар, 1</span>
-              <span className="text-[13px] text-text-muted">Посмотреть на карте</span>
-            </span>
-          </a>
         </div>
       </div>
     </section>
