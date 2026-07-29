@@ -1,8 +1,9 @@
 'use client';
 
 import { useRef } from 'react';
-import { speakers, speakerThemes } from '@/content/hero';
-import { asset } from '@/lib/paths';
+import { speakers as builtinSpeakers, speakerThemes } from '@/content/hero';
+import { mediaSrc } from '@/lib/paths';
+import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
 
 /**
@@ -13,8 +14,19 @@ import FlaskMark from '@/components/FlaskMark';
  *
  * Данные и фото — реальные спикеры первой конференции (cblabconference.ru).
  */
+/** Карточка спикера: на сайте нужны только эти поля */
+type SpeakerCard = {
+  name: string;
+  role: string;
+  company: string;
+  photo: string;
+  theme: string;
+};
+
 export default function SpeakersCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
+  // Данные из админки, пока их нет — вшитые в сборку
+  const speakers = useLiveContent<SpeakerCard[]>('speakers', builtinSpeakers as never);
 
   const scrollByCards = (dir: 1 | -1) => {
     const el = trackRef.current;
@@ -73,7 +85,7 @@ export default function SpeakersCarousel() {
           className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {speakers.map((s) => {
-            const color = speakerThemes[s.theme];
+            const color = speakerThemes[s.theme as keyof typeof speakerThemes] ?? '#00E5FF';
             return (
               <article
                 key={s.name}
@@ -82,7 +94,7 @@ export default function SpeakersCarousel() {
                 <div className="relative aspect-[4/5] overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={asset(s.photo)}
+                    src={mediaSrc(s.photo)}
                     alt={`${s.name}, ${s.role}, ${s.company}`}
                     width={400}
                     height={500}

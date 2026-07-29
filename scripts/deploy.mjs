@@ -22,6 +22,12 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const localDir = resolve(root, 'out');
 
+/**
+ * Пути, которые живут только на сервере и деплоем не перезаписываются:
+ * контент из админки, загруженные фото спикеров и файл с паролем.
+ */
+const KEEP_ON_SERVER = ['api/_data', 'api/uploads', 'api/config.php'];
+
 const cfg = {
   host: process.env.SFTP_HOST,
   port: Number(process.env.SFTP_PORT || 22),
@@ -56,8 +62,13 @@ try {
     await sftp.mkdir(remoteDir, true);
   }
 
-  await sftp.uploadDir(localDir, remoteDir);
+  // Живое на сервере не трогаем: контент из админки, загруженные фото и
+  // пароль. Иначе каждая выкладка откатывала бы правки клиента.
+  await sftp.uploadDir(localDir, remoteDir, {
+    filter: (path) => !KEEP_ON_SERVER.some((p) => path.replace(/\\/g, '/').includes(p)),
+  });
   console.log('Готово. Статика залита.');
+  console.log(`Не тронуто на сервере: ${KEEP_ON_SERVER.join(', ')}`);
 } catch (err) {
   console.error('Ошибка заливки:', err.message);
   process.exitCode = 1;

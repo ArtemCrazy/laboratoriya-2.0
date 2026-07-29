@@ -1,0 +1,15 @@
+# Служебные файлы API наружу не отдаём. Сейчас PHP их исполняет и вывода
+# нет, но если PHP на хостинге отключат, исходники ушли бы текстом —
+# вместе с хешем пароля из config.php.
+<FilesMatch "^(config\.php|config\.example\.php|_bootstrap\.php)$">
+  Require all denied
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Данные админки читаются только через content.php
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^_data/ - [F,L]
+</IfModule>

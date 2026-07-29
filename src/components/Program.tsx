@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { program, speakers } from '@/content/hero';
-import { asset } from '@/lib/paths';
+import { program as builtinProgram, speakers as builtinSpeakers } from '@/content/hero';
+import { mediaSrc } from '@/lib/paths';
+import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
 
 /**
@@ -23,9 +24,18 @@ const ACCENT = '#FFD54F';
 /** Доклад — голубой, всё остальное практика — жёлтый (правки 29.07) */
 const formatColor = (format: string) => (format === 'Доклад' ? CYAN : ACCENT);
 
+type ProgramSpeaker = { name: string; role: string; company: string; photo: string; topic: string };
+type ProgramDay = { day: string; date: string; sessions: { format: string; speaker: number }[] };
+
 export default function Program() {
   const [day, setDay] = useState(0);
-  const current = program[day];
+  // Данные из админки, пока их нет — вшитые в сборку
+  const program = useLiveContent<ProgramDay[]>('program', builtinProgram as never);
+  const speakers = useLiveContent<ProgramSpeaker[]>('speakers', builtinSpeakers as never);
+
+  // День мог исчезнуть после правки в админке — не падаем на пустоте
+  const current = program[day] ?? program[0];
+  if (!current) return null;
 
   return (
     <section id="program" className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28">
@@ -83,6 +93,8 @@ export default function Program() {
         <div className="mt-10 flex flex-col">
           {current.sessions.map((s, i) => {
             const sp = speakers[s.speaker];
+            // Спикера могли удалить в админке — такую сессию просто не выводим
+            if (!sp) return null;
             const color = formatColor(s.format);
             return (
               <div key={i} className="flex gap-4 sm:gap-6">
@@ -115,7 +127,7 @@ export default function Program() {
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={asset(sp.photo)}
+                          src={mediaSrc(sp.photo)}
                           alt=""
                           aria-hidden="true"
                           width={400}

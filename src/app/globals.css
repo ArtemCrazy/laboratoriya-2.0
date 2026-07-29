@@ -24,6 +24,66 @@
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
+
+  /* --------------------------------------------------------------------
+     Токены админки (/admin) — светлая тема. Префикс adm- намеренный:
+     у лендинга своя палитра, где accent жёлтый, а в админке индиго.
+     Без префикса классы перекрыли бы друг друга и поехала бы вёрстка.
+
+     Значения заданы напрямую, без промежуточных переменных: @theme
+     вычисляется один раз в :root, и ссылка на переменную, объявленную
+     ниже по дереву, там не разрешается — цвета выходили пустыми.
+     Тёмная тема переопределяет эти же токены (см. .admin-root.dark).
+     -------------------------------------------------------------------- */
+  --color-adm-bg: #fafafc;
+  --color-adm-elev: #ffffff;
+  --color-adm-surface: #ffffff;
+  --color-adm-surface2: #f6f7fb;
+  --color-adm-border: #e2e8f0;
+  --color-adm-border-strong: #cbd5e1;
+  --color-adm-text: #0f172a;
+  --color-adm-text2: #334155;
+  --color-adm-muted: #64748b;
+  --color-adm-muted2: #94a3b8;
+  --color-adm-accent: #4f46e5;
+  --color-adm-accent2: #7c3aed;
+  --color-adm-accent-soft: #e0e7ff;
+  --color-adm-success: #16a34a;
+  --color-adm-danger: #dc2626;
+  --color-adm-danger-soft: #fee2e2;
+}
+
+.admin-root {
+  color-scheme: light;
+  background-color: var(--color-adm-bg);
+  color: var(--color-adm-text);
+}
+
+/* Тёмная тема админки — глубокий zinc с холодным индиго */
+.admin-root.dark {
+  --color-adm-bg: #09090d;
+  --color-adm-elev: #111118;
+  --color-adm-surface: #16161f;
+  --color-adm-surface2: #1e1e29;
+  --color-adm-border: #262634;
+  --color-adm-border-strong: #373749;
+  --color-adm-text: #f4f4f7;
+  --color-adm-text2: #d4d4dc;
+  --color-adm-muted: #9494a5;
+  --color-adm-muted2: #717182;
+  --color-adm-accent: #818cf8;
+  --color-adm-accent2: #a78bfa;
+  --color-adm-accent-soft: #312e5f;
+  --color-adm-success: #4ade80;
+  --color-adm-danger: #f87171;
+  --color-adm-danger-soft: #4c1717;
+
+  color-scheme: dark;
+}
+
+/* В админке фокус индиго, а не бирюзовый как на лендинге */
+.admin-root :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline-color: rgb(var(--adm-accent));
 }
 
 :root {

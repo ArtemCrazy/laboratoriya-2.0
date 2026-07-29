@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "npm run build && node scripts/deploy.mjs"
+    "deploy": "npm run build && node scripts/deploy.mjs",
+    "admin:password": "node scripts/admin-password.mjs"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "next": "15.1.6",
     "react": "19.0.0",
     "react-dom": "19.0.0"
