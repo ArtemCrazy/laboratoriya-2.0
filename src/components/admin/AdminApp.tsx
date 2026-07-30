@@ -9,9 +9,20 @@ import {
   type AdminContent,
 } from '@/lib/adminApi';
 import AdminLogin from '@/components/admin/AdminLogin';
-import AdminSidebar, { type AdminSection } from '@/components/admin/AdminSidebar';
+import AdminSidebar, {
+  SECTION_TITLE,
+  type AdminSection,
+} from '@/components/admin/AdminSidebar';
 import SpeakersEditor from '@/components/admin/SpeakersEditor';
 import ProgramEditor from '@/components/admin/ProgramEditor';
+import PricingEditor from '@/components/admin/PricingEditor';
+import PartnersEditor from '@/components/admin/PartnersEditor';
+import FooterEditor from '@/components/admin/FooterEditor';
+import {
+  HeroEditor,
+  ReviewsEditor,
+  ParticipantsEditor,
+} from '@/components/admin/SimpleEditors';
 import { IconSave, IconCheck, IconAlert, IconMenu } from '@/components/admin/icons';
 
 const THEME_KEY = 'lab2:adminTheme';
@@ -77,6 +88,16 @@ export default function AdminApp() {
     setDirty(true);
     setStatus(null);
   };
+
+  /** Сноска раздела: пустая строка означает, что на сайте её нет */
+  const note = (key: string) => content?.notes?.[key] ?? '';
+  const setNote = (key: string, value: string) =>
+    setContent((c) => {
+      if (!c) return c;
+      setDirty(true);
+      setStatus(null);
+      return { ...c, notes: { ...c.notes, [key]: value } };
+    });
 
   const save = async () => {
     if (!content) return;
@@ -179,7 +200,7 @@ export default function AdminApp() {
           </button>
 
           <span className="flex-1 truncate text-[15px] font-medium">
-            {section === 'speakers' ? 'Спикеры' : 'Программа'}
+            {SECTION_TITLE[section]}
           </span>
 
           {status && (
@@ -215,16 +236,69 @@ export default function AdminApp() {
         )}
 
         <div className="mx-auto w-full max-w-[980px] flex-1 p-4 lg:p-8">
-          {section === 'speakers' ? (
+          {section === 'hero' && (
+            <HeroEditor
+              hero={content.hero}
+              note={note('hero')}
+              onNote={(v) => setNote('hero', v)}
+              onChange={(hero) => patch({ hero })}
+            />
+          )}
+          {section === 'speakers' && (
             <SpeakersEditor
               speakers={content.speakers}
+              note={note('speakers')}
+              onNote={(v) => setNote('speakers', v)}
               onChange={(speakers) => patch({ speakers })}
             />
-          ) : (
+          )}
+          {section === 'program' && (
             <ProgramEditor
               program={content.program}
               speakers={content.speakers}
+              note={note('program')}
+              onNote={(v) => setNote('program', v)}
               onChange={(program) => patch({ program })}
+            />
+          )}
+          {section === 'pricing' && (
+            <PricingEditor
+              pricing={content.pricing}
+              note={note('pricing')}
+              onNote={(v) => setNote('pricing', v)}
+              onChange={(pricing) => patch({ pricing })}
+            />
+          )}
+          {section === 'reviews' && (
+            <ReviewsEditor
+              reviews={content.reviews}
+              note={note('reviews')}
+              onNote={(v) => setNote('reviews', v)}
+              onChange={(reviews) => patch({ reviews })}
+            />
+          )}
+          {section === 'participants' && (
+            <ParticipantsEditor
+              participants={content.participants}
+              note={note('participants')}
+              onNote={(v) => setNote('participants', v)}
+              onChange={(participants) => patch({ participants })}
+            />
+          )}
+          {section === 'partners' && (
+            <PartnersEditor
+              categories={content.partners}
+              note={note('partners')}
+              onNote={(v) => setNote('partners', v)}
+              onChange={(partners) => patch({ partners })}
+            />
+          )}
+          {section === 'footer' && (
+            <FooterEditor
+              footer={content.footer}
+              note={note('footer')}
+              onNote={(v) => setNote('footer', v)}
+              onChange={(footer) => patch({ footer })}
             />
           )}
         </div>

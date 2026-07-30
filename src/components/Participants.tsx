@@ -1,6 +1,10 @@
-import { participants } from '@/content/hero';
-import { asset } from '@/lib/paths';
+'use client';
+
+import { participants as builtinParticipants } from '@/content/hero';
+import { mediaSrc } from '@/lib/paths';
+import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
+import BlockNote from '@/components/BlockNote';
 
 /**
  * Блок «Наши участники» (ТЗ 4.7). Авто-карусель логотипов: нейтральный вид,
@@ -11,7 +15,11 @@ import FlaskMark from '@/components/FlaskMark';
  * а не цветом файла: так все девять выглядят одинаково по плотности.
  * Цветных версий заказчик не передавал, поэтому hover — подсветка до белого.
  */
+type Participant = { name: string; logo: string };
+
 export default function Participants() {
+  const participants = useLiveContent<Participant[]>('participants', builtinParticipants as never);
+
   /**
    * Лента едет на -50% и должна стыковаться без шва, поэтому:
    * 1) половина ленты обязана быть шире экрана, иначе справа появляется
@@ -40,6 +48,8 @@ export default function Participants() {
         >
           Компании, представители которых были на первой лаборатории
         </h2>
+
+        <BlockNote section="participants" />
       </div>
 
       <div className="relative mt-12 overflow-hidden">
@@ -51,7 +61,7 @@ export default function Participants() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={asset(p.logo)}
+                src={mediaSrc(p.logo)}
                 alt={p.name}
                 width={400}
                 height={130}

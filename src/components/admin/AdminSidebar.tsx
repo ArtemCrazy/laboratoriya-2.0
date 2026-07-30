@@ -10,13 +10,44 @@ import {
   IconMoon,
   IconLogout,
   IconExternal,
+  IconPin,
+  IconTag,
+  IconQuote,
+  IconBuilding,
+  IconHandshake,
+  IconLayout,
 } from '@/components/admin/icons';
 
-export type AdminSection = 'speakers' | 'program';
+export type AdminSection =
+  | 'hero'
+  | 'speakers'
+  | 'program'
+  | 'pricing'
+  | 'reviews'
+  | 'participants'
+  | 'partners'
+  | 'footer';
 
-const ITEMS: { id: AdminSection; label: string; Icon: typeof IconUsers }[] = [
-  { id: 'speakers', label: 'Спикеры', Icon: IconUsers },
-  { id: 'program', label: 'Программа', Icon: IconCalendar },
+export const SECTION_TITLE: Record<AdminSection, string> = {
+  hero: 'Даты и место',
+  speakers: 'Спикеры',
+  program: 'Программа',
+  pricing: 'Стоимость',
+  reviews: 'Отзывы',
+  participants: 'Участники',
+  partners: 'Партнёры',
+  footer: 'Подвал',
+};
+
+const ITEMS: { id: AdminSection; Icon: typeof IconUsers }[] = [
+  { id: 'hero', Icon: IconPin },
+  { id: 'speakers', Icon: IconUsers },
+  { id: 'program', Icon: IconCalendar },
+  { id: 'pricing', Icon: IconTag },
+  { id: 'reviews', Icon: IconQuote },
+  { id: 'participants', Icon: IconBuilding },
+  { id: 'partners', Icon: IconHandshake },
+  { id: 'footer', Icon: IconLayout },
 ];
 
 const COLLAPSE_KEY = 'lab2:adminSidebarCollapsed';
@@ -95,7 +126,8 @@ export default function AdminSidebar({
             Разделы
           </div>
         )}
-        {ITEMS.map(({ id, label, Icon }) => {
+        {ITEMS.map(({ id, Icon }) => {
+          const label = SECTION_TITLE[id];
           const active = id === section;
           return (
             <button

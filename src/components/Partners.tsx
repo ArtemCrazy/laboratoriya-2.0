@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { partnerCategories } from '@/content/hero';
+import { partnerCategories as builtinPartners } from '@/content/hero';
+import { mediaSrc } from '@/lib/paths';
+import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
+import BlockNote from '@/components/BlockNote';
 import PartnerModal from '@/components/PartnerModal';
 
 /**
@@ -16,8 +19,20 @@ import PartnerModal from '@/components/PartnerModal';
  * пустыми слотами. Как придут логотипы с URL — слот заменяется на ссылку
  * с target="_blank" и UTM (требование ТЗ).
  */
+type Partner = { name: string; logo: string; url: string };
+type Category = { level: string; hidden: boolean; slots: number; partners: Partner[] };
+
 export default function Partners() {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const categories = useLiveContent<Category[]>(
+    'partners',
+    builtinPartners.map((c) => ({ level: c.level, hidden: false, slots: c.slots, partners: [] })),
+  );
+
+  // Скрытый статус не показываем: по нему пакет ещё не продан.
+  // Пустой статус без слотов тоже прячем, чтобы не висел голый заголовок.
+  const visible = categories.filter((c) => !c.hidden && (c.partners?.length || c.slots > 0));
 
   return (
     <section id="partners" className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28">
@@ -45,12 +60,16 @@ export default function Partners() {
           </button>
         </div>
 
-        {/* Правки 29.07: статус без партнёров со страницы убирается —
-            достаточно поставить ему slots: 0 в контенте */}
+        <BlockNote section="partners" />
+
         <div className="mt-12 flex flex-col gap-10">
-          {partnerCategories
-            .filter((c) => c.slots > 0)
-            .map((c) => (
+          {visible.map((c) => {
+            const partners = c.partners ?? [];
+            // Пустые места дорисовываем только до заявленного количества
+            const empty = Math.max(0, c.slots - partners.length);
+            const wide = partners.length + empty <= 2;
+
+            return (
               <div key={c.level}>
                 <div className="flex items-center gap-4">
                   <span className="text-xs uppercase tracking-[0.18em] text-text-muted">
@@ -61,16 +80,53 @@ export default function Partners() {
 
                 <div
                   className={`mt-5 grid gap-4 ${
-                    c.slots <= 2
+                    wide
                       ? 'sm:grid-cols-2 lg:grid-cols-3'
                       : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
                   }`}
                 >
-                  {Array.from({ length: c.slots }).map((_, i) => (
+                  {partners.map((p, i) => {
+                    const card = (
+                      <span
+                        className={`flex items-center justify-center rounded-2xl border border-glass-border bg-glass px-5 transition-colors hover:border-cyan/40 ${
+                          wide ? 'h-28' : 'h-20'
+                        }`}
+                      >
+                        {p.logo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={mediaSrc(p.logo)}
+                            alt={p.name}
+                            loading="lazy"
+                            className="max-h-12 w-auto max-w-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-center text-[14px] font-medium">{p.name}</span>
+                        )}
+                      </span>
+                    );
+
+                    // Ссылки партнёров открываем в новой вкладке (ТЗ 4.10)
+                    return p.url ? (
+                      <a
+                        key={i}
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={p.name}
+                      >
+                        {card}
+                      </a>
+                    ) : (
+                      <span key={i}>{card}</span>
+                    );
+                  })}
+
+                  {Array.from({ length: empty }).map((_, i) => (
                     <span
-                      key={i}
+                      key={`empty-${i}`}
                       className={`flex items-center justify-center rounded-2xl border border-dashed border-glass-border bg-glass/50 text-[13px] text-text-muted ${
-                        c.slots === 1 ? 'h-28' : 'h-20'
+                        wide ? 'h-28' : 'h-20'
                       }`}
                     >
                       Логотип
@@ -78,7 +134,8 @@ export default function Partners() {
                   ))}
                 </div>
               </div>
-            ))}
+            );
+          })}
         </div>
       </div>
 

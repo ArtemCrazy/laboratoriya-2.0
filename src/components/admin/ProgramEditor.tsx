@@ -1,7 +1,7 @@
 'use client';
 
 import type { AdminDay, AdminSpeaker } from '@/lib/adminApi';
-import { Field, IconBtn } from '@/components/admin/SpeakersEditor';
+import { Field, IconBtn, SectionHead } from '@/components/admin/ui';
 import { IconPlus, IconTrash, IconChevron, IconAlert } from '@/components/admin/icons';
 
 /**
@@ -13,10 +13,14 @@ const FORMATS = ['Доклад', 'Дебаты', 'Импровизация', 'М
 export default function ProgramEditor({
   program,
   speakers,
+  note,
+  onNote,
   onChange,
 }: {
   program: AdminDay[];
   speakers: AdminSpeaker[];
+  note: string;
+  onNote: (v: string) => void;
   onChange: (next: AdminDay[]) => void;
 }) {
   const updateDay = (di: number, patch: Partial<AdminDay>) =>
@@ -43,13 +47,12 @@ export default function ProgramEditor({
 
   return (
     <div>
-      <div className="mb-5">
-        <h2 className="text-[19px] font-semibold tracking-tight">Программа</h2>
-        <p className="mt-1 text-[13px] text-adm-muted">
-          Два дня конференции. Организационные строки (регистрация, обед) на сайт не выводятся —
-          только выступления.
-        </p>
-      </div>
+      <SectionHead
+        title="Программа"
+        hint="Два дня конференции. Организационные строки (регистрация, обед) на сайт не выводятся, только выступления."
+        note={note}
+        onNote={onNote}
+      />
 
       {speakers.length === 0 && (
         <p className="mb-4 flex items-start gap-2 rounded-lg bg-adm-danger-soft px-3.5 py-2.5 text-[13px] text-adm-danger">

@@ -1,5 +1,9 @@
-import { pricing } from '@/content/hero';
+'use client';
+
+import { pricing as builtinPricing } from '@/content/hero';
+import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
+import BlockNote from '@/components/BlockNote';
 
 /**
  * Блок «Стоимость и покупка» (ТЗ 4.9). Три тарифа, рекомендуемый выделен.
@@ -9,7 +13,12 @@ import FlaskMark from '@/components/FlaskMark';
  * «НДС 0%». Матрицу сравнения не строим: состав тарифов виден в карточках,
  * отличается только число дней — таблица дублировала бы их.
  */
+type PricingData = typeof builtinPricing;
+
 export default function Pricing() {
+  // Тарифы и цены заказчик правит в админке (ТЗ §6)
+  const pricing = useLiveContent<PricingData>('pricing', builtinPricing);
+
   return (
     <section id="price" className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28">
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
@@ -24,6 +33,8 @@ export default function Pricing() {
         >
           Форматы участия и цены
         </h2>
+
+        <BlockNote section="pricing" />
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {pricing.tariffs.map((t) => (

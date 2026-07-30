@@ -6,7 +6,16 @@
  */
 
 import { asset } from '@/lib/paths';
-import { speakers as builtinSpeakers, program as builtinProgram } from '@/content/hero';
+import {
+  speakers as builtinSpeakers,
+  program as builtinProgram,
+  pricing as builtinPricing,
+  reviews as builtinReviews,
+  participants as builtinParticipants,
+  partnerCategories as builtinPartners,
+  footer as builtinFooter,
+  hero as builtinHero,
+} from '@/content/hero';
 
 export type AdminSpeaker = {
   name: string;
@@ -20,9 +29,65 @@ export type AdminSpeaker = {
 export type AdminSession = { format: string; speaker: number };
 export type AdminDay = { day: string; date: string; sessions: AdminSession[] };
 
+export type AdminTariff = {
+  name: string;
+  audience: string;
+  price: string;
+  earlyPrice: string;
+  recommended: boolean;
+  features: string[];
+};
+export type AdminPricing = {
+  note: string;
+  earlyDeadline: string;
+  tariffs: AdminTariff[];
+};
+
+export type AdminReview = { text: string; name: string; role: string; company: string };
+
+export type AdminParticipant = { name: string; logo: string };
+
+/** Партнёр внутри категории. Логотип и ссылка необязательны */
+export type AdminPartner = { name: string; logo: string; url: string };
+export type AdminPartnerCategory = {
+  level: string;
+  /** Снят — статус не показывается на сайте (пакет ещё не продан) */
+  hidden: boolean;
+  /** Сколько пустых мест показать, пока логотипов нет */
+  slots: number;
+  partners: AdminPartner[];
+};
+
+export type AdminDocument = { label: string; href: string };
+export type AdminFooter = {
+  description: string;
+  email: string;
+  phones: string[];
+  documents: AdminDocument[];
+  organizerLines: string[];
+  copyright: string;
+};
+
+export type AdminHero = {
+  dates: string;
+  location: string;
+  locationNote: string;
+  hall: string;
+};
+
+/** Сноски к блокам: пустая строка — сноска не показывается */
+export type AdminNotes = Record<string, string>;
+
 export type AdminContent = {
+  hero: AdminHero;
   speakers: AdminSpeaker[];
   program: AdminDay[];
+  pricing: AdminPricing;
+  reviews: AdminReview[];
+  participants: AdminParticipant[];
+  partners: AdminPartnerCategory[];
+  footer: AdminFooter;
+  notes: AdminNotes;
 };
 
 const api = (file: string) => asset(`/api/${file}`);
@@ -70,6 +135,12 @@ export async function logout(): Promise<void> {
  */
 export function builtinContent(): AdminContent {
   return {
+    hero: {
+      dates: builtinHero.dates,
+      location: builtinHero.location,
+      locationNote: builtinHero.locationNote,
+      hall: 'зал «Архангельск»',
+    },
     speakers: builtinSpeakers.map((s) => ({
       name: s.name,
       role: s.role,
@@ -83,6 +154,40 @@ export function builtinContent(): AdminContent {
       date: d.date,
       sessions: d.sessions.map((x) => ({ format: x.format, speaker: x.speaker })),
     })),
+    pricing: {
+      note: builtinPricing.note,
+      earlyDeadline: builtinPricing.earlyDeadline,
+      tariffs: builtinPricing.tariffs.map((t) => ({
+        name: t.name,
+        audience: t.audience,
+        price: t.price,
+        earlyPrice: t.earlyPrice,
+        recommended: t.recommended,
+        features: [...t.features],
+      })),
+    },
+    reviews: builtinReviews.map((r) => ({
+      text: r.text,
+      name: r.name,
+      role: r.role,
+      company: r.company,
+    })),
+    participants: builtinParticipants.map((p) => ({ name: p.name, logo: p.logo })),
+    partners: builtinPartners.map((c) => ({
+      level: c.level,
+      hidden: false,
+      slots: c.slots,
+      partners: [],
+    })),
+    footer: {
+      description: builtinFooter.description,
+      email: builtinFooter.email,
+      phones: [...builtinFooter.phones],
+      documents: builtinFooter.documents.map((d) => ({ label: d.label, href: d.href })),
+      organizerLines: [...builtinFooter.organizer.lines],
+      copyright: builtinFooter.copyright,
+    },
+    notes: {},
   };
 }
 
@@ -95,9 +200,21 @@ export async function loadContent(): Promise<AdminContent> {
     });
     const data = await parse(res);
     const c = data.content ?? {};
+
+    // Раздел, которого в файле ещё нет, берём из сборки — админка
+    // открывается заполненной, а не пустой
+    const list = <T>(v: unknown, f: T[]): T[] => (Array.isArray(v) && v.length ? (v as T[]) : f);
+
     return {
-      speakers: Array.isArray(c.speakers) && c.speakers.length ? c.speakers : fallback.speakers,
-      program: Array.isArray(c.program) && c.program.length ? c.program : fallback.program,
+      hero: { ...fallback.hero, ...(c.hero ?? {}) },
+      speakers: list(c.speakers, fallback.speakers),
+      program: list(c.program, fallback.program),
+      pricing: c.pricing?.tariffs?.length ? { ...fallback.pricing, ...c.pricing } : fallback.pricing,
+      reviews: list(c.reviews, fallback.reviews),
+      participants: list(c.participants, fallback.participants),
+      partners: list(c.partners, fallback.partners),
+      footer: { ...fallback.footer, ...(c.footer ?? {}) },
+      notes: typeof c.notes === 'object' && c.notes ? c.notes : {},
     };
   } catch {
     return fallback;

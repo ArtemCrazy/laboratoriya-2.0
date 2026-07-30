@@ -5,6 +5,7 @@ import { program as builtinProgram, speakers as builtinSpeakers } from '@/conten
 import { mediaSrc } from '@/lib/paths';
 import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
+import BlockNote from '@/components/BlockNote';
 
 /**
  * Блок «Программа на два дня» (ТЗ 4.5). Переключатель День 1 / День 2,
@@ -62,6 +63,8 @@ export default function Program() {
             Скачать программу PDF
           </a>
         </div>
+
+        <BlockNote section="program" />
 
         {/* Переключатель дней: название, под ним дата */}
         <div className="mt-8 inline-flex rounded-2xl border border-glass-border bg-glass p-1.5">

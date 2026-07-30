@@ -1,5 +1,9 @@
-import { reviews } from '@/content/hero';
+'use client';
+
+import { reviews as builtinReviews } from '@/content/hero';
+import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
+import BlockNote from '@/components/BlockNote';
 
 /**
  * Блок «Отзывы участников» (ТЗ 4.8). Сетка карточек, без автокарусели —
@@ -9,7 +13,14 @@ import FlaskMark from '@/components/FlaskMark';
  * ⚠️ ТЗ просит 5–6 отзывов, заказчик передал два (у второго нет ФИО и фото).
  * Ждём остальные — сетка рассчитана на 3 колонки и добьётся сама.
  */
+type Review = { text: string; name: string; role: string; company: string };
+
 export default function Reviews() {
+  const reviews = useLiveContent<Review[]>('reviews', builtinReviews as never);
+
+  // Блока нет, пока не добавили ни одного отзыва
+  if (!reviews.length) return null;
+
   return (
     <section id="reviews" className="relative border-t border-glass-border bg-bg-main py-20 lg:py-28">
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
@@ -24,6 +35,8 @@ export default function Reviews() {
         >
           Что говорили участники первой лаборатории
         </h2>
+
+        <BlockNote section="reviews" />
 
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {reviews.map((r) => (

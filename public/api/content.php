@@ -36,8 +36,19 @@ if (!is_array($content)) {
     fail('Нет данных для сохранения');
 }
 
-// Сохраняем только известные разделы: лишние ключи в файл не пускаем
-$allowed = ['speakers', 'program'];
+// Сохраняем только известные разделы: лишние ключи в файл не пускаем.
+// notes — сноски к блокам, которые заказчик показывает и убирает сам.
+$allowed = [
+    'hero',
+    'speakers',
+    'program',
+    'pricing',
+    'reviews',
+    'participants',
+    'partners',
+    'footer',
+    'notes',
+];
 $clean = [];
 foreach ($allowed as $key) {
     if (array_key_exists($key, $content)) {

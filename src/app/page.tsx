@@ -4,6 +4,7 @@ import AboutSection from '@/components/AboutSection';
 import KeyThemes from '@/components/KeyThemes';
 import SpeakersCarousel from '@/components/SpeakersCarousel';
 import Program from '@/components/Program';
+import HeroMeta from '@/components/HeroMeta';
 import Formats from '@/components/Formats';
 import Benefits from '@/components/Benefits';
 import Recap from '@/components/Recap';
@@ -109,22 +110,9 @@ export default function Home() {
               {hero.subtitle}
             </p>
 
-            {/* Правки 29.07: дата и место крупнее и жирнее, прямо над кнопками */}
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[clamp(16px,1.35vw,20px)] font-semibold">
-              <span className="flex items-center gap-2.5">
-                <span className="text-cyan">
-                  <IconCalendar />
-                </span>
-                {hero.dates}
-              </span>
-              <span className="text-cyan-dim">|</span>
-              <span className="flex items-center gap-2.5">
-                <span className="text-accent">
-                  <IconPin />
-                </span>
-                {hero.location}, {hero.locationNote}, зал «Архангельск»
-              </span>
-            </div>
+            {/* Правки 29.07: дата и место крупнее и жирнее, прямо над кнопками.
+                Значения приходят из админки, поэтому вынесено в компонент */}
+            <HeroMeta />
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <LiquidButton href="#price">{hero.ctaPrimary}</LiquidButton>
@@ -274,26 +262,5 @@ export default function Home() {
 
 
 
-function IconCalendar() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    </svg>
-  );
-}
 
-function IconPin() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M8 14.5s5-4.6 5-8a5 5 0 0 0-10 0c0 3.4 5 8 5 8Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-      <circle cx="8" cy="6.4" r="1.7" stroke="currentColor" strokeWidth="1.4" />
-    </svg>
-  );
-}
 

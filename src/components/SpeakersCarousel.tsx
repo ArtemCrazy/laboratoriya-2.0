@@ -5,6 +5,7 @@ import { speakers as builtinSpeakers, speakerThemes } from '@/content/hero';
 import { mediaSrc } from '@/lib/paths';
 import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
+import BlockNote from '@/components/BlockNote';
 
 /**
  * Блок «Спикеры» (правки 24.07) — горизонтальная карусель вместо молекулы.
@@ -78,6 +79,8 @@ export default function SpeakersCarousel() {
             </button>
           </div>
         </div>
+
+        <BlockNote section="speakers" />
 
         {/* Дорожка карусели: нативный скролл + snap, свайп на мобильном */}
         <div

@@ -126,6 +126,49 @@ export const IconImage = (p: Props) => (
   </Svg>
 );
 
+export const IconPin = (p: Props) => (
+  <Svg {...p}>
+    <path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11Z" />
+    <circle cx="12" cy="10" r="2.6" />
+  </Svg>
+);
+
+export const IconTag = (p: Props) => (
+  <Svg {...p}>
+    <path d="M20.5 13.5 13 21a2 2 0 0 1-2.8 0l-7-7A2 2 0 0 1 2.6 12l.4-7A2 2 0 0 1 5 3l7-.4a2 2 0 0 1 1.5.6l7 7a2 2 0 0 1 0 3.3Z" />
+    <circle cx="7.8" cy="7.8" r="1.4" />
+  </Svg>
+);
+
+export const IconQuote = (p: Props) => (
+  <Svg {...p}>
+    <path d="M9 7c-2.2 0-4 1.8-4 4s1.8 4 4 4c0 2-1.4 3.4-3 4M19 7c-2.2 0-4 1.8-4 4s1.8 4 4 4c0 2-1.4 3.4-3 4" />
+  </Svg>
+);
+
+export const IconBuilding = (p: Props) => (
+  <Svg {...p}>
+    <path d="M4 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15M14 21V11h4a2 2 0 0 1 2 2v8M3 21h18" />
+    <path d="M7.5 8.5h3M7.5 12.5h3M7.5 16.5h3" />
+  </Svg>
+);
+
+export const IconHandshake = (p: Props) => (
+  <Svg {...p}>
+    <path d="m11 17 2 2a1.4 1.4 0 0 0 2-2l-1-1" />
+    <path d="M14 16a1.4 1.4 0 0 0 2-2l-3.5-3.5" />
+    <path d="M3 10.5 7 7l3 2.5a1.5 1.5 0 0 0 2 0L14 8l7 6.5" />
+    <path d="M3 14.5 6 17M21 10.5 17.5 7" />
+  </Svg>
+);
+
+export const IconLayout = (p: Props) => (
+  <Svg {...p}>
+    <rect x="3" y="4" width="18" height="16" rx="2.5" />
+    <path d="M3 15h18M9 15v5" />
+  </Svg>
+);
+
 export const IconExternal = (p: Props) => (
   <Svg {...p}>
     <path d="M14 4h6v6M20 4l-8 8M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5" />

@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import type { AdminSpeaker } from '@/lib/adminApi';
 import { uploadPhoto } from '@/lib/adminApi';
-import { asset } from '@/lib/paths';
+import { mediaSrc } from '@/lib/paths';
 import { speakerThemes } from '@/content/hero';
 import {
   IconPlus,
@@ -12,6 +12,7 @@ import {
   IconImage,
   IconAlert,
 } from '@/components/admin/icons';
+import { Field, IconBtn, SectionHead } from '@/components/admin/ui';
 
 const THEMES = Object.keys(speakerThemes) as (keyof typeof speakerThemes)[];
 const THEME_LABEL: Record<string, string> = {
@@ -37,9 +38,13 @@ const EMPTY: AdminSpeaker = {
  */
 export default function SpeakersEditor({
   speakers,
+  note,
+  onNote,
   onChange,
 }: {
   speakers: AdminSpeaker[];
+  note: string;
+  onNote: (v: string) => void;
   onChange: (next: AdminSpeaker[]) => void;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -69,13 +74,13 @@ export default function SpeakersEditor({
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-[19px] font-semibold tracking-tight">Спикеры</h2>
-          <p className="mt-1 text-[13px] text-adm-muted">
-            Карточки в карусели на сайте. Порядок здесь — порядок на странице.
-          </p>
-        </div>
+      <SectionHead
+        title="Спикеры"
+        hint="Карточки в карусели на сайте. Порядок здесь — порядок на странице."
+        note={note}
+        onNote={onNote}
+        notePlaceholder="Например: Спикеры прошлой конференции"
+      >
         <button
           type="button"
           onClick={add}
@@ -84,7 +89,7 @@ export default function SpeakersEditor({
           <IconPlus size={16} strokeWidth={2.5} />
           Добавить спикера
         </button>
-      </div>
+      </SectionHead>
 
       {speakers.length === 0 && (
         <p className="rounded-xl border border-dashed border-adm-border bg-adm-surface p-8 text-center text-sm text-adm-muted">
@@ -160,7 +165,7 @@ function SpeakerRow({
           {speaker.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={speaker.photo.startsWith('/api') ? speaker.photo : asset(speaker.photo)}
+              src={mediaSrc(speaker.photo)}
               alt=""
               className="h-full w-full object-cover"
             />
@@ -276,53 +281,3 @@ function SpeakerRow({
   );
 }
 
-export function Field({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-[13px] font-medium text-adm-text2">{label}</span>
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-adm-border bg-adm-bg px-3 py-2 text-[14px] text-adm-text outline-none transition-colors focus:border-adm-accent"
-      />
-    </label>
-  );
-}
-
-export function IconBtn({
-  label,
-  onClick,
-  disabled,
-  danger,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  danger?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      title={label}
-      aria-label={label}
-      onClick={onClick}
-      disabled={disabled}
-      className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-adm-muted transition-colors hover:bg-adm-surface2 hover:text-adm-text disabled:cursor-not-allowed disabled:opacity-30 ${
-        danger ? 'hover:bg-adm-danger-soft hover:text-adm-danger' : ''
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
