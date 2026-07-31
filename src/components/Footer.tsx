@@ -1,7 +1,7 @@
 'use client';
 
 import { footer as builtinFooter } from '@/content/hero';
-import { asset } from '@/lib/paths';
+import { asset, mediaSrc } from '@/lib/paths';
 import { useLiveContent } from '@/lib/useLiveContent';
 
 /**
@@ -9,8 +9,8 @@ import { useLiveContent } from '@/lib/useLiveContent';
  * бренд/описание, контакты, документы, организатор. Телефоны через tel:,
  * почта через mailto:, документы открываются в новой вкладке.
  *
- * ⚠️ Реквизиты организатора и ссылки на юр. документы ещё не переданы —
- * стоят плейсхолдеры (папка «Реквизиты» в Drive пока пустая).
+ * Реквизиты и документы перенесены с сайта первой конференции, дальше
+ * заказчик правит их в админке.
  */
 type FooterData = {
   description: string;
@@ -95,7 +95,9 @@ export default function Footer() {
               {data.documents.map((d) => (
                 <li key={d.label}>
                   <a
-                    href={d.href}
+                    // Документ может лежать у нас или быть внешней ссылкой:
+                    // mediaSrc добавит префикс только своим путям
+                    href={mediaSrc(d.href)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-text-muted transition-colors hover:text-cyan"
