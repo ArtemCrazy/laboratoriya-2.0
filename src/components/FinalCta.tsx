@@ -3,6 +3,7 @@
 import { hero } from '@/content/hero';
 import LiquidButton from '@/components/LiquidButton';
 import { useLead } from '@/components/LeadProvider';
+import { asset } from '@/lib/paths';
 
 /**
  * Финальный CTA (ТЗ §3) — краткое повторение оффера и действия.
@@ -19,6 +20,30 @@ export default function FinalCta() {
       <div aria-hidden="true" className="absolute inset-0">
         <div className="absolute -left-20 top-0 h-[420px] w-[420px] rounded-full bg-cyan/10 blur-[130px]" />
         <div className="absolute -right-20 bottom-0 h-[380px] w-[380px] rounded-full bg-accent/10 blur-[130px]" />
+      </div>
+
+      {/* Маскоты как на первой конференции: стоят на нижней границе блока,
+          симметрично по краям, текст между ними.
+          Показываем от 1536px: на экранах уже они наезжали на заголовок */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 hidden 2xl:block">
+        <div className="relative mx-auto h-0 max-w-[1440px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={asset('/img/mascot-man.webp')}
+            alt=""
+            width={640}
+            height={640}
+            className="absolute bottom-0 left-[3%] w-[220px] min-[1800px]:w-[250px]"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={asset('/img/mascot-woman.webp')}
+            alt=""
+            width={640}
+            height={640}
+            className="absolute bottom-0 right-[3%] w-[220px] min-[1800px]:w-[250px]"
+          />
+        </div>
       </div>
 
       <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
