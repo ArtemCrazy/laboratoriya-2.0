@@ -99,9 +99,12 @@ export default function Program() {
         {/* Timeline: слева кружок с линией, справа карточка сессии */}
         <div className="mt-10 flex flex-col">
           {current.sessions.map((s, i) => {
+            // Спикер может быть не назначен: тема известна, выступающего
+            // объявят позже. Такую сессию всё равно показываем
             const sp = speakers[s.speaker];
-            // Спикера могли удалить в админке — такую сессию просто не выводим
-            if (!sp) return null;
+            const title = s.topic?.trim() || sp?.topic;
+            // Совсем пустую карточку не рисуем: ни спикера, ни темы
+            if (!sp && !title) return null;
             const color = formatColor(s.format);
             return (
               <div key={i} className="flex gap-4 sm:gap-6">
@@ -137,21 +140,23 @@ export default function Program() {
                     </div>
 
                     <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
-                      {/* Фото спикера слева */}
-                      <span
-                        className="block h-16 w-16 shrink-0 overflow-hidden rounded-full border"
-                        style={{ borderColor: `${color}66` }}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={mediaSrc(sp.photo)}
-                          alt=""
-                          aria-hidden="true"
-                          width={400}
-                          height={400}
-                          className="h-full w-full object-cover"
-                        />
-                      </span>
+                      {/* Фото и имя — только если спикер назначен */}
+                      {sp && (
+                        <span
+                          className="block h-16 w-16 shrink-0 overflow-hidden rounded-full border"
+                          style={{ borderColor: `${color}66` }}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={mediaSrc(sp.photo)}
+                            alt=""
+                            aria-hidden="true"
+                            width={400}
+                            height={400}
+                            className="h-full w-full object-cover"
+                          />
+                        </span>
+                      )}
                       <div className="min-w-0">
                         <p
                           className="text-[17px] font-bold leading-snug"
@@ -159,11 +164,13 @@ export default function Program() {
                         >
                           {/* Тема сессии перекрывает тему из карточки спикера:
                               один спикер может выступать дважды по-разному */}
-                          {s.topic?.trim() || sp.topic}
+                          {title}
                         </p>
-                        <p className="mt-1.5 text-sm text-text-muted">
-                          {sp.name} · {sp.role}, {sp.company}
-                        </p>
+                        {sp && (
+                          <p className="mt-1.5 text-sm text-text-muted">
+                            {sp.name} · {sp.role}, {sp.company}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

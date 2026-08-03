@@ -3,7 +3,7 @@
 import type { AdminDay, AdminSpeaker } from '@/lib/adminApi';
 import { keyThemes } from '@/content/hero';
 import { Field, IconBtn, SectionHead } from '@/components/admin/ui';
-import { IconPlus, IconTrash, IconChevron, IconAlert } from '@/components/admin/icons';
+import { IconPlus, IconTrash, IconChevron } from '@/components/admin/icons';
 
 /**
  * Форматы: «Доклад» на сайте окрашивается голубым, остальные — жёлтым
@@ -33,7 +33,13 @@ export default function ProgramEditor({
     });
 
   const addSession = (di: number) =>
-    updateDay(di, { sessions: [...program[di].sessions, { format: 'Доклад', speaker: 0 }] });
+    updateDay(di, {
+      sessions: [
+        ...program[di].sessions,
+        // Спикеров может не быть вовсе — тогда оставляем не назначенным
+        { format: 'Доклад', speaker: speakers.length ? 0 : -1 },
+      ],
+    });
 
   const removeSession = (di: number, si: number) =>
     updateDay(di, { sessions: program[di].sessions.filter((_, i) => i !== si) });
@@ -54,15 +60,6 @@ export default function ProgramEditor({
         note={note}
         onNote={onNote}
       />
-
-      {speakers.length === 0 && (
-        <p className="mb-4 flex items-start gap-2 rounded-lg bg-adm-danger-soft px-3.5 py-2.5 text-[13px] text-adm-danger">
-          <span className="mt-px shrink-0">
-            <IconAlert size={15} />
-          </span>
-          Сначала добавьте спикеров — сессии ссылаются на них.
-        </p>
-      )}
 
       <div className="space-y-5">
         {program.map((day, di) => (
@@ -113,6 +110,9 @@ export default function ProgramEditor({
                         }
                         className="cursor-pointer rounded-lg border border-adm-border bg-adm-surface px-3 py-2 text-[14px] text-adm-text outline-none transition-colors focus:border-adm-accent"
                       >
+                        {/* Спикера можно не назначать: тема уже известна,
+                            а выступающего объявят позже */}
+                        <option value={-1}>Спикер не назначен</option>
                         {speakers.map((sp2, i) => (
                           <option key={i} value={i}>
                             {sp2.name || `Спикер ${i + 1}`}
@@ -162,18 +162,23 @@ export default function ProgramEditor({
                       <input
                         type="text"
                         value={s.topic ?? ''}
-                        placeholder={sp?.topic || 'Тема из карточки спикера'}
+                        placeholder={
+                          sp?.topic || (s.speaker < 0 ? 'Укажите тему выступления' : 'Тема из карточки спикера')
+                        }
                         onChange={(e) => updateSession(di, si, { topic: e.target.value })}
                         className="rounded-lg border border-adm-border bg-adm-surface px-3 py-2 text-[14px] text-adm-text outline-none transition-colors placeholder:text-adm-muted2 focus:border-adm-accent"
                       />
                       <span className="text-[12px] text-adm-muted">
                         {s.topic
                           ? 'Своя тема для этого выступления'
-                          : 'Пусто — на сайте покажем тему из карточки спикера'}
+                          : s.speaker < 0
+                            ? 'Спикер не назначен — без темы выступление будет пустым'
+                            : 'Пусто — на сайте покажем тему из карточки спикера'}
                       </span>
                     </label>
 
-                    {!sp && (
+                    {/* Спикера могли удалить из списка, а ссылка на него осталась */}
+                    {!sp && s.speaker >= 0 && (
                       <p className="w-full text-[12px] text-adm-danger">
                         Спикер удалён — выберите другого
                       </p>
@@ -185,8 +190,7 @@ export default function ProgramEditor({
               <button
                 type="button"
                 onClick={() => addSession(di)}
-                disabled={speakers.length === 0}
-                className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-adm-border px-3.5 py-2 text-[13px] font-medium text-adm-text2 transition-colors hover:border-adm-accent hover:text-adm-accent disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-adm-border px-3.5 py-2 text-[13px] font-medium text-adm-text2 transition-colors hover:border-adm-accent hover:text-adm-accent"
               >
                 <IconPlus size={15} />
                 Добавить выступление
