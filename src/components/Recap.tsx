@@ -115,25 +115,42 @@ export default function Recap() {
               снова расходились по высоте */}
           <div className="relative">
             <div className="grid aspect-video grid-cols-2 grid-rows-2 gap-3 lg:absolute lg:inset-0 lg:aspect-auto">
-            {collage.map((src, i) => (
-              <button
-                key={src}
-                type="button"
-                onClick={() => setLightbox(i + 1)}
-                aria-label={`Открыть фото ${i + 1}`}
-                className="group cursor-pointer overflow-hidden rounded-xl border border-glass-border"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={asset(src)}
-                  alt=""
-                  width={1600}
-                  height={1067}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                </button>
-              ))}
+            {collage.map((src, i) => {
+                // На последней плитке — вход в галерею: действие там, где
+                // человек смотрит на фотографии, а не внизу блока
+                const last = i === collage.length - 1;
+                const rest = recap.photos.length - collage.length;
+
+                return (
+                  <button
+                    key={src}
+                    type="button"
+                    onClick={() => setLightbox(i + 1)}
+                    aria-label={last ? 'Смотреть все фото' : `Открыть фото ${i + 1}`}
+                    className="group relative cursor-pointer overflow-hidden rounded-xl border border-glass-border"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={asset(src)}
+                      alt=""
+                      width={1600}
+                      height={1067}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+
+                    {last && rest > 0 && (
+                      <span className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-bg-main/70 text-white transition-colors group-hover:bg-bg-main/55">
+                        <span className="text-cyan">
+                          <IconGallery />
+                        </span>
+                        <span className="text-[15px] font-semibold">Смотреть фото</span>
+                        <span className="text-[12px] text-text-muted">ещё {rest}</span>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -142,7 +159,8 @@ export default function Recap() {
           {recap.text}
         </p>
 
-        <div className="mt-10 flex flex-col gap-8 border-t border-glass-border pt-8 lg:flex-row lg:items-center lg:justify-between">
+        {/* Цифры занимают строку целиком: вход в галерею переехал на коллаж */}
+        <div className="mt-10 border-t border-glass-border pt-8">
           <div className="grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-4 lg:gap-x-14">
             {recap.facts.map((f) => (
               <div key={f.label}>
@@ -156,15 +174,6 @@ export default function Recap() {
               </div>
             ))}
           </div>
-
-          <button
-            type="button"
-            onClick={() => setLightbox(0)}
-            className="inline-flex shrink-0 cursor-pointer items-center gap-2.5 self-start rounded-full border border-glass-border bg-glass px-5 py-3 text-sm font-semibold transition-colors hover:border-cyan/50 hover:text-cyan lg:self-auto"
-          >
-            Смотреть фото
-            <IconArrow />
-          </button>
         </div>
       </div>
 
@@ -236,13 +245,23 @@ function IconPlay() {
   );
 }
 
-function IconArrow() {
+function IconGallery() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M3 8h10m0 0-4-4m4 4-4 4"
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect
+        x="3"
+        y="6"
+        width="14"
+        height="12"
+        rx="2"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.6"
+      />
+      <circle cx="7.5" cy="10" r="1.3" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M3.5 15.5 7 12l3 2.5L12.5 13l4.5 4M20 8v9a3 3 0 0 1-3 3H8"
+        stroke="currentColor"
+        strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
