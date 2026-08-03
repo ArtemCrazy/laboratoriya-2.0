@@ -110,9 +110,11 @@ export default function Recap() {
           </div>
 
           {/* Фотоколлаж 2×2, клик открывает lightbox.
-              На десктопе высоту задаёт видео, коллаж тянется под него: у колонок
-              разная ширина, и собственный 16:9 разводил их по высоте */}
-          <div className="grid aspect-video grid-cols-2 grid-rows-2 gap-3 lg:aspect-auto lg:h-full">
+              На десктопе высоту задаёт видео: коллаж вынут из потока
+              (absolute), иначе его плитки сами растягивали строку и колонки
+              снова расходились по высоте */}
+          <div className="relative">
+            <div className="grid aspect-video grid-cols-2 grid-rows-2 gap-3 lg:absolute lg:inset-0 lg:aspect-auto">
             {collage.map((src, i) => (
               <button
                 key={src}
@@ -130,8 +132,9 @@ export default function Recap() {
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-              </button>
-            ))}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -1,22 +1,38 @@
 'use client';
 
+import { useRef } from 'react';
 import { reviews as builtinReviews } from '@/content/hero';
 import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
 import BlockNote from '@/components/BlockNote';
 
 /**
- * Блок «Отзывы участников» (ТЗ 4.8). Сетка карточек, без автокарусели —
- * ТЗ прямо запрещает бесконечную прокрутку без управления. Текст не
- * обрезается: ключевая мысль должна быть видна целиком.
+ * Блок «Отзывы участников» (ТЗ 4.8). Слайдер на три карточки, листается
+ * стрелками и свайпом. Автопрокрутки нет — ТЗ прямо её запрещает.
  *
- * ⚠️ ТЗ просит 5–6 отзывов, заказчик передал два (у второго нет ФИО и фото).
- * Ждём остальные — сетка рассчитана на 3 колонки и добьётся сама.
+ * Слайдер, а не сетка: отзывов может быть любое количество, и при четырёх
+ * последняя карточка висела в новом ряду одна. Текст не обрезаем, ключевая
+ * мысль должна читаться целиком.
  */
 type Review = { text: string; name: string; role: string; company: string };
 
 export default function Reviews() {
   const reviews = useLiveContent<Review[]>('reviews', builtinReviews as never);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const scrollByCards = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector('figure');
+    const step = card ? card.getBoundingClientRect().width + 16 : el.clientWidth * 0.8;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+    const atStart = el.scrollLeft <= 4;
+
+    // Зацикливаем, как в карусели спикеров
+    if (dir === 1 && atEnd) el.scrollTo({ left: 0, behavior: 'smooth' });
+    else if (dir === -1 && atStart) el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
+    else el.scrollBy({ left: step * dir, behavior: 'smooth' });
+  };
 
   // Блока нет, пока не добавили ни одного отзыва
   if (!reviews.length) return null;
@@ -29,20 +45,47 @@ export default function Reviews() {
           Отзывы
         </div>
 
-        <h2
-          className="max-w-[820px] text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.15] tracking-tight"
-          style={{ fontFamily: 'var(--font-outfit)' }}
-        >
-          Что говорили участники первой лаборатории
-        </h2>
+        <div className="flex items-end justify-between gap-6">
+          <h2
+            className="max-w-[820px] text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.15] tracking-tight"
+            style={{ fontFamily: 'var(--font-outfit)' }}
+          >
+            Что говорили участники первой лаборатории
+          </h2>
+
+          {/* Стрелки нужны, только если карточки не помещаются разом */}
+          {reviews.length > 3 && (
+            <div className="hidden shrink-0 gap-2 lg:flex">
+              <button
+                type="button"
+                onClick={() => scrollByCards(-1)}
+                aria-label="Предыдущий отзыв"
+                className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-glass-border text-text-muted transition-colors hover:border-cyan/50 hover:text-white"
+              >
+                <Arrow dir="left" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollByCards(1)}
+                aria-label="Следующий отзыв"
+                className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-glass-border text-text-muted transition-colors hover:border-cyan/50 hover:text-white"
+              >
+                <Arrow dir="right" />
+              </button>
+            </div>
+          )}
+        </div>
 
         <BlockNote section="reviews" />
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          ref={trackRef}
+          className="mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {reviews.map((r) => (
             <figure
               key={r.text.slice(0, 40)}
-              className="flex flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-colors hover:border-cyan/40"
+              className="flex w-[300px] shrink-0 snap-start flex-col rounded-2xl border border-glass-border bg-glass p-6 transition-colors hover:border-cyan/40 sm:w-[380px] lg:w-[calc((100%-2*16px)/3)]"
             >
               <span aria-hidden="true" className="text-4xl leading-none text-cyan/40">
                 &laquo;
@@ -67,5 +110,19 @@ export default function Reviews() {
         </div>
       </div>
     </section>
+  );
+}
+
+function Arrow({ dir }: { dir: 'left' | 'right' }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path
+        d={dir === 'right' ? 'M6 3l6 6-6 6' : 'M12 3L6 9l6 6'}
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
