@@ -29,7 +29,7 @@ type ProgramSpeaker = { name: string; role: string; company: string; photo: stri
 type ProgramDay = {
   day: string;
   date: string;
-  sessions: { format: string; speaker: number; topic?: string }[];
+  sessions: { format: string; speaker: number; topic?: string; track?: string }[];
 };
 
 export default function Program() {
@@ -119,12 +119,22 @@ export default function Program() {
                 {/* Карточка сессии */}
                 <div className="flex-1 pb-6">
                   <div className="rounded-2xl border border-glass-border bg-glass p-5 transition-colors hover:border-cyan/40">
-                    <span
-                      className="inline-block rounded-full border px-3 pb-[3px] pt-[5px] text-[11px] font-semibold uppercase tracking-wider"
-                      style={{ borderColor: `${color}55`, color }}
-                    >
-                      {s.format}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <span
+                        className="inline-block rounded-full border px-3 pb-[3px] pt-[5px] text-[11px] font-semibold uppercase tracking-wider"
+                        style={{ borderColor: `${color}55`, color }}
+                      >
+                        {s.format}
+                      </span>
+
+                      {/* Тематический блок: длинные названия режем по двоеточию,
+                          в метке нужна короткая часть */}
+                      {s.track?.trim() && (
+                        <span className="text-[13px] text-text-muted">
+                          {s.track.split(':')[0]}
+                        </span>
+                      )}
+                    </div>
 
                     <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
                       {/* Фото спикера слева */}

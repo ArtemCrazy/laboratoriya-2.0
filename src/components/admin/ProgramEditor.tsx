@@ -1,6 +1,7 @@
 'use client';
 
 import type { AdminDay, AdminSpeaker } from '@/lib/adminApi';
+import { keyThemes } from '@/content/hero';
 import { Field, IconBtn, SectionHead } from '@/components/admin/ui';
 import { IconPlus, IconTrash, IconChevron, IconAlert } from '@/components/admin/icons';
 
@@ -137,6 +138,21 @@ export default function ProgramEditor({
                       </IconBtn>
                     </div>
 
+                    {/* Тематический блок из «Ключевых тем». Список открытый:
+                        можно выбрать из шести или вписать свой */}
+                    <label className="flex w-full flex-col gap-1.5">
+                      <span className="text-[13px] font-medium text-adm-text2">
+                        Тематический блок
+                      </span>
+                      <input
+                        list="admin-tracks"
+                        value={s.track ?? ''}
+                        placeholder="Необязательно. Например: Рынок труда и мотивации"
+                        onChange={(e) => updateSession(di, si, { track: e.target.value })}
+                        className="rounded-lg border border-adm-border bg-adm-surface px-3 py-2 text-[14px] text-adm-text outline-none transition-colors placeholder:text-adm-muted2 focus:border-adm-accent"
+                      />
+                    </label>
+
                     {/* Тему можно задать прямо здесь. Пусто — берётся из
                         карточки спикера, чтобы не дублировать её вручную */}
                     <label className="flex w-full flex-col gap-1.5">
@@ -183,6 +199,14 @@ export default function ProgramEditor({
       <datalist id="admin-formats">
         {FORMATS.map((f) => (
           <option key={f} value={f} />
+        ))}
+      </datalist>
+
+      {/* Тематические блоки — те же, что в «Ключевых темах» на сайте.
+          На странице показываем короткую часть, до двоеточия */}
+      <datalist id="admin-tracks">
+        {keyThemes.map((t) => (
+          <option key={t} value={t.split(':')[0]} />
         ))}
       </datalist>
     </div>

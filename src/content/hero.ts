@@ -369,8 +369,11 @@ export const speakerBonds: [number, number][] = [
  * из программы убраны, тайминг слева не выводится — остались только сессии
  * со спикерами, поэтому у сессии нет ни времени, ни отдельного заголовка.
  */
-/** topic пустой — тема берётся из карточки спикера */
-type Session = { format: string; speaker: number; topic?: string };
+/**
+ * topic пустой — тема берётся из карточки спикера.
+ * track — тематический блок из «Ключевых тем», необязателен.
+ */
+type Session = { format: string; speaker: number; topic?: string; track?: string };
 type ProgramDay = { day: string; date: string; sessions: Session[] };
 
 export const program: ProgramDay[] = [
