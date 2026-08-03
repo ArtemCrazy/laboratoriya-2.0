@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { asset } from '@/lib/paths';
+import LeadProvider from '@/components/LeadProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,7 +27,10 @@ export default function RootLayout({
         />
         <link rel="icon" type="image/svg+xml" href={asset('/favicon.svg')} />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* Одно окно заявки на всю страницу — его открывают кнопки из разных блоков */}
+        <LeadProvider>{children}</LeadProvider>
+      </body>
     </html>
   );
 }

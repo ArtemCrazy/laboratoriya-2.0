@@ -50,6 +50,7 @@ export default function PricingEditor({
                   price: '',
                   earlyPrice: '',
                   recommended: false,
+                  quote: false,
                   features: [],
                 },
               ],
@@ -104,20 +105,32 @@ export default function PricingEditor({
 
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <Field
-                label="Цена"
+                label={t.quote ? 'Текст вместо цены' : 'Цена'}
                 value={t.price}
                 onChange={(v) => patchTariff(ti, { price: v })}
-                placeholder="72 000 ₽"
+                placeholder={t.quote ? 'Стоимость зависит от количества участников' : '72 000 ₽'}
               />
-              <Field
-                label="Цена при ранней оплате"
-                value={t.earlyPrice}
-                onChange={(v) => patchTariff(ti, { earlyPrice: v })}
-                placeholder="64 800 ₽"
-              />
+              {!t.quote && (
+                <Field
+                  label="Цена при ранней оплате"
+                  value={t.earlyPrice}
+                  onChange={(v) => patchTariff(ti, { earlyPrice: v })}
+                  placeholder="64 800 ₽"
+                />
+              )}
             </div>
 
             <label className="mt-4 flex cursor-pointer items-center gap-2.5 text-[13px]">
+              <input
+                type="checkbox"
+                checked={t.quote}
+                onChange={(e) => patchTariff(ti, { quote: e.target.checked })}
+                className="h-4 w-4 cursor-pointer accent-adm-accent"
+              />
+              Цена по запросу — вместо покупки кнопка «Запросить расчёт»
+            </label>
+
+            <label className="mt-3 flex cursor-pointer items-center gap-2.5 text-[13px]">
               <input
                 type="checkbox"
                 checked={t.recommended}

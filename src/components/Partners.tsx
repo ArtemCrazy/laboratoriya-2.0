@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { partnerCategories as builtinPartners } from '@/content/hero';
 import { mediaSrc } from '@/lib/paths';
 import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
 import BlockNote from '@/components/BlockNote';
-import PartnerModal from '@/components/PartnerModal';
+import { useLead } from '@/components/LeadProvider';
 
 /**
  * Блок «Партнёры» (ТЗ 4.10). Категории: генеральный / стратегический /
@@ -23,7 +22,7 @@ type Partner = { name: string; logo: string; url: string };
 type Category = { level: string; hidden: boolean; slots: number; partners: Partner[] };
 
 export default function Partners() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const openLead = useLead();
 
   const categories = useLiveContent<Category[]>(
     'partners',
@@ -52,7 +51,7 @@ export default function Partners() {
 
           <button
             type="button"
-            onClick={() => setModalOpen(true)}
+            onClick={() => openLead('partner')}
             className="inline-flex shrink-0 cursor-pointer items-center gap-2.5 self-start rounded-full bg-accent px-5 py-3 text-sm font-semibold text-text-dark transition-colors hover:bg-accent-hover lg:self-auto"
           >
             Стать партнёром
@@ -139,7 +138,6 @@ export default function Partners() {
         </div>
       </div>
 
-      <PartnerModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </section>
   );
 }

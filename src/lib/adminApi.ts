@@ -35,6 +35,8 @@ export type AdminTariff = {
   price: string;
   earlyPrice: string;
   recommended: boolean;
+  /** Цена по запросу: вместо покупки кнопка «Запросить расчёт» */
+  quote: boolean;
   features: string[];
 };
 export type AdminPricing = {
@@ -163,6 +165,7 @@ export function builtinContent(): AdminContent {
         price: t.price,
         earlyPrice: t.earlyPrice,
         recommended: t.recommended,
+        quote: t.quote,
         features: [...t.features],
       })),
     },

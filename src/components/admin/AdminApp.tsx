@@ -18,6 +18,7 @@ import ProgramEditor from '@/components/admin/ProgramEditor';
 import PricingEditor from '@/components/admin/PricingEditor';
 import PartnersEditor from '@/components/admin/PartnersEditor';
 import FooterEditor from '@/components/admin/FooterEditor';
+import LeadsEditor from '@/components/admin/LeadsEditor';
 import {
   HeroEditor,
   ReviewsEditor,
@@ -236,6 +237,8 @@ export default function AdminApp() {
         )}
 
         <div className="mx-auto w-full max-w-[980px] flex-1 p-4 lg:p-8">
+          {/* Заявки живут отдельно от контента: их не сохраняют кнопкой */}
+          {section === 'leads' && <LeadsEditor />}
           {section === 'hero' && (
             <HeroEditor
               hero={content.hero}

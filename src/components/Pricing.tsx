@@ -3,6 +3,7 @@
 import { pricing as builtinPricing } from '@/content/hero';
 import { useLiveContent } from '@/lib/useLiveContent';
 import FlaskMark from '@/components/FlaskMark';
+import { useLead } from '@/components/LeadProvider';
 import BlockNote from '@/components/BlockNote';
 
 /**
@@ -16,6 +17,7 @@ import BlockNote from '@/components/BlockNote';
 type PricingData = typeof builtinPricing;
 
 export default function Pricing() {
+  const openLead = useLead();
   // Тарифы и цены заказчик правит в админке (ТЗ §6)
   const pricing = useLiveContent<PricingData>('pricing', builtinPricing);
 
@@ -73,31 +75,38 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              {/* Цена внизу карточки, после состава пакета (правки 29.07) */}
+              {/* Цена внизу карточки, после состава пакета (правки 29.07).
+                  У тарифа с расчётом цены нет — там запрос стоимости */}
               <div className="mt-8 border-t border-glass-border pt-6">
                 <div
-                  className={`text-[clamp(30px,3.2vw,40px)] font-extrabold leading-none ${
-                    t.recommended ? 'text-accent' : 'text-white'
-                  }`}
+                  className={`font-extrabold leading-tight ${
+                    t.quote
+                      ? 'text-[17px] text-text-muted'
+                      : 'text-[clamp(30px,3.2vw,40px)] leading-none'
+                  } ${t.recommended ? 'text-accent' : t.quote ? '' : 'text-white'}`}
                   style={{ fontFamily: 'var(--font-outfit)' }}
                 >
                   {t.price}
                 </div>
-                <p className="mt-2.5 text-[14px] leading-snug text-text-muted">
-                  {pricing.earlyDeadline} —{' '}
-                  <span className="font-semibold text-cyan">{t.earlyPrice}</span>
-                </p>
 
-                <a
-                  href="#final-cta"
-                  className={`mt-6 block rounded-full py-3.5 text-center text-sm font-semibold transition-colors ${
+                {!t.quote && t.earlyPrice && (
+                  <p className="mt-2.5 text-[14px] leading-snug text-text-muted">
+                    {pricing.earlyDeadline} —{' '}
+                    <span className="font-semibold text-cyan">{t.earlyPrice}</span>
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => openLead(t.quote ? 'quote' : 'ticket', `Тариф «${t.name}»`)}
+                  className={`mt-6 block w-full cursor-pointer rounded-full py-3.5 text-center text-sm font-semibold transition-colors ${
                     t.recommended
                       ? 'bg-accent text-text-dark hover:bg-accent-hover'
                       : 'border border-glass-border bg-glass hover:border-cyan/50 hover:text-cyan'
                   }`}
                 >
-                  Купить билет
-                </a>
+                  {t.quote ? 'Запросить расчёт' : 'Купить билет'}
+                </button>
               </div>
             </article>
           ))}

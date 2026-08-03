@@ -16,9 +16,11 @@ import {
   IconBuilding,
   IconHandshake,
   IconLayout,
+  IconInbox,
 } from '@/components/admin/icons';
 
 export type AdminSection =
+  | 'leads'
   | 'hero'
   | 'speakers'
   | 'program'
@@ -29,6 +31,7 @@ export type AdminSection =
   | 'footer';
 
 export const SECTION_TITLE: Record<AdminSection, string> = {
+  leads: 'Заявки',
   hero: 'Даты и место',
   speakers: 'Спикеры',
   program: 'Программа',
@@ -40,6 +43,7 @@ export const SECTION_TITLE: Record<AdminSection, string> = {
 };
 
 const ITEMS: { id: AdminSection; Icon: typeof IconUsers }[] = [
+  { id: 'leads', Icon: IconInbox },
   { id: 'hero', Icon: IconPin },
   { id: 'speakers', Icon: IconUsers },
   { id: 'program', Icon: IconCalendar },

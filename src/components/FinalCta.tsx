@@ -1,14 +1,15 @@
+'use client';
+
 import { hero } from '@/content/hero';
 import LiquidButton from '@/components/LiquidButton';
+import { useLead } from '@/components/LeadProvider';
 
 /**
  * Финальный CTA (ТЗ §3) — краткое повторение оффера и действия.
- *
- * ⚠️ Формы пока не подключены: по ТЗ §6 нужны модальные окна («Купить билет»,
- * «Получить программу», «Корпоративное участие», «Стать партнёром») с отправкой
- * в CRM. До выбора CRM кнопки ведут на почту — заявка не теряется.
+ * Кнопки открывают формы заявок, заявка уходит в панель управления и на почту.
  */
 export default function FinalCta() {
+  const openLead = useLead();
   return (
     <section
       id="final-cta"
@@ -26,8 +27,8 @@ export default function FinalCta() {
             className="text-[clamp(28px,3.8vw,50px)] font-extrabold leading-[1.12] tracking-tight"
             style={{ fontFamily: 'var(--font-outfit)' }}
           >
-            Два дня, которые соберут вашу{' '}
-            <span className="text-gradient">систему вознаграждения</span>
+            Два дня, которые помогут усилить вашу{' '}
+            <span className="text-gradient">систему мотивации персонала</span>
           </h2>
 
           <p className="mx-auto mt-6 max-w-[620px] text-[17px] leading-relaxed text-text-muted">
@@ -36,20 +37,21 @@ export default function FinalCta() {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <LiquidButton href="#price">{hero.ctaPrimary}</LiquidButton>
-            <LiquidButton href="#program" variant="ghost">
+            <LiquidButton onClick={() => openLead('ticket')}>{hero.ctaPrimary}</LiquidButton>
+            <LiquidButton onClick={() => openLead('program')} variant="ghost">
               {hero.ctaSecondary}
             </LiquidButton>
           </div>
 
           <p className="mt-8 text-sm text-text-muted">
             Нужен счёт на компанию или участие командой?{' '}
-            <a
-              href="mailto:info@cblabconference.ru"
-              className="font-medium text-cyan underline-offset-4 transition-colors hover:underline"
+            <button
+              type="button"
+              onClick={() => openLead('quote')}
+              className="cursor-pointer font-medium text-cyan underline-offset-4 transition-colors hover:underline"
             >
-              Напишите нам
-            </a>{' '}
+              Запросите расчёт
+            </button>{' '}
             — подготовим документы.
           </p>
         </div>

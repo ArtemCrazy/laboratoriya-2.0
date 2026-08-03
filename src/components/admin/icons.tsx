@@ -169,6 +169,13 @@ export const IconLayout = (p: Props) => (
   </Svg>
 );
 
+export const IconInbox = (p: Props) => (
+  <Svg {...p}>
+    <path d="M3 13h4l1.5 2.5h7L17 13h4" />
+    <path d="M5.5 5h13l2.5 8v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4l2.5-8Z" />
+  </Svg>
+);
+
 export const IconExternal = (p: Props) => (
   <Svg {...p}>
     <path d="M14 4h6v6M20 4l-8 8M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5" />

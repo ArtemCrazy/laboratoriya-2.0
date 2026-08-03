@@ -35,7 +35,9 @@ type Layer = {
 };
 
 type Props = {
-  href: string;
+  /** Ссылка-якорь. Не задана — кнопка открывает форму по onClick */
+  href?: string;
+  onClick?: () => void;
   children: React.ReactNode;
   variant?: 'primary' | 'ghost';
   icon?: React.ReactNode;
@@ -44,12 +46,13 @@ type Props = {
 
 export default function LiquidButton({
   href,
+  onClick,
   children,
   variant = 'primary',
   icon,
   className = '',
 }: Props) {
-  const rootRef = useRef<HTMLAnchorElement>(null);
+  const rootRef = useRef<HTMLAnchorElement & HTMLButtonElement>(null);
   const backRef = useRef<SVGPathElement>(null);
   const frontRef = useRef<SVGPathElement>(null);
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -173,11 +176,18 @@ export default function LiquidButton({
 
   const primary = variant === 'primary';
 
+  // Кнопка без href открывает модальное окно, поэтому это button, а не ссылка
+  const Tag = href ? 'a' : 'button';
+
   return (
-    <a
+    <Tag
       ref={rootRef}
       href={href}
-      className={`liquid-btn group relative inline-flex items-center justify-center px-8 py-4 text-center font-semibold transition-transform duration-200 active:scale-[0.97] ${
+      onClick={onClick}
+      type={href ? undefined : 'button'}
+      className={`liquid-btn group relative inline-flex ${
+        href ? '' : 'cursor-pointer'
+      } items-center justify-center px-8 py-4 text-center font-semibold transition-transform duration-200 active:scale-[0.97] ${
         primary ? 'text-accent' : 'text-white'
       } ${className}`}
     >
@@ -222,7 +232,7 @@ export default function LiquidButton({
         {children}
         {icon}
       </span>
-    </a>
+    </Tag>
   );
 }
 

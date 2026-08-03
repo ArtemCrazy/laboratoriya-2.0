@@ -16,6 +16,7 @@ import Venue from '@/components/Venue';
 import FinalCta from '@/components/FinalCta';
 import Footer from '@/components/Footer';
 import LiquidButton from '@/components/LiquidButton';
+import HeroCta from '@/components/HeroCta';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
@@ -115,10 +116,7 @@ export default function Home() {
             <HeroMeta />
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <LiquidButton href="#price">{hero.ctaPrimary}</LiquidButton>
-              <LiquidButton href="#program" variant="ghost">
-                {hero.ctaSecondary}
-              </LiquidButton>
+              <HeroCta />
             </div>
 
           </div>

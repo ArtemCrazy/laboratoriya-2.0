@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { hero, nav } from '@/content/hero';
 import { asset } from '@/lib/paths';
+import { useLead } from '@/components/LeadProvider';
 
 /**
  * Шапка по ТЗ 4.1: sticky после первого скролла, бургер на мобильном,
@@ -17,6 +18,7 @@ const logoBubbles = [
   { left: '62%', bottom: '20%', size: 2, delay: 4.2 },
 ];
 export default function Header() {
+  const openLead = useLead();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -98,12 +100,13 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <a
-              href="#price"
-              className="hidden rounded-full bg-accent px-4 py-2 text-sm font-semibold text-text-dark transition-colors hover:bg-accent-hover lg:inline-block"
+            <button
+              type="button"
+              onClick={() => openLead('ticket')}
+              className="hidden cursor-pointer rounded-full bg-accent px-4 py-2 text-sm font-semibold text-text-dark transition-colors hover:bg-accent-hover lg:inline-block"
             >
               {hero.ctaPrimary}
-            </a>
+            </button>
 
             {/* Бургер */}
             <button
@@ -157,12 +160,13 @@ export default function Header() {
           scrolled ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
-        <a
-          href="#price"
-          className="block rounded-full bg-accent py-3.5 text-center font-semibold text-text-dark"
+        <button
+          type="button"
+          onClick={() => openLead('ticket')}
+          className="block w-full cursor-pointer rounded-full bg-accent py-3.5 text-center font-semibold text-text-dark"
         >
           {hero.ctaPrimary} · {hero.dates}
-        </a>
+        </button>
       </div>
     </>
   );
