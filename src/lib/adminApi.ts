@@ -26,7 +26,8 @@ export type AdminSpeaker = {
   theme: string;
 };
 
-export type AdminSession = { format: string; speaker: number };
+/** topic пустой — на сайте берётся тема из карточки спикера */
+export type AdminSession = { format: string; speaker: number; topic?: string };
 export type AdminDay = { day: string; date: string; sessions: AdminSession[] };
 
 export type AdminTariff = {

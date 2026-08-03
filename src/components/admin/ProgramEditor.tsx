@@ -137,13 +137,26 @@ export default function ProgramEditor({
                       </IconBtn>
                     </div>
 
-                    {/* Тема доклада берётся из карточки спикера — здесь показываем,
-                        чтобы не пришлось держать её в голове */}
-                    {sp?.topic && (
-                      <p className="w-full text-[12px] leading-snug text-adm-muted">
-                        Тема: {sp.topic}
-                      </p>
-                    )}
+                    {/* Тему можно задать прямо здесь. Пусто — берётся из
+                        карточки спикера, чтобы не дублировать её вручную */}
+                    <label className="flex w-full flex-col gap-1.5">
+                      <span className="text-[13px] font-medium text-adm-text2">
+                        Тема выступления
+                      </span>
+                      <input
+                        type="text"
+                        value={s.topic ?? ''}
+                        placeholder={sp?.topic || 'Тема из карточки спикера'}
+                        onChange={(e) => updateSession(di, si, { topic: e.target.value })}
+                        className="rounded-lg border border-adm-border bg-adm-surface px-3 py-2 text-[14px] text-adm-text outline-none transition-colors placeholder:text-adm-muted2 focus:border-adm-accent"
+                      />
+                      <span className="text-[12px] text-adm-muted">
+                        {s.topic
+                          ? 'Своя тема для этого выступления'
+                          : 'Пусто — на сайте покажем тему из карточки спикера'}
+                      </span>
+                    </label>
+
                     {!sp && (
                       <p className="w-full text-[12px] text-adm-danger">
                         Спикер удалён — выберите другого

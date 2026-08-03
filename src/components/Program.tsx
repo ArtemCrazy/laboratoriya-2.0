@@ -26,7 +26,11 @@ const ACCENT = '#FFD54F';
 const formatColor = (format: string) => (format === 'Доклад' ? CYAN : ACCENT);
 
 type ProgramSpeaker = { name: string; role: string; company: string; photo: string; topic: string };
-type ProgramDay = { day: string; date: string; sessions: { format: string; speaker: number }[] };
+type ProgramDay = {
+  day: string;
+  date: string;
+  sessions: { format: string; speaker: number; topic?: string }[];
+};
 
 export default function Program() {
   const [day, setDay] = useState(0);
@@ -143,7 +147,9 @@ export default function Program() {
                           className="text-[17px] font-bold leading-snug"
                           style={{ fontFamily: 'var(--font-outfit)' }}
                         >
-                          {sp.topic}
+                          {/* Тема сессии перекрывает тему из карточки спикера:
+                              один спикер может выступать дважды по-разному */}
+                          {s.topic?.trim() || sp.topic}
                         </p>
                         <p className="mt-1.5 text-sm text-text-muted">
                           {sp.name} · {sp.role}, {sp.company}
