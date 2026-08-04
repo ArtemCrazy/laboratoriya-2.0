@@ -29,13 +29,27 @@ export type AdminSpeaker = {
 /**
  * topic пустой — на сайте берётся тема из карточки спикера.
  * track — тематический блок, к которому относится выступление.
+ * speakers — список выступающих: в части форматов их несколько.
+ * speaker — прежнее поле на одного, читаем для уже сохранённых программ.
+ * theses — тезисы доклада, на сайте идут списком.
  */
 export type AdminSession = {
   format: string;
-  speaker: number;
+  speaker?: number;
+  speakers?: number[];
   topic?: string;
   track?: string;
+  theses?: string[];
 };
+
+/** Список выступающих с учётом старого формата на одного спикера */
+export function sessionSpeakers(s: {
+  speaker?: number;
+  speakers?: number[];
+}): number[] {
+  if (Array.isArray(s.speakers)) return s.speakers.filter((i) => i >= 0);
+  return typeof s.speaker === 'number' && s.speaker >= 0 ? [s.speaker] : [];
+}
 export type AdminDay = { day: string; date: string; sessions: AdminSession[] };
 
 export type AdminTariff = {

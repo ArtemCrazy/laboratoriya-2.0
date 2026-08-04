@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { program as builtinProgram, speakers as builtinSpeakers } from '@/content/hero';
 import { mediaSrc } from '@/lib/paths';
 import { useLiveContent } from '@/lib/useLiveContent';
+import { sessionSpeakers } from '@/lib/adminApi';
 import FlaskMark from '@/components/FlaskMark';
 import BlockNote from '@/components/BlockNote';
+import { useLead } from '@/components/LeadProvider';
 
 /**
  * Блок «Программа на два дня» (ТЗ 4.5). Переключатель День 1 / День 2,
@@ -29,10 +31,18 @@ type ProgramSpeaker = { name: string; role: string; company: string; photo: stri
 type ProgramDay = {
   day: string;
   date: string;
-  sessions: { format: string; speaker: number; topic?: string; track?: string }[];
+  sessions: {
+    format: string;
+    speaker?: number;
+    speakers?: number[];
+    topic?: string;
+    track?: string;
+    theses?: string[];
+  }[];
 };
 
 export default function Program() {
+  const openLead = useLead();
   const [day, setDay] = useState(0);
   // Данные из админки, пока их нет — вшитые в сборку
   const program = useLiveContent<ProgramDay[]>('program', builtinProgram as never);
@@ -58,14 +68,15 @@ export default function Program() {
             Два дня практики, реальных кейсов и совместной работы над C&B-задачами
           </h2>
 
-          {/* Правки 29.07: кнопка выделена цветом */}
-          <a
-            href="#"
-            className="inline-flex shrink-0 items-center gap-2.5 self-start rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-text-dark transition-colors hover:bg-accent-hover lg:self-auto"
+          {/* Правки 04.08: программу присылаем по заявке, а не файлом */}
+          <button
+            type="button"
+            onClick={() => openLead('program')}
+            className="inline-flex shrink-0 cursor-pointer items-center gap-2.5 self-start rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-text-dark transition-colors hover:bg-accent-hover lg:self-auto"
           >
             <IconDownload />
-            Скачать программу PDF
-          </a>
+            Запросить программу
+          </button>
         </div>
 
         <BlockNote section="program" />
@@ -99,12 +110,15 @@ export default function Program() {
         {/* Timeline: слева кружок с линией, справа карточка сессии */}
         <div className="mt-10 flex flex-col">
           {current.sessions.map((s, i) => {
-            // Спикер может быть не назначен: тема известна, выступающего
-            // объявят позже. Такую сессию всё равно показываем
-            const sp = speakers[s.speaker];
-            const title = s.topic?.trim() || sp?.topic;
+            // Выступающих может быть несколько, а может не быть вовсе:
+            // тема известна, спикера объявят позже
+            const people = sessionSpeakers(s)
+              .map((idx) => speakers[idx])
+              .filter(Boolean);
+            const title = s.topic?.trim() || people[0]?.topic;
+            const theses = (s.theses ?? []).map((t) => t.trim()).filter(Boolean);
             // Совсем пустую карточку не рисуем: ни спикера, ни темы
-            if (!sp && !title) return null;
+            if (!people.length && !title) return null;
             const color = formatColor(s.format);
             return (
               <div key={i} className="flex gap-4 sm:gap-6">
@@ -130,33 +144,34 @@ export default function Program() {
                         {s.format}
                       </span>
 
-                      {/* Тематический блок: длинные названия режем по двоеточию,
-                          в метке нужна короткая часть */}
+                      {/* Тематический блок — ровно так, как ввели в админке */}
                       {s.track?.trim() && (
-                        <span className="text-[13px] text-text-muted">
-                          {s.track.split(':')[0]}
+                        <span className="text-[13px] leading-snug text-text-muted">
+                          {s.track}
                         </span>
                       )}
                     </div>
 
-                    <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
-                      {/* Фото и имя — только если спикер назначен */}
-                      {sp && (
-                        <span
-                          className="block h-16 w-16 shrink-0 overflow-hidden rounded-full border"
-                          style={{ borderColor: `${color}66` }}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={mediaSrc(sp.photo)}
-                            alt=""
-                            aria-hidden="true"
-                            width={400}
-                            height={400}
-                            className="h-full w-full object-cover"
-                          />
+                    <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start">
+                      {/* Фото: при нескольких выступающих идут стопкой внахлёст */}
+                      {people.length > 0 && (
+                        <span className="flex shrink-0 -space-x-3">
+                          {people.map((p, k) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              key={k}
+                              src={mediaSrc(p.photo)}
+                              alt=""
+                              aria-hidden="true"
+                              width={400}
+                              height={400}
+                              className="h-16 w-16 rounded-full border-2 object-cover"
+                              style={{ borderColor: `${color}66`, background: 'var(--color-bg-main)' }}
+                            />
+                          ))}
                         </span>
                       )}
+
                       <div className="min-w-0">
                         <p
                           className="text-[17px] font-bold leading-snug"
@@ -166,10 +181,27 @@ export default function Program() {
                               один спикер может выступать дважды по-разному */}
                           {title}
                         </p>
-                        {sp && (
-                          <p className="mt-1.5 text-sm text-text-muted">
-                            {sp.name} · {sp.role}, {sp.company}
+
+                        {people.map((p, k) => (
+                          <p key={k} className="mt-1.5 text-sm text-text-muted">
+                            {p.name} · {p.role}, {p.company}
                           </p>
+                        ))}
+
+                        {/* Тезисы доклада */}
+                        {theses.length > 0 && (
+                          <ul className="mt-3 flex flex-col gap-1.5">
+                            {theses.map((t, k) => (
+                              <li key={k} className="flex gap-2.5 text-[15px] leading-snug">
+                                <span
+                                  aria-hidden="true"
+                                  className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
+                                  style={{ background: color }}
+                                />
+                                {t}
+                              </li>
+                            ))}
+                          </ul>
                         )}
                       </div>
                     </div>

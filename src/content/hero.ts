@@ -5,8 +5,8 @@
  */
 
 export const hero = {
-  // Правки 24.07: название капслоком, без дефиса; подзаголовок отдельной строкой
-  titleMain: 'C&B ЛАБОРАТОРИЯ:',
+  // Правки 04.08: версия стоит рядом с названием, двоеточие убрано
+  titleMain: 'C&B ЛАБОРАТОРИЯ',
   titleAccent: 'химия цифр и людей',
   version: '2.0',
   subtitle:
@@ -372,8 +372,18 @@ export const speakerBonds: [number, number][] = [
 /**
  * topic пустой — тема берётся из карточки спикера.
  * track — тематический блок из «Ключевых тем», необязателен.
+ * speakers — выступающих может быть несколько; speaker остаётся для
+ * записей, сделанных до этого, и читается как один спикер.
+ * theses — тезисы доклада, выводятся списком.
  */
-type Session = { format: string; speaker: number; topic?: string; track?: string };
+type Session = {
+  format: string;
+  speaker?: number;
+  speakers?: number[];
+  topic?: string;
+  track?: string;
+  theses?: string[];
+};
 type ProgramDay = { day: string; date: string; sessions: Session[] };
 
 export const program: ProgramDay[] = [
@@ -412,7 +422,12 @@ export const formats = [
   { symbol: 'Cl', accent: 'violet', title: 'Клиники', desc: 'Разбор реальной задачи участника командой экспертов — как на врачебном приёме.' },
   { symbol: 'Ms', accent: 'green', title: 'Мастерские', desc: 'Работа руками: собираете инструмент или решение, которое заберёте в свою компанию.' },
   { symbol: 'Kn', accent: 'pink', title: 'Консилиумы', desc: 'Несколько экспертов разбирают кейс с разных сторон и сводят его к решению.' },
-  { symbol: 'Nt', accent: 'cyan', title: 'Нетворкинг', desc: 'Гала-ужин и живое общение — знакомства и обмен опытом с C&B-руководителями.' },
+  {
+    symbol: 'Nt',
+    accent: 'cyan',
+    title: 'Нетворкинг',
+    desc: 'Возможность познакомиться с коллегами, обменяться опытом и найти полезные контакты для дальнейшего взаимодействия.',
+  },
 ] as const;
 
 /**

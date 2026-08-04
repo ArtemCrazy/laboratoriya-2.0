@@ -99,12 +99,9 @@ export default function Home() {
               className="text-[clamp(32px,4.1vw,58px)] font-extrabold leading-[1.08] tracking-tight"
               style={{ fontFamily: 'var(--font-outfit)' }}
             >
-              {hero.titleMain}
+              {hero.titleMain} {hero.version}
               <br />
-              <span className="xl:whitespace-nowrap">
-                <span className="text-gradient">{hero.titleAccent}</span>{' '}
-                <span className="text-accent">{hero.version}</span>
-              </span>
+              <span className="text-gradient xl:whitespace-nowrap">{hero.titleAccent}</span>
             </h1>
 
             <p className="mt-6 max-w-[560px] text-[17px] leading-relaxed text-text-muted">

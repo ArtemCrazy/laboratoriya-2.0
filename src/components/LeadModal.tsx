@@ -222,6 +222,7 @@ export default function LeadModal({
                 className="absolute left-[-9999px] h-0 w-0 opacity-0"
               />
 
+              {/* Правки 04.08: документы в согласии — рабочие ссылки */}
               <label className="mt-1 flex cursor-pointer items-start gap-3 text-[13px] leading-snug text-text-muted">
                 <input
                   type="checkbox"
@@ -229,8 +230,18 @@ export default function LeadModal({
                   required
                   className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-cyan"
                 />
-                Согласен с политикой конфиденциальности, согласием на обработку персональных
-                данных и публичной офертой
+                <span>
+                  Согласен с{' '}
+                  <DocLink href="/docs/politika-konfidencialnosti.pdf">
+                    политикой конфиденциальности
+                  </DocLink>
+                  ,{' '}
+                  <DocLink href="/docs/soglasie-na-obrabotku-personalnyh-dannyh.pdf">
+                    согласием на обработку персональных данных
+                  </DocLink>{' '}
+                  и{' '}
+                  <DocLink href="/docs/publichnaya-oferta.pdf">публичной офертой</DocLink>
+                </span>
               </label>
 
               {error && (
@@ -264,6 +275,21 @@ const AUTOCOMPLETE: Record<FieldKey, string | undefined> = {
   people: 'off',
   comment: 'off',
 };
+
+/** Ссылка на юридический документ: открывается в новой вкладке (ТЗ 4.12) */
+function DocLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={asset(href)}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="text-cyan underline-offset-2 hover:underline"
+    >
+      {children}
+    </a>
+  );
+}
 
 function IconClose() {
   return (
