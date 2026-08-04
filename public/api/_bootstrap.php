@@ -104,6 +104,56 @@ function read_content(): array
     return is_array($data) ? $data : [];
 }
 
+const BACKUP_DIR = DATA_DIR . '/backups';
+/** Сколько копий держим: правки мелкие и частые, глубина важнее объёма */
+const BACKUP_KEEP = 40;
+
+/**
+ * Копия текущего контента перед перезаписью.
+ *
+ * Без неё неудачное сохранение или случайная очистка стирают работу
+ * заказчика без следа — так уже случилось с внесённой программой.
+ */
+function backup_content(): void
+{
+    if (!is_file(CONTENT_FILE)) {
+        return;
+    }
+    if (!is_dir(BACKUP_DIR) && !mkdir(BACKUP_DIR, 0775, true) && !is_dir(BACKUP_DIR)) {
+        return;
+    }
+    protect_dir(BACKUP_DIR);
+
+    @copy(CONTENT_FILE, BACKUP_DIR . '/content-' . date('Ymd-His') . '.json');
+
+    // Старые копии подчищаем, иначе папка растёт без предела
+    $files = glob(BACKUP_DIR . '/content-*.json') ?: [];
+    if (count($files) > BACKUP_KEEP) {
+        sort($files);
+        foreach (array_slice($files, 0, count($files) - BACKUP_KEEP) as $old) {
+            @unlink($old);
+        }
+    }
+}
+
+/** Список копий: свежие сверху */
+function list_backups(): array
+{
+    $files = glob(BACKUP_DIR . '/content-*.json') ?: [];
+    rsort($files);
+
+    return array_map(static function (string $path): array {
+        $name = basename($path);
+        // content-20260804-134201.json → 04.08.2026 13:42
+        preg_match('/content-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})\.json/', $name, $m);
+        return [
+            'name' => $name,
+            'size' => filesize($path) ?: 0,
+            'date' => $m ? "$m[3].$m[2].$m[1] $m[4]:$m[5]" : $name,
+        ];
+    }, $files);
+}
+
 /**
  * Пишем через временный файл и rename: если запись оборвётся,
  * content.json не превратится в обрезанный «полуфайл».
@@ -114,6 +164,9 @@ function write_content(array $data): void
         fail('Не удалось создать папку данных', 500);
     }
     protect_dir(DATA_DIR);
+
+    // Прежнюю версию сохраняем до того, как перезапишем
+    backup_content();
 
     $json = json_encode(
         $data,

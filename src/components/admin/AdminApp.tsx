@@ -19,6 +19,7 @@ import PricingEditor from '@/components/admin/PricingEditor';
 import PartnersEditor from '@/components/admin/PartnersEditor';
 import FooterEditor from '@/components/admin/FooterEditor';
 import LeadsEditor from '@/components/admin/LeadsEditor';
+import BackupsPanel from '@/components/admin/BackupsPanel';
 import {
   HeroEditor,
   ReviewsEditor,
@@ -237,6 +238,17 @@ export default function AdminApp() {
         )}
 
         <div className="mx-auto w-full max-w-[980px] flex-1 p-4 lg:p-8">
+          {/* История правок общая для всего контента, заявок она не касается */}
+          {section !== 'leads' && (
+            <BackupsPanel
+              onRestored={async () => {
+                setContent(await loadContent());
+                setDirty(false);
+                setStatus({ kind: 'ok', text: 'Версия восстановлена' });
+              }}
+            />
+          )}
+
           {/* Заявки живут отдельно от контента: их не сохраняют кнопкой */}
           {section === 'leads' && <LeadsEditor />}
           {section === 'hero' && (

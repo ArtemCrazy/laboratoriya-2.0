@@ -12,6 +12,38 @@ require __DIR__ . '/_bootstrap.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
+// Список резервных копий — только для админки
+if ($method === 'GET' && isset($_GET['backups'])) {
+    require_auth();
+    respond(['ok' => true, 'backups' => list_backups()]);
+}
+
+// Восстановление из копии. Текущее состояние тоже уходит в копию,
+// поэтому откат можно отменить
+if ($method === 'POST' && isset($_GET['restore'])) {
+    require_auth();
+
+    $body = read_json_body();
+    $name = (string) ($body['name'] ?? '');
+    // Имя приходит от клиента: пускаем только наш формат, без путей
+    if (!preg_match('/^content-\d{8}-\d{6}\.json$/', $name)) {
+        fail('Некорректное имя копии');
+    }
+
+    $path = BACKUP_DIR . '/' . $name;
+    if (!is_file($path)) {
+        fail('Копия не найдена', 404);
+    }
+
+    $data = json_decode((string) file_get_contents($path), true);
+    if (!is_array($data)) {
+        fail('Копия повреждена', 500);
+    }
+
+    write_content($data);
+    respond(['ok' => true, 'restored' => $name]);
+}
+
 if ($method === 'GET') {
     $data = read_content();
     header('Content-Type: application/json; charset=utf-8');

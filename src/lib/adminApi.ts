@@ -258,6 +258,30 @@ export async function saveContent(content: AdminContent): Promise<void> {
   );
 }
 
+export type ContentBackup = { name: string; size: number; date: string };
+
+/** Список автоматических копий контента (свежие сверху) */
+export async function loadBackups(): Promise<ContentBackup[]> {
+  const data = await parse(
+    await fetch(`${api('content.php')}?backups=1&t=${Date.now()}`, {
+      credentials: 'same-origin',
+    }),
+  );
+  return data.backups ?? [];
+}
+
+/** Откат к копии. Текущее состояние тоже сохраняется, откат обратим */
+export async function restoreBackup(name: string): Promise<void> {
+  await parse(
+    await fetch(`${api('content.php')}?restore=1`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    }),
+  );
+}
+
 export async function uploadPhoto(file: File): Promise<string> {
   const body = new FormData();
   body.append('file', file);
