@@ -37,7 +37,13 @@ const cfg = {
   username: process.env.PROD_USER,
   password: process.env.PROD_PASSWORD,
 };
-const remoteDir = process.env.PROD_DIR;
+/**
+ * Путь собираем здесь, а не берём из окружения целиком: Git Bash подменяет
+ * переменные, похожие на unix-пути, и /var/www превращается в путь к Git.
+ */
+const remoteDir = process.env.PROD_DIR?.startsWith('/')
+  ? process.env.PROD_DIR
+  : `/var/www/${process.env.PROD_USER}/data/www/${process.env.PROD_DIR}`;
 const archiveName = process.env.PROD_ARCHIVE || 'vers1';
 
 /** Живое на сервере: контент админки, загруженные фото и пароль */
@@ -63,6 +69,9 @@ if (missing.length) {
 const sftp = new SftpClient();
 
 /** Рекурсивно скачиваем папку: fastGet умеет только файлы */
+/** Медиа не тянем к себе: это десятки мегабайт, и они есть в бэкапе хостинга */
+const SKIP_LOCAL = ['img', 'images', 'upload', 'uploads'];
+
 async function downloadDir(remote, local) {
   const list = await sftp.list(remote);
   const { mkdirSync } = await import('node:fs');
@@ -73,6 +82,10 @@ async function downloadDir(remote, local) {
     const to = `${local}/${item.name}`;
     // Архив кладём внутрь той же папки — в него самого не заходим
     if (item.name === archiveName) continue;
+    if (item.type === 'd' && SKIP_LOCAL.includes(item.name)) {
+      console.log(`  (локально пропущено, останется на сервере: ${item.name})`);
+      continue;
+    }
     if (item.type === 'd') {
       await downloadDir(from, to);
     } else if (item.type === '-') {
