@@ -17,29 +17,52 @@ import { useLead } from '@/components/LeadProvider';
  * в табах дата стоит под названием дня, кнопка PDF выделена цветом.
  * Цвет плашки задаёт формат: доклады голубые, практические форматы жёлтые.
  *
- * ⚠️ Расписание — плейсхолдер (см. program в content/hero). Сессии собраны
- * из реальных спикеров первой конференции, реальную программу заменим.
+ * Правки 12.08: тематический блок вынесен заголовком над группой активностей
+ * и больше не повторяется в каждой карточке; внутри карточки порядок
+ * тип → тема → тезисы → спикер, время выводится, если задано в админке.
  */
 
 const CYAN = '#00E5FF';
 const ACCENT = '#FFD54F';
 
-/** Доклад — голубой, всё остальное практика — жёлтый (правки 29.07) */
-const formatColor = (format: string) => (format === 'Доклад' ? CYAN : ACCENT);
+/** Форматы, которые считаем докладными: они голубые, практика — жёлтая */
+const REPORT_FORMATS = ['доклад', 'кейс', 'аналитический обзор'];
+
+const formatColor = (format: string) =>
+  REPORT_FORMATS.includes(format.trim().toLowerCase()) ? CYAN : ACCENT;
 
 type ProgramSpeaker = { name: string; role: string; company: string; photo: string; topic: string };
-type ProgramDay = {
-  day: string;
-  date: string;
-  sessions: {
-    format: string;
-    speaker?: number;
-    speakers?: number[];
-    topic?: string;
-    track?: string;
-    theses?: string[];
-  }[];
+type ProgramSession = {
+  format: string;
+  speaker?: number;
+  speakers?: number[];
+  topic?: string;
+  track?: string;
+  theses?: string[];
+  time?: string;
 };
+type ProgramDay = { day: string; date: string; sessions: ProgramSession[] };
+
+/**
+ * Соседние активности с одинаковым тематическим блоком идут одной группой:
+ * название блока показываем один раз, заголовком над ними.
+ */
+function groupByTrack(sessions: ProgramSession[]) {
+  const groups: { track: string; sessions: ProgramSession[] }[] = [];
+  for (const s of sessions) {
+    const track = s.track?.trim() ?? '';
+    const last = groups[groups.length - 1];
+    if (last && last.track === track) last.sessions.push(s);
+    else groups.push({ track, sessions: [s] });
+  }
+  return groups;
+}
+
+/** «Блок 1. Рынок труда…» → номер отдельной плашкой, название рядом */
+function splitTrack(track: string) {
+  const m = track.match(/^(Блок\s*\d+)\s*[.:]?\s*(.+)$/i);
+  return m ? { badge: m[1], title: m[2] } : { badge: '', title: track };
+}
 
 export default function Program() {
   const openLead = useLead();
@@ -107,105 +130,130 @@ export default function Program() {
           })}
         </div>
 
-        {/* Timeline: слева кружок с линией, справа карточка сессии */}
-        <div className="mt-10 flex flex-col">
-          {current.sessions.map((s, i) => {
-            // Выступающих может быть несколько, а может не быть вовсе:
-            // тема известна, спикера объявят позже
-            const people = sessionSpeakers(s)
-              .map((idx) => speakers[idx])
-              .filter(Boolean);
-            const title = s.topic?.trim() || people[0]?.topic;
-            const theses = (s.theses ?? []).map((t) => t.trim()).filter(Boolean);
-            // Совсем пустую карточку не рисуем: ни спикера, ни темы
-            if (!people.length && !title) return null;
-            const color = formatColor(s.format);
+        {/* Тематические блоки: заголовок и под ним активности блока */}
+        <div className="mt-10 flex flex-col gap-2">
+          {groupByTrack(current.sessions).map((group, gi) => {
+            const { badge, title: trackTitle } = splitTrack(group.track);
             return (
-              <div key={i} className="flex gap-4 sm:gap-6">
-                {/* Колонка таймлайна: тайминг убран, остались кружки */}
-                <div className="flex w-4 shrink-0 flex-col items-center sm:w-5">
-                  <span
-                    className="mt-5 h-3 w-3 shrink-0 rounded-full"
-                    style={{ background: color }}
-                  />
-                  {i < current.sessions.length - 1 && (
-                    <span className="mt-1 w-px flex-1 bg-glass-border" />
-                  )}
-                </div>
-
-                {/* Карточка сессии */}
-                <div className="flex-1 pb-6">
-                  <div className="rounded-2xl border border-glass-border bg-glass p-5 transition-colors hover:border-cyan/40">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                      <span
-                        className="inline-block rounded-full border px-3 pb-[3px] pt-[5px] text-[11px] font-semibold uppercase tracking-wider"
-                        style={{ borderColor: `${color}55`, color }}
-                      >
-                        {s.format}
+              <div key={gi}>
+                {group.track && (
+                  <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-cyan/25 bg-cyan/[0.07] px-5 py-4">
+                    {badge && (
+                      <span className="rounded-full bg-cyan/15 px-3 pb-[3px] pt-[5px] text-[11px] font-bold uppercase tracking-wider text-cyan">
+                        {badge}
                       </span>
-
-                      {/* Тематический блок — ровно так, как ввели в админке */}
-                      {s.track?.trim() && (
-                        <span className="text-[13px] leading-snug text-text-muted">
-                          {s.track}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start">
-                      {/* Фото: при нескольких выступающих идут стопкой внахлёст */}
-                      {people.length > 0 && (
-                        <span className="flex shrink-0 -space-x-3">
-                          {people.map((p, k) => (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              key={k}
-                              src={mediaSrc(p.photo)}
-                              alt=""
-                              aria-hidden="true"
-                              width={400}
-                              height={400}
-                              className="h-16 w-16 rounded-full border-2 object-cover"
-                              style={{ borderColor: `${color}66`, background: 'var(--color-bg-main)' }}
-                            />
-                          ))}
-                        </span>
-                      )}
-
-                      <div className="min-w-0">
-                        <p
-                          className="text-[17px] font-bold leading-snug"
-                          style={{ fontFamily: 'var(--font-outfit)' }}
-                        >
-                          {/* Тема сессии перекрывает тему из карточки спикера:
-                              один спикер может выступать дважды по-разному */}
-                          {title}
-                        </p>
-
-                        {people.map((p, k) => (
-                          <p key={k} className="mt-1.5 text-sm text-text-muted">
-                            {p.name} · {p.role}, {p.company}
-                          </p>
-                        ))}
-
-                        {/* Тезисы доклада */}
-                        {theses.length > 0 && (
-                          <ul className="mt-3 flex flex-col gap-1.5">
-                            {theses.map((t, k) => (
-                              <li key={k} className="flex gap-2.5 text-[15px] leading-snug">
-                                <span
-                                  aria-hidden="true"
-                                  className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
-                                  style={{ background: color }}
-                                />
-                                {t}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    </div>
+                    )}
+                    <h3
+                      className="text-[clamp(17px,1.7vw,22px)] font-bold leading-snug"
+                      style={{ fontFamily: 'var(--font-outfit)' }}
+                    >
+                      {trackTitle}
+                    </h3>
                   </div>
+                )}
+
+                {/* Timeline: слева кружок с линией, справа карточка активности */}
+                <div className="flex flex-col">
+                  {group.sessions.map((s, i) => {
+                    // Выступающих может быть несколько, а может не быть вовсе:
+                    // тема известна, спикера объявят позже
+                    const people = sessionSpeakers(s)
+                      .map((idx) => speakers[idx])
+                      .filter(Boolean);
+                    const title = s.topic?.trim() || people[0]?.topic;
+                    const theses = (s.theses ?? []).map((t) => t.trim()).filter(Boolean);
+                    // Совсем пустую карточку не рисуем: ни спикера, ни темы
+                    if (!people.length && !title) return null;
+                    const color = formatColor(s.format);
+                    const time = s.time?.trim();
+                    return (
+                      <div key={i} className="flex gap-4 sm:gap-6">
+                        {/* Колонка таймлайна: тайминг убран, остались кружки */}
+                        <div className="flex w-4 shrink-0 flex-col items-center sm:w-5">
+                          <span
+                            className="mt-5 h-3 w-3 shrink-0 rounded-full"
+                            style={{ background: color }}
+                          />
+                          {i < group.sessions.length - 1 && (
+                            <span className="mt-1 w-px flex-1 bg-glass-border" />
+                          )}
+                        </div>
+
+                        {/* Карточка активности: тип → тема → тезисы → спикер */}
+                        <div className="flex-1 pb-6">
+                          <div className="rounded-2xl border border-glass-border bg-glass p-5 transition-colors hover:border-cyan/40">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                              {time && (
+                                <span className="text-[13px] font-bold tabular-nums text-white/80">
+                                  {time}
+                                </span>
+                              )}
+                              <span
+                                className="inline-block rounded-full border px-3 pb-[3px] pt-[5px] text-[11px] font-semibold uppercase tracking-wider"
+                                style={{ borderColor: `${color}55`, color }}
+                              >
+                                {s.format}
+                              </span>
+                            </div>
+
+                            {/* Тема сессии перекрывает тему из карточки спикера:
+                                один спикер может выступать дважды по-разному */}
+                            <p
+                              className="mt-3 text-[17px] font-bold leading-snug"
+                              style={{ fontFamily: 'var(--font-outfit)' }}
+                            >
+                              {title}
+                            </p>
+
+                            {/* Тезисы доклада */}
+                            {theses.length > 0 && (
+                              <ul className="mt-3 flex flex-col gap-1.5">
+                                {theses.map((t, k) => (
+                                  <li key={k} className="flex gap-2.5 text-[15px] leading-snug">
+                                    <span
+                                      aria-hidden="true"
+                                      className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
+                                      style={{ background: color }}
+                                    />
+                                    {t}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            {/* Спикеры — в самом низу карточки, жирным */}
+                            {people.length > 0 && (
+                              <div className="mt-4 flex flex-wrap gap-x-7 gap-y-4 border-t border-glass-border pt-4">
+                                {people.map((p, k) => (
+                                  <div key={k} className="flex items-center gap-3">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                      src={mediaSrc(p.photo)}
+                                      alt=""
+                                      aria-hidden="true"
+                                      width={400}
+                                      height={400}
+                                      className="h-14 w-14 shrink-0 rounded-full border-2 object-cover"
+                                      style={{
+                                        borderColor: `${color}66`,
+                                        background: 'var(--color-bg-main)',
+                                      }}
+                                    />
+                                    <div className="min-w-0">
+                                      <p className="text-[15px] font-bold leading-snug">{p.name}</p>
+                                      <p className="mt-0.5 text-[13px] font-bold leading-snug text-text-muted">
+                                        {[p.role, p.company].filter(Boolean).join(', ')}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );

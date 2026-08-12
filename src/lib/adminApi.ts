@@ -32,6 +32,7 @@ export type AdminSpeaker = {
  * speakers — список выступающих: в части форматов их несколько.
  * speaker — прежнее поле на одного, читаем для уже сохранённых программ.
  * theses — тезисы доклада, на сайте идут списком.
+ * time — время активности, пустое просто не показываем.
  */
 export type AdminSession = {
   format: string;
@@ -40,6 +41,7 @@ export type AdminSession = {
   topic?: string;
   track?: string;
   theses?: string[];
+  time?: string;
 };
 
 /** Список выступающих с учётом старого формата на одного спикера */

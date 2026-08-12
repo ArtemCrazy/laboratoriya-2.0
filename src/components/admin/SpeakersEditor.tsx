@@ -15,26 +15,13 @@ import {
 import { Field, IconBtn, SectionHead } from '@/components/admin/ui';
 
 const THEMES = Object.keys(speakerThemes) as (keyof typeof speakerThemes)[];
-const THEME_LABEL: Record<string, string> = {
-  analytics: 'Аналитика',
-  motivation: 'Мотивация',
-  wellbeing: 'Благополучие',
-  rewards: 'Вознаграждение',
-  culture: 'Культура',
-};
-
-const EMPTY: AdminSpeaker = {
-  name: '',
-  role: '',
-  company: '',
-  photo: '',
-  topic: '',
-  theme: 'analytics',
-};
 
 /**
  * Редактор карточек спикеров: порядок, поля и фото.
- * Тема задаёт цвет акцента карточки на сайте.
+ *
+ * Правки 12.08: выпадающий список «Тема выступления» из формы убран.
+ * Он задавал только цвет акцента карточки — теперь цвет назначается
+ * по очереди при добавлении спикера, у сохранённых карточек не меняется.
  */
 export default function SpeakersEditor({
   speakers,
@@ -68,7 +55,15 @@ export default function SpeakersEditor({
   };
 
   const add = () => {
-    onChange([...speakers, { ...EMPTY }]);
+    const next: AdminSpeaker = {
+      name: '',
+      role: '',
+      company: '',
+      photo: '',
+      topic: '',
+      theme: THEMES[speakers.length % THEMES.length],
+    };
+    onChange([...speakers, next]);
     setOpenIndex(speakers.length);
   };
 
@@ -223,20 +218,6 @@ function SpeakerRow({
               value={speaker.role}
               onChange={(v) => onUpdate({ role: v })}
             />
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[13px] font-medium text-adm-text2">Тема выступления</span>
-              <select
-                value={speaker.theme}
-                onChange={(e) => onUpdate({ theme: e.target.value })}
-                className="cursor-pointer rounded-lg border border-adm-border bg-adm-bg px-3 py-2 text-[14px] text-adm-text outline-none transition-colors focus:border-adm-accent"
-              >
-                {THEMES.map((t) => (
-                  <option key={t} value={t}>
-                    {THEME_LABEL[t] ?? t}
-                  </option>
-                ))}
-              </select>
-            </label>
           </div>
 
           <div className="mt-4">

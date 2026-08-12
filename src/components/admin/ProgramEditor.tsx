@@ -83,7 +83,7 @@ export default function ProgramEditor({
     <div>
       <SectionHead
         title="Программа"
-        hint="Два дня конференции. Организационные строки (регистрация, обед) на сайт не выводятся, только выступления."
+        hint="Два дня конференции. Активности с одинаковым тематическим блоком идут группой: название блока на сайте выводится заголовком над ними и в карточках не повторяется."
         note={note}
         onNote={onNote}
       />
@@ -119,6 +119,18 @@ export default function ProgramEditor({
                     key={si}
                     className="flex flex-wrap items-end gap-3 rounded-lg border border-adm-border bg-adm-bg p-3"
                   >
+                    {/* Время активности: пустое — на сайте просто не показываем */}
+                    <label className="flex w-[130px] flex-col gap-1.5">
+                      <span className="text-[13px] font-medium text-adm-text2">Время</span>
+                      <input
+                        type="text"
+                        value={s.time ?? ''}
+                        placeholder="10:00 — 11:30"
+                        onChange={(e) => updateSession(di, si, { time: e.target.value })}
+                        className="rounded-lg border border-adm-border bg-adm-surface px-3 py-2 text-[14px] text-adm-text outline-none transition-colors placeholder:text-adm-muted2 focus:border-adm-accent"
+                      />
+                    </label>
+
                     <label className="flex min-w-[150px] flex-1 flex-col gap-1.5">
                       <span className="text-[13px] font-medium text-adm-text2">Формат</span>
                       <input
