@@ -27,6 +27,12 @@ const LEAD_TYPES = [
     'partner' => 'Заявка на партнёрство',
 ];
 
+/**
+ * Стадии работы с заявкой. Раньше их было две — новая и обработанная,
+ * поэтому старое значение done приводим к «won» при чтении.
+ */
+const LEAD_STATUSES = ['new', 'work', 'won', 'lost'];
+
 /** Поля, которые вообще принимаем. Всё остальное отбрасываем */
 const LEAD_FIELDS = [
     'name' => 'Имя и фамилия',
@@ -48,7 +54,22 @@ function read_leads(): array
     }
     $raw = file_get_contents(LEADS_FILE);
     $data = $raw === false ? null : json_decode($raw, true);
-    return is_array($data) ? $data : [];
+    if (!is_array($data)) {
+        return [];
+    }
+
+    // Заявки, сохранённые до появления стадий
+    foreach ($data as &$lead) {
+        $status = (string) ($lead['status'] ?? 'new');
+        if ($status === 'done') {
+            $status = 'won';
+        }
+        $lead['status'] = in_array($status, LEAD_STATUSES, true) ? $status : 'new';
+        $lead['note'] = (string) ($lead['note'] ?? '');
+    }
+    unset($lead);
+
+    return $data;
 }
 
 function write_leads(array $leads): void
@@ -336,15 +357,26 @@ if ($method === 'PATCH') {
 
     $id = (string) ($body['id'] ?? '');
     $status = (string) ($body['status'] ?? '');
-    if ($id === '' || !in_array($status, ['new', 'done'], true)) {
-        fail('Нужен id заявки и статус');
+    $hasNote = array_key_exists('note', $body);
+
+    if ($id === '' || ($status === '' && !$hasNote)) {
+        fail('Нужен id заявки и что менять');
+    }
+    if ($status !== '' && !in_array($status, LEAD_STATUSES, true)) {
+        fail('Неизвестная стадия заявки');
     }
 
     $leads = read_leads();
     $found = false;
     foreach ($leads as &$l) {
         if (($l['id'] ?? '') === $id) {
-            $l['status'] = $status;
+            if ($status !== '') {
+                $l['status'] = $status;
+            }
+            if ($hasNote) {
+                $l['note'] = mb_substr(trim((string) $body['note']), 0, 2000);
+            }
+            $l['updatedAt'] = date('c');
             $found = true;
             break;
         }

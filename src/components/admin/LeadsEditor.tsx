@@ -6,23 +6,64 @@ import { Field, IconBtn } from '@/components/admin/ui';
 import { IconTrash, IconCheck, IconAlert } from '@/components/admin/icons';
 
 /**
- * Заявки с сайта.
+ * Заявки с сайта — доска по стадиям работы.
  *
  * Заказчик рассказал, что письма иногда уходили в спам и заявки сверяли
- * по панели — поэтому список здесь основной, а почта дублирует.
+ * по панели — поэтому доска здесь основной инструмент, а почта дублирует.
  *
  * Раздел живёт отдельно от контента: заявки приходят от посетителей, их
- * не «сохраняют» кнопкой, а помечают обработанными по мере разбора.
+ * не «сохраняют» кнопкой, а двигают по стадиям по мере работы. Карточку
+ * можно перетащить мышью, а на телефоне — перевести кнопками на карточке.
  */
+
+type Status = 'new' | 'work' | 'won' | 'lost';
 
 type Lead = {
   id: string;
   type: string;
   typeLabel: string;
   createdAt: string;
-  status: 'new' | 'done';
+  updatedAt?: string;
+  status: Status;
+  note?: string;
   fields: Record<string, string>;
 };
+
+/**
+ * Стадии намеренно короткие: заявка либо ещё не разобрана, либо в работе,
+ * либо закончилась результатом. Промежуточные шаги вроде «выставлен счёт»
+ * пишутся заметкой на карточке, чтобы доска не расползалась.
+ */
+const COLUMNS: { id: Status; label: string; hint: string; dot: string; head: string }[] = [
+  {
+    id: 'new',
+    label: 'Новые',
+    hint: 'Пришли с сайта, ещё не разобраны',
+    dot: 'bg-adm-accent',
+    head: 'bg-adm-accent-soft text-adm-accent',
+  },
+  {
+    id: 'work',
+    label: 'В работе',
+    hint: 'Списались, ведём переговоры',
+    dot: 'bg-adm-warn',
+    head: 'bg-adm-warn-soft text-adm-warn',
+  },
+  {
+    id: 'won',
+    label: 'Успешно',
+    hint: 'Оплатили или договорились',
+    dot: 'bg-adm-success',
+    head: 'bg-adm-success-soft text-adm-success',
+  },
+  {
+    id: 'lost',
+    label: 'Отклонены',
+    hint: 'Не подошло или не отвечают',
+    dot: 'bg-adm-muted2',
+    head: 'bg-adm-surface2 text-adm-muted',
+  },
+];
 
 const FIELD_LABEL: Record<string, string> = {
   name: 'Имя',
@@ -83,8 +124,10 @@ export default function LeadsEditor() {
   const [testResult, setTestResult] = useState<Channels | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [onlyNew, setOnlyNew] = useState(false);
   const [savedHint, setSavedHint] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overColumn, setOverColumn] = useState<Status | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -109,13 +152,24 @@ export default function LeadsEditor() {
     void load();
   }, [load]);
 
-  const setStatus = async (id: string, status: 'new' | 'done') => {
+  /** Карточку двигаем сразу, ответ сервера только подтверждает */
+  const setStatus = async (id: string, status: Status) => {
     setLeads((list) => list.map((l) => (l.id === id ? { ...l, status } : l)));
     await fetch(api, {
       method: 'PATCH',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, status }),
+    }).catch(() => undefined);
+  };
+
+  const setNote = async (id: string, note: string) => {
+    setLeads((list) => list.map((l) => (l.id === id ? { ...l, note } : l)));
+    await fetch(api, {
+      method: 'PATCH',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, note }),
     }).catch(() => undefined);
   };
 
@@ -173,7 +227,6 @@ export default function LeadsEditor() {
     }
   };
 
-  const shown = onlyNew ? leads.filter((l) => l.status === 'new') : leads;
   const newCount = leads.filter((l) => l.status === 'new').length;
 
   return (
@@ -184,20 +237,18 @@ export default function LeadsEditor() {
           <p className="mt-1 text-[13px] text-adm-muted">
             {loading
               ? 'Загружаем…'
-              : `Всего ${leads.length}, новых ${newCount}. Дублируются письмом.`}
+              : `Всего ${leads.length}, новых ${newCount}. Перетащите карточку в нужную колонку.`}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="flex cursor-pointer items-center gap-2 text-[13px]">
-            <input
-              type="checkbox"
-              checked={onlyNew}
-              onChange={(e) => setOnlyNew(e.target.checked)}
-              className="h-4 w-4 cursor-pointer accent-adm-accent"
-            />
-            Только новые
-          </label>
+          <button
+            type="button"
+            onClick={() => setShowSettings((v) => !v)}
+            className="cursor-pointer rounded-lg border border-adm-border px-3.5 py-2 text-[13px] font-medium transition-colors hover:border-adm-accent hover:text-adm-accent"
+          >
+            {showSettings ? 'Скрыть настройки' : 'Настройки уведомлений'}
+          </button>
           <button
             type="button"
             onClick={load}
@@ -208,6 +259,7 @@ export default function LeadsEditor() {
         </div>
       </div>
 
+      {showSettings && (
       <div className="mb-5 space-y-4 rounded-xl border border-adm-border bg-adm-surface p-4">
         <div>
           <h3 className="mb-3 text-[15px] font-semibold">Уведомления о заявках</h3>
@@ -344,6 +396,7 @@ export default function LeadsEditor() {
           Заявки всегда остаются здесь, независимо от почты и таблицы.
         </p>
       </div>
+      )}
 
       {error && (
         <p className="mb-4 flex items-start gap-2 rounded-lg bg-adm-danger-soft px-3.5 py-2.5 text-[13px] text-adm-danger">
@@ -352,74 +405,211 @@ export default function LeadsEditor() {
         </p>
       )}
 
-      {!loading && shown.length === 0 && (
+      {!loading && leads.length === 0 && (
         <p className="rounded-xl border border-dashed border-adm-border bg-adm-surface p-8 text-center text-sm text-adm-muted">
-          {leads.length === 0 ? 'Заявок пока нет.' : 'Новых заявок нет.'}
+          Заявок пока нет.
         </p>
       )}
 
-      <div className="space-y-2.5">
-        {shown.map((lead) => (
-          <div
-            key={lead.id}
-            className={`rounded-xl border bg-adm-surface p-4 ${
-              lead.status === 'new' ? 'border-adm-accent/50' : 'border-adm-border opacity-70'
-            }`}
-          >
-            <div className="flex flex-wrap items-center gap-3">
-              <span
-                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ${
-                  lead.status === 'new'
-                    ? 'bg-adm-accent-soft text-adm-accent'
-                    : 'bg-adm-surface2 text-adm-muted'
+      {leads.length > 0 && (
+        <div className="grid gap-3 lg:grid-cols-4">
+          {COLUMNS.map((col) => {
+            const items = leads.filter((l) => l.status === col.id);
+            return (
+              <section
+                key={col.id}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setOverColumn(col.id);
+                }}
+                onDragLeave={() => setOverColumn((c) => (c === col.id ? null : c))}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setOverColumn(null);
+                  // Идентификатор берём из самого события: состояние React
+                  // к моменту сброса может ещё не примениться
+                  const id = e.dataTransfer.getData('text/plain') || dragId;
+                  if (id) void setStatus(id, col.id);
+                  setDragId(null);
+                }}
+                className={`flex min-h-[160px] flex-col rounded-xl border bg-adm-bg p-2.5 transition-colors ${
+                  overColumn === col.id ? 'border-adm-accent bg-adm-accent-soft/40' : 'border-adm-border'
                 }`}
               >
-                {lead.status === 'new' ? 'Новая' : 'Обработана'}
-              </span>
-              <span className="text-[15px] font-medium">{lead.typeLabel}</span>
-              <span className="text-[13px] text-adm-muted">{formatDate(lead.createdAt)}</span>
+                <header className={`mb-2.5 rounded-lg px-3 py-2 ${col.head}`}>
+                  <div className="flex items-center gap-2">
+                    <span className={`h-2 w-2 shrink-0 rounded-full ${col.dot}`} />
+                    <span className="text-[13px] font-semibold">{col.label}</span>
+                    <span className="ml-auto text-[13px] font-semibold tabular-nums">
+                      {items.length}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-[11px] opacity-80">{col.hint}</p>
+                </header>
 
-              <span className="ml-auto flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setStatus(lead.id, lead.status === 'new' ? 'done' : 'new')}
-                  className="cursor-pointer rounded-lg border border-adm-border px-3 py-1.5 text-[12px] font-medium transition-colors hover:border-adm-accent hover:text-adm-accent"
-                >
-                  {lead.status === 'new' ? 'Отметить обработанной' : 'Вернуть в новые'}
-                </button>
-                <IconBtn label="Удалить" danger onClick={() => remove(lead.id)}>
-                  <IconTrash size={15} />
-                </IconBtn>
-              </span>
-            </div>
-
-            <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
-              {Object.entries(lead.fields).map(([key, value]) => (
-                <div key={key} className="flex gap-2 text-[14px]">
-                  <dt className="shrink-0 text-adm-muted">{FIELD_LABEL[key] ?? key}:</dt>
-                  <dd className="min-w-0 break-words">
-                    {key === 'email' ? (
-                      <a href={`mailto:${value}`} className="text-adm-accent hover:underline">
-                        {value}
-                      </a>
-                    ) : key === 'phone' ? (
-                      <a
-                        href={`tel:${value.replace(/[^+\d]/g, '')}`}
-                        className="text-adm-accent hover:underline"
-                      >
-                        {value}
-                      </a>
-                    ) : (
-                      value
-                    )}
-                  </dd>
+                <div className="flex flex-1 flex-col gap-2.5">
+                  {items.length === 0 && (
+                    <p className="rounded-lg border border-dashed border-adm-border py-6 text-center text-[12px] text-adm-muted2">
+                      Пусто
+                    </p>
+                  )}
+                  {items.map((lead) => (
+                    <LeadCard
+                      key={lead.id}
+                      lead={lead}
+                      dragging={dragId === lead.id}
+                      onDragStart={() => setDragId(lead.id)}
+                      onDragEnd={() => {
+                        setDragId(null);
+                        setOverColumn(null);
+                      }}
+                      onMove={(status) => void setStatus(lead.id, status)}
+                      onNote={(note) => void setNote(lead.id, note)}
+                      onRemove={() => void remove(lead.id)}
+                    />
+                  ))}
                 </div>
-              ))}
-            </dl>
-          </div>
-        ))}
-      </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
     </div>
+  );
+}
+
+/**
+ * Карточка заявки. Перетаскивается мышью, а кнопками стадии переводится
+ * там, где перетаскивание недоступно — на телефоне и планшете.
+ */
+function LeadCard({
+  lead,
+  dragging,
+  onDragStart,
+  onDragEnd,
+  onMove,
+  onNote,
+  onRemove,
+}: {
+  lead: Lead;
+  dragging: boolean;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+  onMove: (status: Status) => void;
+  onNote: (note: string) => void;
+  onRemove: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [note, setNoteText] = useState(lead.note ?? '');
+
+  const name = lead.fields.name || 'Без имени';
+  const email = lead.fields.email;
+  const phone = lead.fields.phone;
+
+  return (
+    <article
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        // Firefox не начинает перетаскивание без данных в буфере
+        e.dataTransfer.setData('text/plain', lead.id);
+        onDragStart();
+      }}
+      onDragEnd={onDragEnd}
+      className={`cursor-grab rounded-lg border border-adm-border bg-adm-surface p-3 transition-opacity active:cursor-grabbing ${
+        dragging ? 'opacity-40' : ''
+      }`}
+    >
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14px] font-semibold">{name}</p>
+          <p className="mt-0.5 truncate text-[12px] text-adm-muted">
+            {[lead.fields.company, lead.fields.role].filter(Boolean).join(', ') || lead.typeLabel}
+          </p>
+        </div>
+        <IconBtn label="Удалить" danger onClick={onRemove}>
+          <IconTrash size={14} />
+        </IconBtn>
+      </div>
+
+      <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
+        <span className="rounded-full bg-adm-surface2 px-2 py-0.5 font-medium text-adm-text2">
+          {lead.typeLabel}
+        </span>
+        <span className="text-adm-muted2">{formatDate(lead.createdAt)}</span>
+      </p>
+
+      {(email || phone) && (
+        <p className="mt-2 flex flex-col gap-0.5 text-[12px]">
+          {email && (
+            <a href={`mailto:${email}`} className="truncate text-adm-accent hover:underline">
+              {email}
+            </a>
+          )}
+          {phone && (
+            <a
+              href={`tel:${phone.replace(/[^+\d]/g, '')}`}
+              className="text-adm-accent hover:underline"
+            >
+              {phone}
+            </a>
+          )}
+        </p>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="mt-2 cursor-pointer text-[12px] font-medium text-adm-muted hover:text-adm-accent"
+      >
+        {open ? 'Свернуть' : 'Подробнее'}
+      </button>
+
+      {open && (
+        <div className="mt-2 border-t border-adm-border pt-2">
+          <dl className="space-y-1">
+            {Object.entries(lead.fields).map(([key, value]) => (
+              <div key={key} className="flex gap-1.5 text-[12px]">
+                <dt className="shrink-0 text-adm-muted">{FIELD_LABEL[key] ?? key}:</dt>
+                <dd className="min-w-0 break-words">{value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          {/* Заметка: чем закончился разговор, когда перезвонить */}
+          <label className="mt-2.5 flex flex-col gap-1">
+            <span className="text-[12px] font-medium text-adm-text2">Заметка</span>
+            <textarea
+              rows={2}
+              value={note}
+              onChange={(e) => setNoteText(e.target.value)}
+              onBlur={() => note !== (lead.note ?? '') && onNote(note)}
+              placeholder="Например: выставили счёт, ждём оплату до пятницы"
+              className="resize-y rounded-lg border border-adm-border bg-adm-bg px-2.5 py-2 text-[12px] text-adm-text outline-none transition-colors placeholder:text-adm-muted2 focus:border-adm-accent"
+            />
+          </label>
+
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {COLUMNS.filter((c) => c.id !== lead.status).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => onMove(c.id)}
+                className="cursor-pointer rounded-md border border-adm-border px-2 py-1 text-[11px] font-medium transition-colors hover:border-adm-accent hover:text-adm-accent"
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!open && note.trim() !== '' && (
+        <p className="mt-2 line-clamp-2 rounded-md bg-adm-surface2 px-2 py-1.5 text-[12px] text-adm-text2">
+          {note}
+        </p>
+      )}
+    </article>
   );
 }
 
