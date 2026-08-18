@@ -14,6 +14,10 @@ import { useLead } from '@/components/LeadProvider';
  * Партнёрство — отдельный сценарий конверсии (ТЗ §6), не покупка билета,
  * поэтому кнопка открывает свою форму, а не ведёт в общий CTA.
  *
+ * Правки 18.08: карточка с логотипом белая. Логотипы приходят без фона,
+ * и тёмные элементы пропадали на тёмной подложке. Заливка на уровне
+ * карточки, а не файла: иначе логотипы выглядят разнородно.
+ *
  * ⚠️ ЛОГОТИПЫ И ССЫЛКИ НЕ ПЕРЕДАНЫ: пока показываем структуру уровней с
  * пустыми слотами. Как придут логотипы с URL — слот заменяется на ссылку
  * с target="_blank" и UTM (требование ТЗ).
@@ -87,7 +91,7 @@ export default function Partners() {
                   {partners.map((p, i) => {
                     const card = (
                       <span
-                        className={`flex items-center justify-center rounded-2xl border border-glass-border bg-glass px-5 transition-colors hover:border-cyan/40 ${
+                        className={`flex items-center justify-center rounded-2xl bg-white px-5 py-3 ring-1 ring-white/15 transition-shadow hover:ring-2 hover:ring-cyan ${
                           wide ? 'h-28' : 'h-20'
                         }`}
                       >
@@ -100,7 +104,9 @@ export default function Partners() {
                             className="max-h-12 w-auto max-w-full object-contain"
                           />
                         ) : (
-                          <span className="text-center text-[14px] font-medium">{p.name}</span>
+                          <span className="text-center text-[14px] font-medium text-text-dark">
+                            {p.name}
+                          </span>
                         )}
                       </span>
                     );
