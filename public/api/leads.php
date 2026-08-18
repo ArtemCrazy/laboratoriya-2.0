@@ -12,9 +12,12 @@
 
 declare(strict_types=1);
 require __DIR__ . '/_bootstrap.php';
+require __DIR__ . '/_mailer.php';
 
 const LEADS_FILE = DATA_DIR . '/leads.json';
 const SETTINGS_FILE = DATA_DIR . '/settings.json';
+/** Результат последней отправки по каналам — показываем в админке */
+const CHANNELS_FILE = DATA_DIR . '/channels.json';
 
 /** Человеческие названия сценариев — они же уходят в письмо */
 const LEAD_TYPES = [
@@ -63,14 +66,125 @@ function write_leads(array $leads): void
     }
 }
 
+/**
+ * Настройки уведомлений.
+ *
+ * smtp* — отправка через ящик домена. Без неё письмо уходит с сервера
+ * хостинга и почти гарантированно попадает в спам: домен обслуживается
+ * Яндексом, и письмо «от себя» с чужого сервера фильтр не пропускает.
+ * sheetUrl — веб-приложение Apps Script, дубль заявки в Google-таблицу.
+ */
 function settings(): array
 {
-    $defaults = ['notifyEmail' => 'info@cblabconference.ru', 'notify' => true];
+    $defaults = [
+        'notifyEmail' => 'info@cblabconference.ru',
+        'notify' => true,
+        'smtpEnabled' => false,
+        'smtpHost' => 'smtp.yandex.ru',
+        'smtpPort' => 465,
+        'smtpUser' => '',
+        'smtpPassword' => '',
+        'smtpFrom' => '',
+        'sheetEnabled' => false,
+        'sheetUrl' => '',
+    ];
     if (!is_file(SETTINGS_FILE)) {
         return $defaults;
     }
     $data = json_decode((string) file_get_contents(SETTINGS_FILE), true);
     return is_array($data) ? array_merge($defaults, $data) : $defaults;
+}
+
+/** Наружу пароль не отдаём — только признак, что он задан */
+function settings_public(array $cfg): array
+{
+    $out = $cfg;
+    $out['smtpPasswordSet'] = trim((string) $cfg['smtpPassword']) !== '';
+    unset($out['smtpPassword']);
+    return $out;
+}
+
+function write_settings(array $cfg): void
+{
+    if (!is_dir(DATA_DIR)) {
+        mkdir(DATA_DIR, 0775, true);
+    }
+    protect_dir(DATA_DIR);
+    file_put_contents(
+        SETTINGS_FILE,
+        json_encode($cfg, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        LOCK_EX
+    );
+}
+
+function channels_status(): array
+{
+    if (!is_file(CHANNELS_FILE)) {
+        return [];
+    }
+    $data = json_decode((string) file_get_contents(CHANNELS_FILE), true);
+    return is_array($data) ? $data : [];
+}
+
+function write_channels(array $status): void
+{
+    if (!is_dir(DATA_DIR)) {
+        return;
+    }
+    file_put_contents(
+        CHANNELS_FILE,
+        json_encode($status, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        LOCK_EX
+    );
+}
+
+/** Текст письма и строка для таблицы собираются из одних и тех же данных */
+function lead_lines(array $lead): array
+{
+    $lines = ["Новая заявка с сайта: {$lead['typeLabel']}", ''];
+    foreach ($lead['fields'] as $key => $value) {
+        $lines[] = LEAD_FIELDS[$key] . ': ' . $value;
+    }
+    $lines[] = '';
+    $lines[] = 'Дата: ' . date('d.m.Y H:i', strtotime((string) $lead['createdAt']));
+    $lines[] = 'Заявка также сохранена в панели управления сайта.';
+    return $lines;
+}
+
+/**
+ * Рассылка заявки по каналам: письмо и Google-таблица.
+ * Заявка к этому моменту уже сохранена, поэтому любая ошибка здесь
+ * ничего не теряет — только пишется в статус для админки.
+ */
+function deliver_lead(array $cfg, array $lead): array
+{
+    $result = ['at' => date('c')];
+
+    if (!empty($cfg['notify']) && !empty($cfg['notifyEmail'])) {
+        $mail = notify_mail(
+            $cfg,
+            (string) $cfg['notifyEmail'],
+            'Заявка с сайта: ' . $lead['typeLabel'],
+            implode("\n", lead_lines($lead)),
+            (string) ($lead['fields']['email'] ?? '')
+        );
+        $result['mail'] = $mail;
+    }
+
+    if (!empty($cfg['sheetEnabled']) && !empty($cfg['sheetUrl'])) {
+        $row = [
+            'id' => $lead['id'],
+            'createdAt' => $lead['createdAt'],
+            'type' => $lead['typeLabel'],
+        ];
+        foreach (LEAD_FIELDS as $key => $label) {
+            $row[$key] = (string) ($lead['fields'][$key] ?? '');
+        }
+        $result['sheet'] = push_to_sheet((string) $cfg['sheetUrl'], $row);
+    }
+
+    write_channels($result);
+    return $result;
 }
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -136,27 +250,9 @@ if ($method === 'POST') {
     $leads = array_slice($leads, 0, 500);
     write_leads($leads);
 
-    // Письмо — вторым каналом. Если почта не ушла, заявка всё равно сохранена
-    $cfg = settings();
-    if (!empty($cfg['notify']) && !empty($cfg['notifyEmail'])) {
-        $lines = ["Новая заявка с сайта: {$lead['typeLabel']}", ''];
-        foreach ($clean as $key => $value) {
-            $lines[] = LEAD_FIELDS[$key] . ': ' . $value;
-        }
-        $lines[] = '';
-        $lines[] = 'Дата: ' . date('d.m.Y H:i');
-        $lines[] = 'Заявка также сохранена в панели управления сайта.';
-
-        $subject = '=?UTF-8?B?' . base64_encode('Заявка с сайта: ' . $lead['typeLabel']) . '?=';
-        $headers = "MIME-Version: 1.0\r\n"
-            . "Content-Type: text/plain; charset=UTF-8\r\n"
-            . 'From: site@' . preg_replace('/^www\./', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost')) . "\r\n";
-        if (!empty($clean['email'])) {
-            $headers .= 'Reply-To: ' . $clean['email'] . "\r\n";
-        }
-
-        @mail((string) $cfg['notifyEmail'], $subject, implode("\n", $lines), $headers);
-    }
+    // Письмо и таблица — вторым и третьим каналом. Заявка уже сохранена,
+    // поэтому сбой доставки её не теряет
+    deliver_lead(settings(), $lead);
 
     respond(['ok' => true]);
 }
@@ -172,31 +268,70 @@ if ($method === 'GET') {
     }
     unset($l);
 
-    respond(['ok' => true, 'leads' => $leads, 'settings' => settings()]);
+    respond([
+        'ok' => true,
+        'leads' => $leads,
+        'settings' => settings_public(settings()),
+        'channels' => channels_status(),
+    ]);
 }
 
 if ($method === 'PATCH') {
     $body = read_json_body();
 
+    // Проверка каналов: отправляем себе тестовую заявку
+    if (($body['action'] ?? '') === 'test') {
+        $cfg = settings();
+        $probe = [
+            'id' => 'test',
+            'typeLabel' => 'Проверка связи',
+            'createdAt' => date('c'),
+            'fields' => [
+                'name' => 'Проверка с сайта',
+                'company' => 'C&B-лаборатория',
+                'email' => (string) $cfg['notifyEmail'],
+                'comment' => 'Тестовая заявка из панели управления. Реагировать не нужно.',
+            ],
+        ];
+        respond(['ok' => true, 'result' => deliver_lead($cfg, $probe)]);
+    }
+
     // Настройки уведомлений меняются здесь же
     if (isset($body['settings']) && is_array($body['settings'])) {
-        $next = [
-            'notifyEmail' => trim((string) ($body['settings']['notifyEmail'] ?? '')),
-            'notify' => !empty($body['settings']['notify']),
-        ];
+        $in = $body['settings'];
+        $cfg = settings();
+
+        $next = array_merge($cfg, [
+            'notifyEmail' => trim((string) ($in['notifyEmail'] ?? $cfg['notifyEmail'])),
+            'notify' => !empty($in['notify']),
+            'smtpEnabled' => !empty($in['smtpEnabled']),
+            'smtpHost' => trim((string) ($in['smtpHost'] ?? $cfg['smtpHost'])),
+            'smtpPort' => (int) ($in['smtpPort'] ?? $cfg['smtpPort']),
+            'smtpUser' => trim((string) ($in['smtpUser'] ?? $cfg['smtpUser'])),
+            'smtpFrom' => trim((string) ($in['smtpFrom'] ?? $cfg['smtpFrom'])),
+            'sheetEnabled' => !empty($in['sheetEnabled']),
+            'sheetUrl' => trim((string) ($in['sheetUrl'] ?? $cfg['sheetUrl'])),
+        ]);
+
+        // Пустой пароль означает «оставить прежний»: наружу мы его не отдаём,
+        // и форма присылает его только когда пароль меняют
+        $pass = (string) ($in['smtpPassword'] ?? '');
+        if ($pass !== '') {
+            $next['smtpPassword'] = $pass;
+        }
+
         if ($next['notifyEmail'] !== '' && !filter_var($next['notifyEmail'], FILTER_VALIDATE_EMAIL)) {
             fail('Проверьте адрес для уведомлений');
         }
-        if (!is_dir(DATA_DIR)) {
-            mkdir(DATA_DIR, 0775, true);
+        if ($next['smtpUser'] !== '' && !filter_var($next['smtpUser'], FILTER_VALIDATE_EMAIL)) {
+            fail('Логин SMTP — это адрес почтового ящика');
         }
-        protect_dir(DATA_DIR);
-        file_put_contents(
-            SETTINGS_FILE,
-            json_encode($next, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
-            LOCK_EX
-        );
-        respond(['ok' => true, 'settings' => $next]);
+        if ($next['sheetUrl'] !== '' && !filter_var($next['sheetUrl'], FILTER_VALIDATE_URL)) {
+            fail('Проверьте ссылку на таблицу');
+        }
+
+        write_settings($next);
+        respond(['ok' => true, 'settings' => settings_public($next)]);
     }
 
     $id = (string) ($body['id'] ?? '');
