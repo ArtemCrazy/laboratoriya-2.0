@@ -237,7 +237,13 @@ export default function AdminApp() {
           </p>
         )}
 
-        <div className="mx-auto w-full max-w-[980px] flex-1 p-4 lg:p-8">
+        {/* Доске заявок нужна вся ширина: четыре колонки в 980 px не влезают.
+            Остальным разделам узкая колонка удобнее — строки не разъезжаются */}
+        <div
+          className={`w-full flex-1 p-4 lg:p-8 ${
+            section === 'leads' ? '' : 'mx-auto max-w-[980px]'
+          }`}
+        >
           {/* История правок общая для всего контента, заявок она не касается */}
           {section !== 'leads' && (
             <BackupsPanel

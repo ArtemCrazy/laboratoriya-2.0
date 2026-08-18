@@ -260,7 +260,7 @@ export default function LeadsEditor() {
       </div>
 
       {showSettings && (
-      <div className="mb-5 space-y-4 rounded-xl border border-adm-border bg-adm-surface p-4">
+      <div className="mb-5 max-w-[980px] space-y-4 rounded-xl border border-adm-border bg-adm-surface p-4">
         <div>
           <h3 className="mb-3 text-[15px] font-semibold">Уведомления о заявках</h3>
           <div className="flex flex-wrap items-end gap-3">
