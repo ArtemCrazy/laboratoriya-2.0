@@ -13,6 +13,7 @@
 declare(strict_types=1);
 require __DIR__ . '/_bootstrap.php';
 require __DIR__ . '/_mailer.php';
+require __DIR__ . '/_antispam.php';
 
 const LEADS_FILE = DATA_DIR . '/leads.json';
 const SETTINGS_FILE = DATA_DIR . '/settings.json';
@@ -31,7 +32,7 @@ const LEAD_TYPES = [
  * Стадии работы с заявкой. Раньше их было две — новая и обработанная,
  * поэтому старое значение done приводим к «won» при чтении.
  */
-const LEAD_STATUSES = ['new', 'work', 'won', 'lost'];
+const LEAD_STATUSES = ['new', 'work', 'won', 'lost', 'spam'];
 
 /** Поля, которые вообще принимаем. Всё остальное отбрасываем */
 const LEAD_FIELDS = [
@@ -210,6 +211,12 @@ function deliver_lead(array $cfg, array $lead): array
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
+// ---------- Пропуск на форму: выдаём всем, кто открыл окно заявки ----------
+if ($method === 'GET' && isset($_GET['form'])) {
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+    respond(['ok' => true, 'token' => issue_form_token()]);
+}
+
 // ---------- Приём заявки ----------
 if ($method === 'POST') {
     $body = read_json_body();
@@ -217,6 +224,16 @@ if ($method === 'POST') {
     // Ловушка для ботов: поле скрыто, человек его не заполнит
     if (!empty($body['website'])) {
         respond(['ok' => true]);
+    }
+
+    // Пропуск выдаётся при открытии формы. Бот, который бьёт прямо
+    // в приёмник, его не запрашивает — и дальше не проходит
+    $token = check_form_token((string) ($body['token'] ?? ''));
+    if (!$token['ok']) {
+        fail($token['error']);
+    }
+    if ($token['age'] < TOKEN_MIN_AGE) {
+        fail('Проверьте, пожалуйста, поля и отправьте ещё раз');
     }
 
     $type = (string) ($body['type'] ?? '');
@@ -244,27 +261,43 @@ if ($method === 'POST') {
 
     $leads = read_leads();
 
-    // Простая защита от потока заявок с одного адреса
+    // Защита от потока: и с одного адреса, и по сайту целиком
     $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
     $recent = 0;
+    $lastHour = 0;
     foreach ($leads as $l) {
-        if (($l['ip'] ?? '') === $ip && strtotime((string) ($l['createdAt'] ?? '')) > time() - 600) {
+        $at = strtotime((string) ($l['createdAt'] ?? ''));
+        if (($l['ip'] ?? '') === $ip && $at > time() - 600) {
             $recent++;
         }
+        if ($at > time() - 3600) {
+            $lastHour++;
+        }
     }
-    if ($recent >= 5) {
+    if ($recent >= 3) {
         fail('Слишком много заявок подряд. Попробуйте позже или напишите нам на почту.', 429);
     }
+    if ($lastHour >= 25) {
+        fail('Сейчас слишком много обращений. Попробуйте позже или напишите нам на почту.', 429);
+    }
+
+    // Подозрительное не выбрасываем: кладём в «Спам», где это видно
+    // и откуда заявку можно вернуть, если фильтр ошибся
+    $verdict = spam_score($clean, $leads, $ip, $token['age']);
+    $isSpam = $verdict['score'] >= 3;
 
     $lead = [
         'id' => bin2hex(random_bytes(6)),
         'type' => $type,
         'typeLabel' => LEAD_TYPES[$type],
         'createdAt' => date('c'),
-        'status' => 'new',
+        'status' => $isSpam ? 'spam' : 'new',
         'fields' => $clean,
         'ip' => $ip,
     ];
+    if ($isSpam) {
+        $lead['spamReason'] = $verdict['why'];
+    }
 
     array_unshift($leads, $lead);
     // Больше 500 заявок не храним: файл не должен расти бесконечно
@@ -272,9 +305,12 @@ if ($method === 'POST') {
     write_leads($leads);
 
     // Письмо и таблица — вторым и третьим каналом. Заявка уже сохранена,
-    // поэтому сбой доставки её не теряет
-    deliver_lead(settings(), $lead);
+    // поэтому сбой доставки её не теряет. Спам не рассылаем
+    if (!$isSpam) {
+        deliver_lead(settings(), $lead);
+    }
 
+    // Боту отвечаем как обычно: пусть считает, что заявка прошла
     respond(['ok' => true]);
 }
 
@@ -392,6 +428,22 @@ if ($method === 'PATCH') {
 
 if ($method === 'DELETE') {
     $body = read_json_body();
+
+    // Уборка колонки целиком: спам приходит десятками, по одной долго
+    $clearStatus = (string) ($body['clearStatus'] ?? '');
+    if ($clearStatus !== '') {
+        if (!in_array($clearStatus, ['spam', 'lost'], true)) {
+            fail('Пачкой очищаются только «Спам» и «Отклонены»');
+        }
+        $leads = read_leads();
+        $kept = array_values(array_filter(
+            $leads,
+            static fn (array $l): bool => ($l['status'] ?? '') !== $clearStatus
+        ));
+        write_leads($kept);
+        respond(['ok' => true, 'removed' => count($leads) - count($kept)]);
+    }
+
     $id = (string) ($body['id'] ?? '');
     if ($id === '') {
         fail('Нужен id заявки');

@@ -16,7 +16,7 @@ import { IconTrash, IconCheck, IconAlert } from '@/components/admin/icons';
  * можно перетащить мышью, а на телефоне — перевести кнопками на карточке.
  */
 
-type Status = 'new' | 'work' | 'won' | 'lost';
+type Status = 'new' | 'work' | 'won' | 'lost' | 'spam';
 
 type Lead = {
   id: string;
@@ -26,6 +26,7 @@ type Lead = {
   updatedAt?: string;
   status: Status;
   note?: string;
+  spamReason?: string;
   fields: Record<string, string>;
 };
 
@@ -63,7 +64,17 @@ const COLUMNS: { id: Status; label: string; hint: string; dot: string; head: str
     dot: 'bg-adm-muted2',
     head: 'bg-adm-surface2 text-adm-muted',
   },
+  {
+    id: 'spam',
+    label: 'Спам',
+    hint: 'Отсеяны автоматически, можно вернуть',
+    dot: 'bg-adm-danger',
+    head: 'bg-adm-danger-soft text-adm-danger',
+  },
 ];
+
+/** Колонки, которые чистятся целиком: там копится мусор */
+const CLEARABLE: Status[] = ['spam', 'lost'];
 
 const FIELD_LABEL: Record<string, string> = {
   name: 'Имя',
@@ -170,6 +181,20 @@ export default function LeadsEditor() {
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, note }),
+    }).catch(() => undefined);
+  };
+
+  const clearColumn = async (status: Status, count: number) => {
+    const col = COLUMNS.find((c) => c.id === status);
+    if (!confirm(`Удалить все заявки из колонки «${col?.label}» (${count})? Восстановить будет нельзя.`)) {
+      return;
+    }
+    setLeads((list) => list.filter((l) => l.status !== status));
+    await fetch(api, {
+      method: 'DELETE',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clearStatus: status }),
     }).catch(() => undefined);
   };
 
@@ -412,7 +437,7 @@ export default function LeadsEditor() {
       )}
 
       {leads.length > 0 && (
-        <div className="grid gap-3 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {COLUMNS.map((col) => {
             const items = leads.filter((l) => l.status === col.id);
             return (
@@ -445,6 +470,15 @@ export default function LeadsEditor() {
                     </span>
                   </div>
                   <p className="mt-0.5 text-[11px] opacity-80">{col.hint}</p>
+                  {CLEARABLE.includes(col.id) && items.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => void clearColumn(col.id, items.length)}
+                      className="mt-1.5 cursor-pointer text-[11px] font-medium underline underline-offset-2 opacity-80 hover:opacity-100"
+                    >
+                      Очистить колонку
+                    </button>
+                  )}
                 </header>
 
                 <div className="flex flex-1 flex-col gap-2.5">
@@ -602,6 +636,12 @@ function LeadCard({
             ))}
           </div>
         </div>
+      )}
+
+      {lead.spamReason && (
+        <p className="mt-2 rounded-md bg-adm-danger-soft px-2 py-1.5 text-[11px] text-adm-danger">
+          Отсеяно: {lead.spamReason}
+        </p>
       )}
 
       {!open && note.trim() !== '' && (

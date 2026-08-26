@@ -82,11 +82,23 @@ export default function LeadModal({
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /**
+   * Пропуск на форму. Выдаётся сервером при открытии окна и уходит вместе
+   * с заявкой: бот, который бьёт прямо в приёмник, его не запрашивает.
+   * Заодно по времени выдачи видно, что форму заполнял человек.
+   */
+  const [token, setToken] = useState('');
 
   useEffect(() => {
     if (!type) return;
     setSent(false);
     setError(null);
+    setToken('');
+
+    fetch(`${asset('/api/leads.php')}?form=1&t=${Date.now()}`)
+      .then((r) => r.json())
+      .then((d) => setToken(typeof d?.token === 'string' ? d.token : ''))
+      .catch(() => setToken(''));
 
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
@@ -117,7 +129,12 @@ export default function LeadModal({
       const res = await fetch(asset('/api/leads.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, fields, website: form.get('website') || '' }),
+        body: JSON.stringify({
+          type,
+          fields,
+          token,
+          website: form.get('website') || '',
+        }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить заявку');
