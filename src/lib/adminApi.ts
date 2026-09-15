@@ -166,7 +166,7 @@ export function builtinContent(): AdminContent {
       dates: builtinHero.dates,
       location: builtinHero.location,
       locationNote: builtinHero.locationNote,
-      hall: 'зал «Архангельск»',
+      hall: builtinHero.hall,
     },
     speakers: builtinSpeakers.map((s) => ({
       name: s.name,

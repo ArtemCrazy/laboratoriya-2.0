@@ -1,6 +1,8 @@
 'use client';
 
 import { hero } from '@/content/hero';
+import { builtinHeroMeta, type HeroMetaData } from '@/components/HeroMeta';
+import { useLiveContent } from '@/lib/useLiveContent';
 import LiquidButton from '@/components/LiquidButton';
 import { useLead } from '@/components/LeadProvider';
 import { asset } from '@/lib/paths';
@@ -11,6 +13,10 @@ import { asset } from '@/lib/paths';
  */
 export default function FinalCta() {
   const openLead = useLead();
+  // Даты и место — те же, что на первом экране: их правят в панели
+  const meta = useLiveContent<HeroMetaData>('hero', builtinHeroMeta);
+  const place = [meta.location, meta.locationNote, meta.hall].filter(Boolean).join(', ');
+
   return (
     <section
       id="final-cta"
@@ -57,7 +63,7 @@ export default function FinalCta() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-[620px] text-[17px] leading-relaxed text-text-muted">
-            {hero.dates} · {hero.location}, {hero.locationNote}, {'зал «Архангельск»'}.
+            {meta.dates} · {place}.
             Места ограничены: зал рассчитан на 150–200 участников.
           </p>
 

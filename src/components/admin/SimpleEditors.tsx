@@ -58,13 +58,13 @@ export function HeroEditor({
           label="Площадка"
           value={hero.locationNote}
           onChange={(v) => patch({ locationNote: v })}
-          placeholder="кластер «Ломоносов»"
+          placeholder="ул. Мясницкая, 13, стр. 20"
         />
         <Field
           label="Зал"
           value={hero.hall}
           onChange={(v) => patch({ hall: v })}
-          placeholder="зал «Архангельск»"
+          placeholder="QUATTRO SPACE"
         />
       </div>
     </div>

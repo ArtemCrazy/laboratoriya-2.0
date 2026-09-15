@@ -9,9 +9,8 @@ import FlaskMark from '@/components/FlaskMark';
  * Блок «Локация» (ТЗ 4.11 + дополнения 27.07). Название, адрес, транспорт,
  * описание пространства и карта. Фото — каруселью, как просил заказчик.
  *
- * Фото реальные: кадры кластера «Ломоносов» из переписки. Карта — ссылкой
- * на Яндекс.Карты: iframe-встройку добавим после подключения согласий,
- * внешняя карта тянет куки.
+ * Фото реальные: кадры QUATTRO SPACE из переписки. Карта — виджет
+ * карточки организации в Яндекс.Картах и кнопка перехода поверх неё.
  */
 export default function Venue() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -123,6 +122,9 @@ export default function Venue() {
                     {location.transport.map((t) => (
                       <span key={t}>{t}</span>
                     ))}
+                    <span className="mt-1.5 text-[15px] text-text-muted">
+                      {location.transportNote}
+                    </span>
                   </dd>
                 </span>
               </div>

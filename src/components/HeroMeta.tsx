@@ -14,7 +14,7 @@ export const builtinHeroMeta: HeroMetaData = {
   dates: hero.dates,
   location: hero.location,
   locationNote: hero.locationNote,
-  hall: 'зал «Архангельск»',
+  hall: hero.hall,
 };
 
 /**
