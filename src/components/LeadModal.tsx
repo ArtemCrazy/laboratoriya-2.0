@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { reachGoal } from '@/components/YandexMetrika';
 import { asset } from '@/lib/paths';
 
 /**
@@ -139,6 +140,8 @@ export default function LeadModal({
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить заявку');
       setSent(true);
+      // Цели в Метрике: lead_ticket, lead_quote, lead_program, lead_partner
+      reachGoal(`lead_${type}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось отправить заявку');
     } finally {

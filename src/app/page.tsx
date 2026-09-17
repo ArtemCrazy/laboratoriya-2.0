@@ -17,6 +17,7 @@ import FinalCta from '@/components/FinalCta';
 import Footer from '@/components/Footer';
 import LiquidButton from '@/components/LiquidButton';
 import HeroCta from '@/components/HeroCta';
+import YandexMetrika from '@/components/YandexMetrika';
 import { hero, terms } from '@/content/hero';
 import { asset } from '@/lib/paths';
 
@@ -250,6 +251,9 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Счётчик только на публичной странице, панель в статистику не попадает */}
+      <YandexMetrika />
     </>
   );
 }
